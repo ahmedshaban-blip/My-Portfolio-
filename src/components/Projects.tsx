@@ -151,6 +151,32 @@ const Projects = () => {
 
   const frontendProjects = [
     {
+      title: "Enjez Services Website",
+      role: "Front-end Web Developer",
+      description: "Service booking platform connecting users with agencies.",
+      techStack: [
+        "React 18",
+        "Redux Toolkit",
+        "Tailwind CSS",
+        "Firebase Auth",
+        "Firestore",
+        "Push Notifications",
+        "Stripe/PayPal",
+        "React Router v6",
+        "i18next",
+      ],
+      features: [
+        "Browse and book services with an intuitive flow",
+        "Real-time booking confirmations and messaging between clients and providers",
+        "Notifications for users and agencies",
+        "Dynamic service CRUD for admins",
+        "Customizable agency profiles",
+        "Mobile-first design and real-time booking updates",
+      ],
+      github: "https://github.com/ahmedshaban-blip/Enjez",
+      demo: "https://enjez.vercel.app/home",
+    },
+    {
       title: "E-Commerce Website",
       role: "Front-end Web Developer",
       description:
@@ -204,32 +230,6 @@ const Projects = () => {
       github:
         "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
       demo: "https://up-course-1.vercel.app/",
-    },
-    {
-      title: "Enjez Services Website",
-      role: "Front-end Web Developer",
-      description: "Service booking platform connecting users with agencies.",
-      techStack: [
-        "React 18",
-        "Redux Toolkit",
-        "Tailwind CSS",
-        "Firebase Auth",
-        "Firestore",
-        "Push Notifications",
-        "Stripe/PayPal",
-        "React Router v6",
-        "i18next",
-      ],
-      features: [
-        "Browse and book services with an intuitive flow",
-        "Real-time booking confirmations and messaging between clients and providers",
-        "Notifications for users and agencies",
-        "Dynamic service CRUD for admins",
-        "Customizable agency profiles",
-        "Mobile-first design and real-time booking updates",
-      ],
-      github: "https://github.com/ahmedshaban-blip/Enjez",
-      demo: "https://enjez.vercel.app/home",
     },
   ];
 

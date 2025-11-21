@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Github, ExternalLink, Smartphone } from "lucide-react";
@@ -28,8 +34,9 @@ const Projects = () => {
         "Stripe payment integration with secure handling",
         "Modern, responsive e-commerce UI for Android & iOS",
       ],
-      github: "#",
-      demo: "#",
+      github:
+        "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
+      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
     },
     {
       title: "Movies Application",
@@ -53,8 +60,8 @@ const Projects = () => {
         "Bilingual support (English & Arabic)",
         "Fully responsive design with clean architecture",
       ],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
+      demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
     },
     {
       title: "Coffee Application",
@@ -76,14 +83,20 @@ const Projects = () => {
         "Order screen with editable address and payment summary",
         "Real-time delivery tracking using OpenStreetMap",
       ],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
+      demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     },
     {
       title: "Flashcard Quiz Application",
       role: "Flutter Developer",
       description: "Flashcard-based study app with CRUD and progress tracking.",
-      techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences", "Material 3"],
+      techStack: [
+        "Flutter",
+        "Dart",
+        "Cubit",
+        "SharedPreferences",
+        "Material 3",
+      ],
       features: [
         "Flip animation for question/answer",
         "Full CRUD for flashcards",
@@ -91,8 +104,9 @@ const Projects = () => {
         "Persistent local storage",
         "Responsive UI and robust error handling",
       ],
-      github: "#",
-      demo: "#",
+      github:
+        "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
+      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
     },
     {
       title: "Currency Converter",
@@ -100,8 +114,8 @@ const Projects = () => {
       description: "Real-time currency conversion with a live API.",
       techStack: ["Flutter", "Dart", "Cubit", "REST API"],
       features: ["Fetch live exchange rates", "Simple and responsive UI"],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/currency_converter",
+      demo: "https://github.com/ahmedshaban-blip/currency_converter",
     },
     {
       title: "Scan QR",
@@ -109,17 +123,19 @@ const Projects = () => {
       description: "Barcode / QR scanner app.",
       techStack: ["Flutter", "Dart", "barcode_scan"],
       features: ["Scan and display QR/barcode data"],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/scan_qr",
+      demo: "https://github.com/ahmedshaban-blip/scan_qr",
     },
     {
       title: "Scientific Research Discover",
       role: "Flutter Developer",
-      description: "App to search, filter, and bookmark academic papers using public APIs.",
+      description:
+        "App to search, filter, and bookmark academic papers using public APIs.",
       techStack: ["Flutter", "Dart", "Cubit", "REST API"],
       features: ["Search academic papers", "Filter and bookmark research"],
-      github: "#",
-      demo: "#",
+      github:
+        "https://github.com/ahmedshaban-blip/scientific_research_discover",
+      demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
     },
     {
       title: "Random Quote Generator",
@@ -127,8 +143,9 @@ const Projects = () => {
       description: "Lightweight app that shows random motivational quotes.",
       techStack: ["Flutter", "Dart", "Cubit"],
       features: ["Display random quotes", "Simple, clean UI"],
-      github: "#",
-      demo: "#",
+      github:
+        "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
+      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
     },
   ];
 
@@ -156,8 +173,8 @@ const Projects = () => {
         "Admin dashboard for product CRUD, inventory tracking, order management, and analytics",
         "Responsive, fast-loading, and accessible UI",
       ],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
+      demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
     },
     {
       title: "Up-Course E-learning Website",
@@ -184,8 +201,9 @@ const Projects = () => {
         "Multi-language support (English & Arabic) and light/dark themes",
         "Analytics and mobile-first, accessible design",
       ],
-      github: "#",
-      demo: "#",
+      github:
+        "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
+      demo: "https://up-course-1.vercel.app/",
     },
     {
       title: "Enjez Services Website",
@@ -210,8 +228,8 @@ const Projects = () => {
         "Customizable agency profiles",
         "Mobile-first design and real-time booking updates",
       ],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/ahmedshaban-blip/Enjez",
+      demo: "https://enjez.vercel.app/home",
     },
   ];
 
@@ -225,7 +243,8 @@ const Projects = () => {
             </h2>
             <div className="w-20 h-1 gradient-primary mx-auto rounded-full" />
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              A showcase of my work in Flutter mobile development and modern web applications
+              A showcase of my work in Flutter mobile development and modern web
+              applications
             </p>
           </div>
 
@@ -242,7 +261,10 @@ const Projects = () => {
             <TabsContent value="flutter" className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {flutterProjects.map((project, index) => (
-                  <Card key={index} className="hover-lift border-border/50 hover:shadow-xl transition-all">
+                  <Card
+                    key={index}
+                    className="hover-lift border-border/50 hover:shadow-xl transition-all"
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between mb-2">
                         <Smartphone className="h-8 w-8 text-primary" />
@@ -262,7 +284,11 @@ const Projects = () => {
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {project.techStack.map((tech, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs">
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {tech}
                             </Badge>
                           ))}
@@ -283,13 +309,26 @@ const Projects = () => {
                       </div>
                       <div className="flex gap-3 pt-2">
                         <Button variant="outline" size="sm" asChild>
-                          <a href={project.github} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Github className="mr-2 h-4 w-4" /> GitHub
                           </a>
                         </Button>
-                        <Button size="sm" className="gradient-primary text-white" asChild>
-                          <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> View Project
+                        <Button
+                          size="sm"
+                          className="gradient-primary text-white"
+                          asChild
+                        >
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" /> View
+                            Project
                           </a>
                         </Button>
                       </div>
@@ -302,7 +341,10 @@ const Projects = () => {
             <TabsContent value="frontend" className="space-y-8">
               <div className="grid grid-cols-1 gap-6">
                 {frontendProjects.map((project, index) => (
-                  <Card key={index} className="hover-lift border-border/50 hover:shadow-xl transition-all">
+                  <Card
+                    key={index}
+                    className="hover-lift border-border/50 hover:shadow-xl transition-all"
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between mb-2">
                         <ExternalLink className="h-8 w-8 text-secondary" />
@@ -310,7 +352,9 @@ const Projects = () => {
                           {project.role}
                         </Badge>
                       </div>
-                      <CardTitle className="text-2xl">{project.title}</CardTitle>
+                      <CardTitle className="text-2xl">
+                        {project.title}
+                      </CardTitle>
                       <CardDescription className="text-base">
                         {project.description}
                       </CardDescription>
@@ -322,7 +366,11 @@ const Projects = () => {
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {project.techStack.map((tech, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs">
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {tech}
                             </Badge>
                           ))}
@@ -343,12 +391,24 @@ const Projects = () => {
                       </div>
                       <div className="flex gap-3 pt-2">
                         <Button variant="outline" size="sm" asChild>
-                          <a href={project.github} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Github className="mr-2 h-4 w-4" /> GitHub
                           </a>
                         </Button>
-                        <Button size="sm" className="bg-secondary text-secondary-foreground hover:opacity-90" asChild>
-                          <a href={project.demo} target="_blank" rel="noopener noreferrer">
+                        <Button
+                          size="sm"
+                          className="bg-secondary text-secondary-foreground hover:opacity-90"
+                          asChild
+                        >
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
                           </a>
                         </Button>

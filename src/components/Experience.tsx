@@ -42,54 +42,64 @@ const Experience = () => {
                     <p className="text-lg text-primary font-semibold">
                       Information Technology Institute (ITI)
                     </p>
-                    <p className="text-muted-foreground">July 2025 – Present</p>
+                    <p className="text-muted-foreground">
+                      July 2025 – November 2025
+                    </p>
                   </div>
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Developed production-ready mobile screens using Flutter and Dart with clean UI/UX
+                        Developed production-ready mobile screens using Flutter
+                        and Dart with clean UI/UX
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Implemented state management (Bloc, Cubit, GetX) in multiple mini-projects
+                        Implemented state management (Bloc, Cubit, GetX) in
+                        multiple mini-projects
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Integrated REST APIs, handled JSON parsing, error states, and loading
+                        Integrated REST APIs, handled JSON parsing, error
+                        states, and loading
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Developed features with Firebase Authentication, Firestore, Storage, and
-                        notifications
+                        Developed features with Firebase Authentication,
+                        Firestore, Storage, and notifications
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Built engaging web UIs using React, Redux Toolkit, and Tailwind CSS
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-primary mt-1">✓</span>
-                      <span>Worked with payment integrations (Stripe, PayPal)</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-primary mt-1">✓</span>
-                      <span>
-                        Collaborated via Git & GitHub (branches, PRs, code reviews)
+                        Built engaging web UIs using React, Redux Toolkit, and
+                        Tailwind CSS
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">✓</span>
                       <span>
-                        Followed Clean Architecture and participated in debugging and code review sessions
+                        Worked with payment integrations (Stripe, PayPal)
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-primary mt-1">✓</span>
+                      <span>
+                        Collaborated via Git & GitHub (branches, PRs, code
+                        reviews)
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-primary mt-1">✓</span>
+                      <span>
+                        Followed Clean Architecture and participated in
+                        debugging and code review sessions
                       </span>
                     </li>
                   </ul>
@@ -107,16 +117,21 @@ const Experience = () => {
                 </div>
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="text-2xl font-bold mb-2">Bachelor's Degree in Computer Science</h3>
+                    <h3 className="text-2xl font-bold mb-2">
+                      Bachelor's Degree in Computer Science
+                    </h3>
                     <p className="text-lg text-secondary font-semibold">
                       Faculty of Computer and Information, Minya University
                     </p>
-                    <p className="text-muted-foreground">September 2020 – January 2025</p>
+                    <p className="text-muted-foreground">
+                      September 2020 – January 2025
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Award className="h-5 w-5 text-primary" />
                     <span className="font-semibold text-foreground">
-                      Graduation Project: <span className="text-primary">A+</span>
+                      Graduation Project:{" "}
+                      <span className="text-primary">A+</span>
                     </span>
                   </div>
                 </div>

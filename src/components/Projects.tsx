@@ -87,6 +87,36 @@ const Projects = () => {
       demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     },
     {
+      title: "RSS Reader Pro",
+      role: "Flutter Developer",
+      description:
+        "Modern RSS reader app with clean architecture, article parsing, smooth UI, and external browser integration.",
+      techStack: [
+        "Flutter",
+        "Dart",
+        "Clean Architecture",
+        "Cubit/Bloc",
+        "http",
+        "xml",
+        "url_launcher",
+        "share_plus",
+        "Equatable",
+      ],
+      features: [
+        "Fetch and parse RSS feed from any URL",
+        "Paginated article listing with featured images",
+        "Detailed article view with full description",
+        "Automatic image extraction from RSS item content",
+        "Efficient pagination with Load More functionality",
+        "Open articles in external web browser",
+        "Share article links easily",
+        "Modern animated UI with gradients and custom clippers",
+      ],
+      github: "https://github.com/ahmedshaban-blip/rss-reader",
+      demo: "https://github.com/ahmedshaban-blip/rss-reader",
+    },
+
+    {
       title: "Flashcard Quiz Application",
       role: "Flutter Developer",
       description: "Flashcard-based study app with CRUD and progress tracking.",

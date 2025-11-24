@@ -29,10 +29,26 @@ const Navbar = () => {
     element?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleDownloadCV = (type: "flutter" | "frontend") => {
+    const link = document.createElement("a");
+    if (type === "flutter") {
+      link.href = "/public/Ahmed Shaban--Flutter Developer.pdf";
+      link.download = "Ahmed-Shaban-Flutter-CV.pdf";
+    } else {
+      link.href = "/public/Ahmed Shaban Front--End Web Developer.pdf";
+      link.download = "Ahmed-Shaban-Frontend-CV.pdf";
+    }
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/95 backdrop-blur-md shadow-md" : "bg-transparent"
+        isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-md"
+          : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4 py-4">
@@ -63,9 +79,22 @@ const Navbar = () => {
                 {link.label}
               </a>
             ))}
-            <Button variant="default" size="sm">
-              Download CV
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => handleDownloadCV("flutter")}
+              >
+                Flutter CV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadCV("frontend")}
+              >
+                Front-end CV
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -93,9 +122,24 @@ const Navbar = () => {
                 {link.label}
               </a>
             ))}
-            <Button variant="default" size="sm" className="w-full">
-              Download CV
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                className="flex-1"
+                onClick={() => handleDownloadCV("flutter")}
+              >
+                Flutter CV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => handleDownloadCV("frontend")}
+              >
+                Front-end CV
+              </Button>
+            </div>
           </div>
         )}
       </div>

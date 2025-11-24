@@ -8,6 +8,20 @@ const Hero = () => {
     element?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleDownloadCV = (type: "flutter" | "frontend") => {
+    const link = document.createElement("a");
+    if (type === "flutter") {
+      link.href = "/public/Ahmed Shaban--Flutter Developer.pdf";
+      link.download = "Ahmed-Shaban-Flutter-CV.pdf";
+    } else {
+      link.href = "/public/Ahmed Shaban Front--End Web Developer.pdf";
+      link.download = "Ahmed-Shaban-Frontend-CV.pdf";
+    }
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section
       id="home"
@@ -37,9 +51,10 @@ const Hero = () => {
           </div>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Fresh graduate with strong hands-on experience building cross-platform mobile apps
-            with Flutter and modern web applications with React. Specialized in Clean Architecture,
-            state management, REST APIs, and creating elegant, maintainable solutions.
+            Fresh graduate with strong hands-on experience building
+            cross-platform mobile apps with Flutter and modern web applications
+            with React. Specialized in Clean Architecture, state management,
+            REST APIs, and creating elegant, maintainable solutions.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -57,8 +72,22 @@ const Hero = () => {
             >
               View Front-end Projects
             </Button>
-            <Button size="lg" variant="secondary">
-              Download CV
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => handleDownloadCV("flutter")}
+            >
+              Download Flutter CV
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => handleDownloadCV("frontend")}
+            >
+              Download Front-end CV
             </Button>
           </div>
 

@@ -1,41 +1,45 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
+import { cn } from "@/lib/utils";
+import { useScrollSpy } from "@/hooks/use-scrollspy";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const navLinks = [
+    { href: "#home", id: "home", label: "Home" },
+    { href: "#about", id: "about", label: "About" },
+    { href: "#skills", id: "skills", label: "Skills" },
+    { href: "#projects", id: "projects", label: "Projects" },
+    { href: "#experience", id: "experience", label: "Experience" },
+    { href: "#contact", id: "contact", label: "Contact" },
+  ];
+
+  const activeId = useScrollSpy(navLinks.map((l) => l.id));
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navLinks = [
-    { href: "#home", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#skills", label: "Skills" },
-    { href: "#projects", label: "Projects" },
-    { href: "#experience", label: "Experience" },
-    { href: "#contact", label: "Contact" },
-  ];
 
   const scrollToSection = (href: string) => {
     setIsMobileMenuOpen(false);
     const element = document.querySelector(href);
-    element?.scrollIntoView({ behavior: "smooth" });
+    element?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleDownloadCV = (type: "flutter" | "frontend") => {
     const link = document.createElement("a");
     if (type === "flutter") {
-      link.href = "/public/Ahmed Shaban--Flutter Developer.pdf";
+      link.href = "/Ahmed Shaban--Flutter Developer.pdf";
       link.download = "Ahmed-Shaban-Flutter-CV.pdf";
     } else {
-      link.href = "/public/Ahmed Shaban Front--End Web Developer.pdf";
+      link.href = "/Ahmed Shaban Front--End Web Developer.pdf";
       link.download = "Ahmed-Shaban-Frontend-CV.pdf";
     }
     document.body.appendChild(link);
@@ -45,17 +49,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/95 backdrop-blur-md shadow-md"
-          : "bg-transparent"
-      }`}
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        isScrolled ? "glass shadow-sm" : "bg-transparent"
+      )}
     >
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4">
+        <div className="h-16 grid grid-cols-[1fr_auto_1fr] items-center">
           <a
             href="#home"
-            className="text-2xl font-bold gradient-text"
+            className="text-xl md:text-2xl font-bold gradient-text col-start-1"
             onClick={(e) => {
               e.preventDefault();
               scrollToSection("#home");
@@ -64,81 +67,81 @@ const Navbar = () => {
             Ahmed Shaban
           </a>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className="text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="flex gap-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => handleDownloadCV("flutter")}
-              >
-                Flutter CV
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDownloadCV("frontend")}
-              >
-                Front-end CV
-              </Button>
-            </div>
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-6 col-start-2">
+            {navLinks.map((link) => {
+              const isActive = activeId === link.id;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  className={cn(
+                    "text-sm font-medium transition-colors",
+                    isActive ? "text-primary" : "text-foreground/75 hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="hidden md:flex items-center justify-end gap-2 col-start-3">
+            <ModeToggle />
+            <Button size="sm" onClick={() => handleDownloadCV("flutter")} className="gradient-primary text-white">
+              Flutter CV
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => handleDownloadCV("frontend")}>
+              Front-end CV
+            </Button>
+          </div>
+
+          {/* Mobile button */}
+          <div className="md:hidden flex items-center justify-end gap-2 col-start-3">
+            <ModeToggle />
+            <button
+              className="text-foreground p-2 rounded-lg hover:bg-accent transition"
+              onClick={() => setIsMobileMenuOpen((v) => !v)}
+              aria-label="Open menu"
+            >
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-4 animate-fade-in">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className="block text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="flex gap-2">
-              <Button
-                variant="default"
-                size="sm"
-                className="flex-1"
-                onClick={() => handleDownloadCV("flutter")}
-              >
-                Flutter CV
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() => handleDownloadCV("frontend")}
-              >
-                Front-end CV
-              </Button>
+          <div className="md:hidden pb-5 animate-fade-in">
+            <div className="glass rounded-2xl p-4 space-y-3">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  className={cn(
+                    "block py-2 px-2 rounded-lg text-sm font-medium transition",
+                    activeId === link.id ? "bg-accent text-primary" : "text-foreground/80 hover:bg-accent"
+                  )}
+                >
+                  {link.label}
+                </a>
+              ))}
+
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <Button onClick={() => handleDownloadCV("flutter")} className="gradient-primary text-white">
+                  Flutter CV
+                </Button>
+                <Button variant="outline" onClick={() => handleDownloadCV("frontend")}>
+                  Front-end CV
+                </Button>
+              </div>
             </div>
           </div>
         )}

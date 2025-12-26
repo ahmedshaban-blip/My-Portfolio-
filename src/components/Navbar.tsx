@@ -1,37 +1,49 @@
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Download, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { useScrollSpy } from "@/hooks/use-scrollspy";
+
+// مكون ModeToggle المطور للتبديل المباشر بضغطة واحدة
+const ModeToggle = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="icon" className="rounded-full border-border glass-effect bg-background/50">
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
+
+  return (
+    <Button 
+      variant="outline" 
+      size="icon" 
+      className="rounded-full border-border glass-effect bg-background/50 hover:bg-accent transition-all duration-300"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+    >
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-blue-400" />
+      <span className="sr-only">Toggle theme</span>
+    </Button>
+  );
+};
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { href: "#home", id: "home", label: "Home" },
-    { href: "#about", id: "about", label: "About" },
-    { href: "#skills", id: "skills", label: "Skills" },
-    { href: "#projects", id: "projects", label: "Projects" },
-    { href: "#experience", id: "experience", label: "Experience" },
-    { href: "#contact", id: "contact", label: "Contact" },
-  ];
-
-  const activeId = useScrollSpy(navLinks.map((l) => l.id));
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    const handleScroll = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const scrollToSection = (href: string) => {
-    setIsMobileMenuOpen(false);
-    const element = document.querySelector(href);
-    element?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const handleDownloadCV = (type: "flutter" | "frontend") => {
     const link = document.createElement("a");
@@ -47,106 +59,109 @@ const Navbar = () => {
     document.body.removeChild(link);
   };
 
+  const links = [
+    { name: "About", href: "#about" },
+    { name: "Skills", href: "#skills" },
+    { name: "Projects", href: "#projects" },
+    { name: "Experience", href: "#experience" },
+    { name: "Contact", href: "#contact" },
+  ];
+
   return (
-    <nav
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "glass shadow-sm" : "bg-transparent"
-      )}
-    >
-      <div className="container mx-auto px-4">
-        <div className="h-16 grid grid-cols-[1fr_auto_1fr] items-center">
-          <a
-            href="#home"
-            className="text-xl md:text-2xl font-bold gradient-text col-start-1"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection("#home");
-            }}
-          >
-            Ahmed Shaban
+    <header className="fixed top-6 left-0 right-0 z-[100] px-4">
+      <nav className={cn(
+        "max-w-6xl mx-auto transition-all duration-500 rounded-full border relative",
+        isScrolled 
+          ? "bg-background/95 backdrop-blur-xl border-border shadow-lg py-3 px-8" 
+          : "bg-transparent border-transparent py-5 px-6"
+      )}>
+        <div className="flex items-center justify-between">
+          <a href="#home" className="text-xl font-bold tracking-tighter whitespace-nowrap hover:opacity-80 transition-opacity">
+            AHMED <span className="text-blue-500">SHABAN</span>
           </a>
 
-          {/* Desktop */}
-          <div className="hidden md:flex items-center gap-6 col-start-2">
-            {navLinks.map((link) => {
-              const isActive = activeId === link.id;
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.href);
-                  }}
-                  className={cn(
-                    "text-sm font-medium transition-colors",
-                    isActive ? "text-primary" : "text-foreground/75 hover:text-foreground"
-                  )}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
+          {/* روابط سطح المكتب */}
+          <div className="hidden lg:flex items-center gap-6">
+            {links.map((link) => (
+              <a 
+                key={link.name} 
+                href={link.href} 
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {link.name}
+              </a>
+            ))}
           </div>
 
-          <div className="hidden md:flex items-center justify-end gap-2 col-start-3">
+          {/* أزرار الأكشن لسطح المكتب */}
+          <div className="hidden md:flex items-center gap-3">
             <ModeToggle />
-            <Button size="sm" onClick={() => handleDownloadCV("flutter")} className="gradient-primary text-white">
-              Flutter CV
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => handleDownloadCV("frontend")}>
-              Front-end CV
-            </Button>
-          </div>
-
-          {/* Mobile button */}
-          <div className="md:hidden flex items-center justify-end gap-2 col-start-3">
-            <ModeToggle />
-            <button
-              className="text-foreground p-2 rounded-lg hover:bg-accent transition"
-              onClick={() => setIsMobileMenuOpen((v) => !v)}
-              aria-label="Open menu"
+            <Button 
+              size="sm" 
+              className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 transition-all active:scale-95 shadow-md shadow-blue-500/20"
+              onClick={() => handleDownloadCV("flutter")}
             >
-              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <Download className="w-4 h-4 mr-2" /> Flutter CV
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="rounded-full bg-background/50 backdrop-blur-sm px-5 border-border hover:bg-accent transition-all active:scale-95"
+              onClick={() => handleDownloadCV("frontend")}
+            >
+              <Download className="w-4 h-4 mr-2" /> Frontend CV
+            </Button>
+          </div>
+
+          {/* أيقونة المنيو للموبايل */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ModeToggle />
+            <button 
+              className="text-foreground p-2 rounded-full hover:bg-accent transition-colors" 
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle Menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden pb-5 animate-fade-in">
-            <div className="glass rounded-2xl p-4 space-y-3">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.href);
-                  }}
-                  className={cn(
-                    "block py-2 px-2 rounded-lg text-sm font-medium transition",
-                    activeId === link.id ? "bg-accent text-primary" : "text-foreground/80 hover:bg-accent"
-                  )}
-                >
-                  {link.label}
-                </a>
-              ))}
-
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <Button onClick={() => handleDownloadCV("flutter")} className="gradient-primary text-white">
-                  Flutter CV
-                </Button>
-                <Button variant="outline" onClick={() => handleDownloadCV("frontend")}>
-                  Front-end CV
-                </Button>
-              </div>
-            </div>
+        {/* قائمة الموبايل المنسدلة - تم حل مشكلة الشفافية كلياً */}
+        {isOpen && (
+          <div className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] rounded-[2.5rem] md:hidden animate-in fade-in slide-in-from-top-6 duration-300 z-[110]">
+             <div className="flex flex-col gap-6">
+                {links.map((link) => (
+                  <a 
+                    key={link.name} 
+                    href={link.href} 
+                    className="text-center text-xl font-bold text-foreground hover:text-blue-500 transition-colors py-2 border-b border-border/50 last:border-none" 
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                ))}
+                
+                {/* أزرار التحميل للموبايل */}
+                <div className="grid grid-cols-1 gap-4 pt-6">
+                  <Button 
+                    className="rounded-full bg-blue-600 hover:bg-blue-700 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-blue-500/20"
+                    onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
+                  >
+                    <Download className="w-5 h-5 mr-2" /> Flutter CV
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="rounded-full bg-secondary border-border text-foreground w-full h-14 text-lg font-bold hover:bg-accent transition-all active:scale-95"
+                    onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
+                  >
+                    <Download className="w-5 h-5 mr-2" /> Frontend CV
+                  </Button>
+                </div>
+             </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Github, ExternalLink, Smartphone } from "lucide-react";
+import { Github, ExternalLink, Smartphone, Globe, Code2, Zap } from "lucide-react";
 
 type Project = {
   title: string;
@@ -17,205 +17,138 @@ type Project = {
 };
 
 const Projects = () => {
+  // FULL ORIGINAL FLUTTER DATA
   const flutterProjects: Project[] = [
     {
-  title: "Enjez Mobile Application",
-  role: "React Native / Cross-Platform Developer",
-  description:
-    "Cross-platform mobile app that connects users with trusted home service providers, allowing service discovery, booking, and payment management with role-based access.",
-  techStack: [
-    "React Native",
-    "Expo",
-    "JavaScript",
-    "Firebase Authentication",
-    "Firestore",
-    "React Navigation",
-    "React Context API",
-    "NativeWind (Tailwind CSS)",
-    "React Native Paper",
-    "PayPal Integration",
-  ],
-  features: [
-    "User authentication with role-based navigation (Client / Admin)",
-    "Browse, search, and filter home services by category",
-    "Personalized service recommendations based on booking history",
-    "Detailed service pages with pricing, duration, and images",
-    "Multi-step service booking with date and time selection",
-    "Booking status tracking (Pending, Confirmed, Completed, Cancelled)",
-    "Integrated PayPal payments with offline payment option",
-    "User profile management and password change with re-authentication",
-    "Admin dashboard for managing services and bookings",
-    "Built-in AI chatbot for user assistance",
-  ],
-  github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
-  demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
-},
-
+      title: "Enjez Mobile Application",
+      role: "Cross-Platform Developer",
+      description: "Connects users with trusted home service providers, allowing booking and payment management.",
+      techStack: ["React Native", "Expo", "Firebase", "PayPal", "RAG Technique"],
+      features: [
+        "Role-based access (Client / Provider)", 
+        "Advanced Recommendation System for personalized services", 
+        "Intelligent AI Chatbot integrated with RAG technique", 
+        "Secure PayPal payment integration",
+        "Real-time service discovery and tracking"
+      ],
+      github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
+      demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
+    },
     {
       title: "E-Commerce Application",
       role: "Flutter Developer",
-      description:
-        "Cross-platform e-commerce app with authentication, product browsing, cart, and secure Stripe payments.",
-      techStack: ["Flutter", "Dart", "Cubit", "Firebase Auth", "Stripe API", "REST APIs", "Responsive UI"],
-      features: [
-        "User registration and login with secure auth",
-        "Product listing with category filtering",
-        "Real-time cart management and checkout",
-        "Stripe payment integration with secure handling",
-        "Modern, responsive e-commerce UI for Android & iOS",
-      ],
+      description: "Full e-commerce experience with product browsing, cart, and secure Stripe payments.",
+      techStack: ["Flutter", "Dart", "Cubit", "Firebase Auth", "Stripe API"],
+      features: ["Secure authentication", "Real-time cart", "Stripe payment integration", "Responsive UI"],
       github: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
       demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
     },
     {
       title: "Movies Application",
       role: "Flutter Developer",
-      description: "Movie browsing app using TMDb API with elegant UI and clean Cubit architecture.",
-      techStack: ["Flutter", "Dart", "Cubit/Bloc", "Dio", "GetIt", "TMDb API", "Clean Architecture"],
-      features: [
-        "View now-playing and upcoming movies",
-        "Detailed movie information pages",
-        "Favorites management",
-        "Light and dark themes",
-        "Bilingual support (English & Arabic)",
-        "Fully responsive design with clean architecture",
-      ],
+      description: "Movie browsing app using TMDb API with clean Cubit architecture and elegant UI.",
+      techStack: ["Flutter", "Dart", "Dio", "TMDb API", "Clean Architecture"],
+      features: ["Upcoming movies", "Favorites management", "Bilingual support", "Light/Dark themes"],
       github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
       demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
     },
     {
       title: "Coffee Application",
       role: "Flutter Developer",
-      description: "Coffee ordering experience with smooth animations and delivery tracking.",
-      techStack: ["Flutter", "Dart", "Cubit/Bloc", "Equatable", "OpenStreetMap", "Animations"],
-      features: [
-        "Animated welcome and onboarding screens",
-        "Categorized home screen with search and offers",
-        "Product detail page with size selection and favorites",
-        "Order screen with editable address and payment summary",
-        "Real-time delivery tracking using OpenStreetMap",
-      ],
+      description: "Coffee ordering experience with smooth animations and real-time delivery tracking.",
+      techStack: ["Flutter", "Dart", "Cubit", "OpenStreetMap", "Animations"],
+      features: ["Onboarding screens", "Size selection", "Real-time delivery tracking", "Order summary"],
       github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
       demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     },
     {
       title: "RSS Reader Pro",
       role: "Flutter Developer",
-      description:
-        "Modern RSS reader app with clean architecture, article parsing, smooth UI, and external browser integration.",
-      techStack: ["Flutter", "Dart", "Clean Architecture", "Cubit/Bloc", "http", "xml", "url_launcher", "share_plus", "Equatable"],
-      features: [
-        "Fetch and parse RSS feed from any URL",
-        "Paginated article listing with featured images",
-        "Detailed article view with full description",
-        "Automatic image extraction from RSS item content",
-        "Efficient pagination with Load More functionality",
-        "Open articles in external web browser",
-        "Share article links easily",
-        "Modern animated UI with gradients and custom clippers",
-      ],
+      description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
+      techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
+      features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
       github: "https://github.com/ahmedshaban-blip/rss-reader",
       demo: "https://github.com/ahmedshaban-blip/rss-reader",
     },
     {
-      title: "Flashcard Quiz Application",
+      title: "Flashcard Quiz",
       role: "Flutter Developer",
-      description: "Flashcard-based study app with CRUD and progress tracking.",
-      techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences", "Material 3"],
-      features: [
-        "Flip animation for question/answer",
-        "Full CRUD for flashcards",
-        "Study mode with navigation and progress tracking",
-        "Persistent local storage",
-        "Responsive UI and robust error handling",
-      ],
+      description: "Study app using flashcards with flip animations and progress tracking.",
+      techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences"],
+      features: ["Flip animations", "Full CRUD", "Study mode", "Local storage persistence"],
       github: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
       demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
     },
     {
       title: "Currency Converter",
       role: "Flutter Developer",
-      description: "Real-time currency conversion with a live API.",
+      description: "Real-time currency conversion tool using a live exchange rate API.",
       techStack: ["Flutter", "Dart", "Cubit", "REST API"],
-      features: ["Fetch live exchange rates", "Simple and responsive UI"],
+      features: ["Live exchange rates", "Fast calculation", "Clean interface"],
       github: "https://github.com/ahmedshaban-blip/currency_converter",
       demo: "https://github.com/ahmedshaban-blip/currency_converter",
     },
     {
       title: "Scan QR",
       role: "Flutter Developer",
-      description: "Barcode / QR scanner app.",
-      techStack: ["Flutter", "Dart", "barcode_scan"],
-      features: ["Scan and display QR/barcode data"],
+      description: "Fast and lightweight Barcode and QR code scanner application.",
+      techStack: ["Flutter", "Dart", "Barcode Scan Library"],
+      features: ["Instant scanning", "Display QR data", "Copy to clipboard"],
       github: "https://github.com/ahmedshaban-blip/scan_qr",
       demo: "https://github.com/ahmedshaban-blip/scan_qr",
     },
     {
       title: "Scientific Research Discover",
       role: "Flutter Developer",
-      description: "App to search, filter, and bookmark academic papers using public APIs.",
-      techStack: ["Flutter", "Dart", "Cubit", "REST API"],
-      features: ["Search academic papers", "Filter and bookmark research"],
+      description: "Discover, filter, and bookmark academic papers using public APIs.",
+      techStack: ["Flutter", "Dart", "REST API", "State Management"],
+      features: ["Academic search", "Filtering tools", "Personal bookmarks"],
       github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
       demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
     },
     {
       title: "Random Quote Generator",
       role: "Flutter Developer",
-      description: "Lightweight app that shows random motivational quotes.",
+      description: "Motivational tool providing daily random quotes with a minimalist design.",
       techStack: ["Flutter", "Dart", "Cubit"],
-      features: ["Display random quotes", "Simple, clean UI"],
+      features: ["Daily quotes", "Instant generation", "Clean typography"],
       github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
       demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
     },
   ];
 
+  // FULL ORIGINAL FRONTEND DATA
   const frontendProjects: Project[] = [
     {
       title: "Enjez Services Website",
-      role: "Front-end Web Developer",
-      description: "Service booking platform connecting users with agencies.",
-      techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Firebase Auth", "Firestore", "Push Notifications", "Stripe/PayPal", "React Router v6", "i18next"],
+      role: "Frontend Web Developer",
+      description: "Service booking platform connecting users with professional agencies.",
+      techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Stripe", "AI Integration"],
       features: [
-        "Browse and book services with an intuitive flow",
-        "Real-time booking confirmations and messaging between clients and providers",
-        "Notifications for users and agencies",
-        "Dynamic service CRUD for admins",
-        "Customizable agency profiles",
-        "Mobile-first design and real-time booking updates",
+        "Agency and Client dashboards", 
+        "Smart Recommendation System for users", 
+        "AI Chatbot with RAG support for automated assistance", 
+        "Secure Stripe payment integration",
+        "Real-time agency messaging system"
       ],
       github: "https://github.com/ahmedshaban-blip/Enjez",
       demo: "https://enjez.vercel.app/home",
     },
     {
       title: "E-Commerce Website",
-      role: "Front-end Web Developer",
-      description: "Full-featured e-commerce website with secure auth, cart, wishlist, and admin dashboard.",
-      techStack: ["HTML5", "CSS3", "JavaScript (ES6+)", "Firebase Auth", "Firestore", "Supabase Storage", "PayPal SDK", "REST APIs"],
-      features: [
-        "User registration, login, and email verification",
-        "Product browsing with category filtering and wishlist",
-        "Real-time cart management and checkout",
-        "PayPal integration for secure payments",
-        "Admin dashboard for product CRUD, inventory tracking, order management, and analytics",
-        "Responsive, fast-loading, and accessible UI",
-      ],
+      role: "Frontend Web Developer",
+      description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
+      techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
+      features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
       github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
       demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
     },
     {
-      title: "Up-Course E-learning Website",
-      role: "Front-end Web Developer",
-      description: "E-learning platform with dual authentication, payments, and instructor dashboards.",
-      techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Vite", "Firebase Auth", "Firestore", "Supabase Storage", "PayPal SDK", "React Router v6", "i18next"],
-      features: [
-        "Email/password and Google OAuth authentication",
-        "Course browsing, enrollment, and PayPal-powered payments",
-        "Instructor dashboard with full course CRUD",
-        "Media management via Supabase and YouTube playlist embedding",
-        "Multi-language support (English & Arabic) and light/dark themes",
-        "Analytics and mobile-first, accessible design",
-      ],
+      title: "Up-Course E-learning",
+      role: "Frontend Web Developer",
+      description: "E-learning platform with dual auth, payments, and media management.",
+      techStack: ["React 18", "Redux", "Supabase", "PayPal", "Vite"],
+      features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
       github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
       demo: "https://up-course-1.vercel.app/",
     },
@@ -224,179 +157,142 @@ const Projects = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
 
-  const openDetails = (p: Project) => {
-    setSelected(p);
-    setOpen(true);
-  };
+  const ProjectCard = ({ project, isFlutter }: { project: Project; isFlutter: boolean }) => (
+    <Card className="group glass-effect rounded-3xl md:rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 transition-all duration-500 flex flex-col h-full border-border">
+      <CardHeader className="p-6 md:p-8">
+        <div className="flex justify-between items-start mb-4 md:mb-6">
+          <div className="p-3 md:p-4 rounded-2xl md:rounded-3xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+            {isFlutter ? <Smartphone size={24} className="md:w-7 md:h-7" /> : <Globe size={24} className="md:w-7 md:h-7" />}
+          </div>
+          <Badge variant="outline" className="border-border px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold tracking-wider uppercase">
+            {project.role}
+          </Badge>
+        </div>
+        
+        <CardTitle className="text-xl md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-blue-500 transition-colors">
+          {project.title}
+        </CardTitle>
+        <CardDescription className="text-sm md:text-md text-muted-foreground line-clamp-2 mb-4 md:mb-6 leading-relaxed">
+          {project.description}
+        </CardDescription>
 
-  const gridCardClass = "glass hover-lift border-border/60 hover:shadow-xl transition-all rounded-2xl";
+        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
+          {project.techStack.map((tech, i) => (
+            <span key={i} className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-muted-foreground bg-secondary/50 border border-border px-2 md:px-3 py-1 rounded-full">
+              {tech}
+            </span>
+          ))}
+        </div>
 
-  const selectedShort = useMemo(() => {
-    if (!selected) return null;
-    return {
-      ...selected,
-      features: selected.features ?? [],
-      techStack: selected.techStack ?? [],
-    };
-  }, [selected]);
+        <div className="flex items-center gap-3 mt-auto pt-4 md:pt-6 border-t border-border">
+          <Button variant="link" className="p-0 text-blue-500 hover:text-blue-600 text-xs md:text-sm" asChild>
+            <a href={project.github} target="_blank" rel="noopener noreferrer">
+              <Github size={14} className="md:w-4 md:h-4 mr-1.5 md:mr-2" /> Github
+            </a>
+          </Button>
+          
+          <div className="ml-auto flex gap-1.5 md:gap-2">
+            <Button 
+              size="sm" 
+              variant="secondary" 
+              className="rounded-full text-[10px] md:text-xs px-3 md:px-4 h-8 md:h-9 bg-secondary border-border hover:bg-accent text-foreground" 
+              onClick={() => { setSelected(project); setOpen(true); }}
+            >
+              Details
+            </Button>
+            <Button 
+              size="sm" 
+              className="rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all px-3 md:px-4 h-8 md:h-9 font-bold" 
+              asChild
+            >
+              <a href={project.demo} target="_blank" rel="noopener noreferrer">
+                <ExternalLink size={12} className="md:w-3.5 md:h-3.5" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+    </Card>
+  );
 
   return (
-    <section id="projects" className="py-24 section-light">
+    <section id="projects" className="py-20 md:py-32 relative">
       <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-4">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Featured <span className="gradient-text">Projects</span>
-            </h2>
-            <div className="w-20 h-1 gradient-primary mx-auto rounded-full" />
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              A showcase of my work in Flutter mobile development and modern web applications
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center space-y-4 md:space-y-6 mb-12 md:mb-20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] md:text-xs font-bold tracking-widest uppercase">
+              <Zap size={12} className="md:w-3.5 md:h-3.5" /> My Portfolio
+            </div>
+            <h2 className="text-4xl md:text-7xl font-black text-gradient tracking-tight">Engineering Excellence</h2>
+            <p className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
+              A comprehensive list of my work, ranging from complex mobile architectures to high-performance web applications.
             </p>
           </div>
 
           <Tabs defaultValue="flutter" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12">
-              <TabsTrigger value="flutter" className="text-base">Flutter</TabsTrigger>
-              <TabsTrigger value="frontend" className="text-base">Front-end</TabsTrigger>
-            </TabsList>
+            <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-4 no-scrollbar">
+              <TabsList className="bg-secondary/50 border border-border p-1 md:p-1.5 rounded-full h-12 md:h-16 inline-flex min-w-max">
+                <TabsTrigger value="flutter" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+                  Mobile Apps <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
+                </TabsTrigger>
+                <TabsTrigger value="frontend" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+                  Web Projects <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value="flutter" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {flutterProjects.map((project, index) => (
-                  <Card key={index} className={gridCardClass}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <Smartphone className="h-8 w-8 text-primary" />
-                        <Badge variant="outline" className="text-xs">{project.role}</Badge>
-                      </div>
-                      <CardTitle className="text-xl">{project.title}</CardTitle>
-                      <CardDescription className="text-base">{project.description}</CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div>
-                        <p className="font-semibold text-sm mb-2 text-muted-foreground">Tech Stack</p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.techStack.slice(0, 8).map((tech, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs">{tech}</Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={project.github} target="_blank" rel="noopener noreferrer">
-                            <Github className="mr-2 h-4 w-4" /> GitHub
-                          </a>
-                        </Button>
-
-                        <Button size="sm" className="gradient-primary text-white" asChild>
-                          <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> Demo
-                          </a>
-                        </Button>
-
-                        <Button size="sm" variant="secondary" onClick={() => openDetails(project)}>
-                          Details
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+            <TabsContent value="flutter" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in duration-700">
+              {flutterProjects.map((project, idx) => (
+                <ProjectCard key={idx} project={project} isFlutter={true} />
+              ))}
             </TabsContent>
 
-            <TabsContent value="frontend" className="space-y-8">
-              <div className="grid grid-cols-1 gap-6">
-                {frontendProjects.map((project, index) => (
-                  <Card key={index} className={gridCardClass}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <ExternalLink className="h-8 w-8 text-secondary" />
-                        <Badge variant="outline" className="text-xs">{project.role}</Badge>
-                      </div>
-                      <CardTitle className="text-2xl">{project.title}</CardTitle>
-                      <CardDescription className="text-base">{project.description}</CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div>
-                        <p className="font-semibold text-sm mb-2 text-muted-foreground">Tech Stack</p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.techStack.slice(0, 10).map((tech, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs">{tech}</Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={project.github} target="_blank" rel="noopener noreferrer">
-                            <Github className="mr-2 h-4 w-4" /> GitHub
-                          </a>
-                        </Button>
-
-                        <Button size="sm" className="bg-secondary text-secondary-foreground hover:opacity-90" asChild>
-                          <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> Live
-                          </a>
-                        </Button>
-
-                        <Button size="sm" variant="secondary" onClick={() => openDetails(project)}>
-                          Details
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+            <TabsContent value="frontend" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in duration-700">
+              {frontendProjects.map((project, idx) => (
+                <ProjectCard key={idx} project={project} isFlutter={false} />
+              ))}
             </TabsContent>
           </Tabs>
 
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-[95vw] md:max-w-2xl glass-effect border-border rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{selectedShort?.title}</DialogTitle>
-                <DialogDescription>{selectedShort?.description}</DialogDescription>
+                <DialogTitle className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 text-foreground">{selected?.title}</DialogTitle>
+                <DialogDescription className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+                  {selected?.description}
+                </DialogDescription>
               </DialogHeader>
-
-              <div className="space-y-5">
+              
+              <div className="space-y-6 md:space-y-10 mt-6 md:mt-8">
                 <div>
-                  <p className="text-sm font-semibold text-muted-foreground mb-2">Tech Stack</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedShort?.techStack?.map((t, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">{t}</Badge>
+                  <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Tech Stack Integration</h4>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
+                    {selected?.techStack?.map((t, i) => (
+                      <Badge key={i} variant="outline" className="bg-secondary/50 border-border text-foreground px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs">
+                        {t}
+                      </Badge>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-muted-foreground mb-2">Key Features</p>
-                  <ul className="space-y-2 text-sm">
-                    {selectedShort?.features?.map((f, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="text-primary">•</span>
-                        <span>{f}</span>
+                  <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Core Deliverables</h4>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    {selected?.features.map((f, i) => (
+                      <li key={i} className="flex items-start gap-2.5 md:gap-3 text-muted-foreground text-xs md:text-sm leading-snug">
+                        <Code2 size={16} className="text-blue-500 mt-0.5 shrink-0 md:w-4 md:h-4" /> {f}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {selectedShort?.github && (
-                    <Button variant="outline" asChild>
-                      <a href={selectedShort.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="mr-2 h-4 w-4" /> GitHub
-                      </a>
-                    </Button>
-                  )}
-                  {selectedShort?.demo && (
-                    <Button className="gradient-primary text-white" asChild>
-                      <a href={selectedShort.demo} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2 h-4 w-4" /> Open
-                      </a>
-                    </Button>
-                  )}
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-6 md:pt-8 border-t border-border">
+                   <Button className="flex-1 rounded-full h-12 md:h-14 bg-blue-600 hover:bg-blue-700 font-bold text-white shadow-lg shadow-blue-500/20 text-sm md:text-base" asChild>
+                    <a href={selected?.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
+                   </Button>
+                   <Button variant="outline" className="flex-1 rounded-full h-12 md:h-14 border-border bg-background text-foreground hover:bg-accent font-bold text-sm md:text-base transition-colors" asChild>
+                    <a href={selected?.github} target="_blank" rel="noopener noreferrer">Source Code</a>
+                   </Button>
                 </div>
               </div>
             </DialogContent>

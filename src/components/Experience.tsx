@@ -19,20 +19,20 @@ const Experience = () => {
   ];
 
   return (
-    <section id="experience" className="py-24 relative overflow-hidden">
-      <div className="absolute top-1/4 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
+    <section id="experience" className="section-padding relative">
+      <div className="absolute top-1/4 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-5xl mx-auto space-y-16">
+        <div className="max-w-5xl mx-auto space-y-12">
           
           <RevealOnScroll>
             <div className="text-center space-y-4">
-              <Badge variant="outline" className="px-4 py-1 rounded-full border-primary/20 bg-primary/5 text-primary">
-                <Sparkles className="w-3.5 h-3.5 mr-2" /> Resume & Journey
-              </Badge>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter">
-                Experience & <span className="text-blue-600 dark:text-blue-500">Education</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
+                <Sparkles className="w-4 h-4" /> Resume & Journey
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                Experience & <span className="text-gradient">Education</span>
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 A timeline of my professional growth, academic achievements, and continuous learning.
@@ -40,24 +40,24 @@ const Experience = () => {
             </div>
           </RevealOnScroll>
 
-          <div className="grid gap-10">
+          <div className="grid gap-8">
             <RevealOnScroll delay={0.1}>
-              <Card className="glass-effect rounded-[2.5rem] border-border overflow-hidden group hover:border-blue-500/50 transition-all duration-500">
-                <div className="flex flex-col md:flex-row gap-8 p-8 md:p-12">
+              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
+                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-3xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform duration-500">
-                      <Briefcase className="h-10 w-10 text-white" />
+                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+                      <Briefcase className="h-8 w-8 text-white" />
                     </div>
                   </div>
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-5">
                     <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-4">
-                        <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                          Front-end and Cross-Platform Developer (Internship)
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                          Front-end and Cross-Platform Developer
                         </h3>
-                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-4 py-1">2025</Badge>
+                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">2025</Badge>
                       </div>
-                      <p className="text-xl text-blue-600 dark:text-blue-400 font-extrabold tracking-tight">
+                      <p className="text-lg text-primary font-semibold">
                         Information Technology Institute (ITI)
                       </p>
                       <div className="flex items-center gap-4 text-muted-foreground text-sm">
@@ -66,7 +66,7 @@ const Experience = () => {
                       </div>
                     </div>
                     
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
                       {[
                         "Developed production-ready mobile screens using Flutter",
                         "Implemented state management (Bloc, Cubit, GetX)",
@@ -77,8 +77,8 @@ const Experience = () => {
                         "Collaborated via Git & GitHub workflows",
                         "Followed Clean Architecture principles"
                       ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-3 group/item">
-                          <CheckCircle2 className="text-blue-500 mt-1 shrink-0 w-4 h-4 group-hover/item:scale-125 transition-transform" />
+                        <li key={i} className="flex items-start gap-2.5">
+                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
                           <span className="text-sm leading-relaxed">{item}</span>
                         </li>
                       ))}
@@ -89,22 +89,22 @@ const Experience = () => {
             </RevealOnScroll>
 
             <RevealOnScroll delay={0.2}>
-              <Card className="glass-effect rounded-[2.5rem] border-border overflow-hidden group hover:border-blue-500/50 transition-all duration-500">
-                <div className="flex flex-col md:flex-row gap-8 p-8 md:p-12">
+              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
+                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-3xl bg-secondary flex items-center justify-center border border-border group-hover:scale-110 transition-transform duration-500">
-                      <GraduationCap className="h-10 w-10 text-foreground" />
+                    <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center border border-border/50 group-hover:scale-105 transition-transform duration-300">
+                      <GraduationCap className="h-8 w-8 text-foreground" />
                     </div>
                   </div>
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-5">
                     <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-4">
-                        <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
                           Bachelor's Degree in Computer Science
                         </h3>
-                        <Badge variant="outline" className="border-border text-muted-foreground px-4 py-1">Class of 2025</Badge>
+                        <Badge variant="outline" className="border-border/50 text-muted-foreground px-3 py-1 text-sm">Class of 2025</Badge>
                       </div>
-                      <p className="text-xl text-blue-600 dark:text-blue-400 font-black tracking-tight underline decoration-blue-500/20 underline-offset-4">
+                      <p className="text-lg text-primary font-semibold">
                         Faculty of Computer and Information, Minya University
                       </p>
                       <div className="flex items-center gap-4 text-muted-foreground text-sm pt-1">
@@ -112,11 +112,11 @@ const Experience = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
-                      <Award className="h-6 w-6 text-blue-500" />
-                      <span className="font-semibold text-foreground">
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-success/5 border border-success/10">
+                      <Award className="h-5 w-5 text-success" />
+                      <span className="font-medium text-foreground">
                         Graduation Project Grade:{" "}
-                        <span className="text-blue-600 dark:text-blue-400 font-black text-lg">A+</span>
+                        <span className="text-success font-bold text-lg">A+</span>
                       </span>
                     </div>
                     
@@ -129,21 +129,21 @@ const Experience = () => {
             </RevealOnScroll>
 
             <RevealOnScroll delay={0.3}>
-              <Card className="glass-effect rounded-[2.5rem] border-border p-8 md:p-12 hover:border-blue-500/50 transition-all duration-500">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500">
-                    <Award className="h-7 w-7" />
+              <Card className="modern-card border-border/50 rounded-2xl p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
+                    <Award className="h-5 w-5" />
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground">
                     Selected Courses & Certifications
                   </h3>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {courses.map((course, index) => (
                     <Badge
                       key={index}
                       variant="outline"
-                      className="px-5 py-2.5 text-sm rounded-full border-border bg-background/50 text-muted-foreground hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all cursor-default"
+                      className="px-4 py-2 text-sm rounded-full border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all cursor-default"
                     >
                       {course}
                     </Badge>

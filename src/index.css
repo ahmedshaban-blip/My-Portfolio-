@@ -1,30 +1,34 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* الوضع الفاتح - نظيف وناعم */
+    /* Light Mode - Clean & Professional */
     --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 221 83% 65%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --accent-glow: 262 83% 70%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 221 83% 53%;
     --radius: 1rem;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
     --mesh-bg: 210 20% 98%;
     --mesh-color-1: rgba(59, 130, 246, 0.08);
@@ -32,38 +36,33 @@
   }
 
   .dark {
-    /* الوضع الداكن المريح - Slate Dark Theme */
-    /* استبدال الأسود بـ Deep Slate (رمادي مزرق داكن جداً) */
+    /* Dark Mode - Deep Slate Theme */
     --background: 222 47% 4%;
     --foreground: 213 31% 91%;
-
-    /* البطاقات تأخذ درجة أفتح قليلاً لتعطي عمقاً (Depth) */
     --card: 222 47% 6%;
     --card-foreground: 213 31% 91%;
-
     --popover: 222 47% 4%;
     --popover-foreground: 213 31% 91%;
-
-    /* اللون الأساسي (الأزرق) */
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 217 91% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
-    /* ألوان الأسطح الثانوية والحدود - جعلناها هادئة وغير فاقعة */
+    --primary-glow: 217 91% 70%;
     --secondary: 222 47% 10%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 47% 10%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 222 47% 10%;
+    --accent: 263 70% 65%;
     --accent-foreground: 210 40% 98%;
-
+    --accent-glow: 263 70% 75%;
     --border: 217 32% 14%;
-    /* حدود خفيفة جداً */
     --input: 217 32% 14%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 217 91% 60%;
+    --success: 142 76% 46%;
+    --warning: 38 92% 60%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    /* ألوان الـ Mesh Gradient في الخلفية */
+    /* Mesh Gradient Colors */
     --mesh-bg: #020617;
-    /* Slate 950 */
     --mesh-color-1: rgba(59, 130, 246, 0.12);
     --mesh-color-2: rgba(139, 92, 246, 0.08);
   }
@@ -97,8 +96,37 @@
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-br transition-all duration-500;
-    /* تم تعديل التدرج ليعتمد على لون الـ foreground لضمان الظهور في كلتا الحالتين */
-    background-image: linear-gradient(to bottom right, hsl(var(--foreground)), hsla(var(--foreground) / 0.6));
+    background-image: linear-gradient(to bottom right, hsl(var(--primary)), hsl(var(--accent)));
+  }
+
+  .text-gradient-subtle {
+    @apply bg-clip-text text-transparent bg-gradient-to-br transition-all duration-500;
+    background-image: linear-gradient(to bottom right, hsl(var(--foreground)), hsla(var(--foreground) / 0.7));
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 40px hsla(var(--primary-glow) / 0.3);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 40px hsla(var(--accent-glow) / 0.3);
+  }
+
+  .modern-card {
+    @apply rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .modern-card:hover {
+    @apply border-primary/50 shadow-xl;
+    box-shadow: 0 0 40px hsla(var(--primary) / 0.05);
+  }
+
+  .section-padding {
+    @apply py-20 md:py-32;
+  }
+
+  .section-padding-sm {
+    @apply py-16 md:py-24;
   }
 }
 

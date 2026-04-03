@@ -9,151 +9,7 @@ import { Github, ExternalLink, Smartphone, Globe, Code2, Zap } from "lucide-reac
 import { HoverCard } from "@/components/animations/HoverCard";
 import { useAnimationContext } from "@/context/AnimationContext";
 import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animation-variants";
-
-type Project = {
-  title: string;
-  role: string;
-  description: string;
-  techStack: string[];
-  features: string[];
-  github: string;
-  demo: string;
-};
-
-const flutterProjects: Project[] = [
-  {
-    title: "Enjez Mobile Application",
-    role: "Cross-Platform Developer",
-    description: "Connects users with trusted home service providers, allowing booking and payment management.",
-    techStack: ["React Native", "Expo", "Firebase", "PayPal", "RAG Technique"],
-    features: [
-      "Role-based access (Client / Provider)",
-      "Advanced Recommendation System for personalized services",
-      "Intelligent AI Chatbot integrated with RAG technique",
-      "Secure PayPal payment integration",
-      "Real-time service discovery and tracking"
-    ],
-    github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
-    demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
-  },
-  {
-    title: "E-Commerce Application",
-    role: "Flutter Developer",
-    description: "Full e-commerce experience with product browsing, cart, and secure Stripe payments.",
-    techStack: ["Flutter", "Dart", "Cubit", "Firebase Auth", "Stripe API"],
-    features: ["Secure authentication", "Real-time cart", "Stripe payment integration", "Responsive UI"],
-    github: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
-    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
-  },
-  {
-    title: "Movies Application",
-    role: "Flutter Developer",
-    description: "Movie browsing app using TMDb API with clean Cubit architecture and elegant UI.",
-    techStack: ["Flutter", "Dart", "Dio", "TMDb API", "Clean Architecture"],
-    features: ["Upcoming movies", "Favorites management", "Bilingual support", "Light/Dark themes"],
-    github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
-    demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
-  },
-  {
-    title: "Coffee Application",
-    role: "Flutter Developer",
-    description: "Coffee ordering experience with smooth animations and real-time delivery tracking.",
-    techStack: ["Flutter", "Dart", "Cubit", "OpenStreetMap", "Animations"],
-    features: ["Onboarding screens", "Size selection", "Real-time delivery tracking", "Order summary"],
-    github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
-    demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
-  },
-  {
-    title: "RSS Reader Pro",
-    role: "Flutter Developer",
-    description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
-    techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
-    features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
-    github: "https://github.com/ahmedshaban-blip/rss-reader",
-    demo: "https://github.com/ahmedshaban-blip/rss-reader",
-  },
-  {
-    title: "Flashcard Quiz",
-    role: "Flutter Developer",
-    description: "Study app using flashcards with flip animations and progress tracking.",
-    techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences"],
-    features: ["Flip animations", "Full CRUD", "Study mode", "Local storage persistence"],
-    github: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
-    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
-  },
-  {
-    title: "Currency Converter",
-    role: "Flutter Developer",
-    description: "Real-time currency conversion tool using a live exchange rate API.",
-    techStack: ["Flutter", "Dart", "Cubit", "REST API"],
-    features: ["Live exchange rates", "Fast calculation", "Clean interface"],
-    github: "https://github.com/ahmedshaban-blip/currency_converter",
-    demo: "https://github.com/ahmedshaban-blip/currency_converter",
-  },
-  {
-    title: "Scan QR",
-    role: "Flutter Developer",
-    description: "Fast and lightweight Barcode and QR code scanner application.",
-    techStack: ["Flutter", "Dart", "Barcode Scan Library"],
-    features: ["Instant scanning", "Display QR data", "Copy to clipboard"],
-    github: "https://github.com/ahmedshaban-blip/scan_qr",
-    demo: "https://github.com/ahmedshaban-blip/scan_qr",
-  },
-  {
-    title: "Scientific Research Discover",
-    role: "Flutter Developer",
-    description: "Discover, filter, and bookmark academic papers using public APIs.",
-    techStack: ["Flutter", "Dart", "REST API", "State Management"],
-    features: ["Academic search", "Filtering tools", "Personal bookmarks"],
-    github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
-    demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
-  },
-  {
-    title: "Random Quote Generator",
-    role: "Flutter Developer",
-    description: "Motivational tool providing daily random quotes with a minimalist design.",
-    techStack: ["Flutter", "Dart", "Cubit"],
-    features: ["Daily quotes", "Instant generation", "Clean typography"],
-    github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
-    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
-  },
-];
-
-const frontendProjects: Project[] = [
-  {
-    title: "Enjez Services Website",
-    role: "Frontend Web Developer",
-    description: "Service booking platform connecting users with professional agencies.",
-    techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Stripe", "AI Integration"],
-    features: [
-      "Agency and Client dashboards",
-      "Smart Recommendation System for users",
-      "AI Chatbot with RAG support for automated assistance",
-      "Secure Stripe payment integration",
-      "Real-time agency messaging system"
-    ],
-    github: "https://github.com/ahmedshaban-blip/Enjez",
-    demo: "https://enjez.vercel.app/home",
-  },
-  {
-    title: "E-Commerce Website",
-    role: "Frontend Web Developer",
-    description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
-    techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
-    features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
-    github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
-    demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
-  },
-  {
-    title: "Up-Course E-learning",
-    role: "Frontend Web Developer",
-    description: "E-learning platform with dual auth, payments, and media management.",
-    techStack: ["React 18", "Redux", "Supabase", "PayPal", "Vite"],
-    features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
-    github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
-    demo: "https://up-course-1.vercel.app/",
-  },
-];
+import { flutterProjects, frontendProjects, type Project } from "@/data/projects";
 
 const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotion, onSelect }: {
   project: Project;
@@ -162,63 +18,63 @@ const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotio
   onSelect: (p: Project) => void;
 }) {
   return (
-    <HoverCard scale={reducedMotion ? 1 : 1.03}>
-      <motion.div layoutId={`card-${project.title}`} layout>
-        <Card className="modern-card elevated-card gradient-border-card flex flex-col h-full border-0 group">
-          <div className="noise-texture" />
-          <CardHeader className="p-6 md:p-8 relative z-10">
-            <div className="flex justify-between items-start mb-4 md:mb-6">
-              <motion.div
-                layoutId={`icon-${project.title}`}
-                className="p-3 md:p-4 rounded-2xl md:rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-blue-500 border border-blue-500/20 shadow-lg shadow-blue-500/10"
+    <HoverCard scale={reducedMotion ? 1 : 1.02}>
+      <motion.div layout>
+        <Card className="modern-card flex flex-col h-full border-border/50 group overflow-hidden">
+          <CardHeader className="p-6 relative z-10">
+            <div className="flex justify-between items-start mb-5">
+              <div
+                className={`p-3 rounded-xl ${isFlutter ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-accent/10 text-accent border border-accent/20'} shadow-lg transition-transform duration-300 group-hover:scale-110`}
               >
-                {isFlutter ? <Smartphone size={24} className="md:w-7 md:h-7" /> : <Globe size={24} className="md:w-7 md:h-7" />}
-              </motion.div>
-              <Badge variant="outline" className="border-border/40 bg-background/30 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold tracking-wider uppercase">
+                {isFlutter ? <Smartphone size={22} /> : <Globe size={22} />}
+              </div>
+              <Badge variant="outline" className="border-border/40 bg-background/30 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
                 {project.role}
               </Badge>
             </div>
 
-            <motion.div layoutId={`title-${project.title}`}>
-              <CardTitle className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-foreground">
-                {project.title}
-              </CardTitle>
-            </motion.div>
-            <CardDescription className="text-sm md:text-md text-muted-foreground line-clamp-2 mb-4 md:mb-6 leading-relaxed">
+            <CardTitle className="text-lg md:text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors duration-200">
+              {project.title}
+            </CardTitle>
+            
+            <CardDescription className="text-sm text-muted-foreground line-clamp-2 mb-5 leading-relaxed">
               {project.description}
             </CardDescription>
 
-            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
-              {project.techStack.map((tech, i) => (
-                <span key={i} className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-foreground/70 bg-secondary/40 border border-border/30 px-2 md:px-3 py-1 rounded-full backdrop-blur-sm">
+            <div className="flex flex-wrap gap-2 mb-6">
+              {project.techStack.slice(0, 4).map((tech, i) => (
+                <span key={i} className="text-[10px] font-medium text-muted-foreground bg-secondary/40 border border-border/30 px-2.5 py-1 rounded-full">
                   {tech}
                 </span>
               ))}
+              {project.techStack.length > 4 && (
+                <span className="text-[10px] font-medium text-muted-foreground">+{project.techStack.length - 4}</span>
+              )}
             </div>
 
-            <div className="flex items-center gap-3 mt-auto pt-4 md:pt-6 border-t border-border/30">
-              <Button variant="link" className="p-0 text-blue-500 hover:text-blue-600 text-xs md:text-sm transition-colors" asChild>
+            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-border/30">
+              <Button variant="link" className="p-0 text-primary hover:text-primary/80 text-sm transition-colors" asChild>
                 <a href={project.github} target="_blank" rel="noopener noreferrer">
-                  <Github size={14} className="md:w-4 md:h-4 mr-1.5 md:mr-2" /> Github
+                  <Github size={14} className="mr-1.5" /> Github
                 </a>
               </Button>
 
-              <div className="ml-auto flex gap-1.5 md:gap-2">
+              <div className="ml-auto flex gap-2">
                 <Button
                   size="sm"
-                  variant="secondary"
-                  className="rounded-full text-[10px] md:text-xs px-3 md:px-4 h-8 md:h-9 bg-secondary/50 hover:bg-secondary/80 border border-border/30 backdrop-blur-sm transition-all"
+                  variant="outline"
+                  className="rounded-full text-xs px-4 h-8 border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200"
                   onClick={() => onSelect(project)}
                 >
                   Details
                 </Button>
                 <Button
                   size="sm"
-                  className="rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 text-sm font-bold shadow-lg shadow-blue-500/25 transition-all px-3 md:px-4 h-8 md:h-9"
+                  className="rounded-full bg-primary text-white hover:bg-primary/90 text-xs shadow-md shadow-primary/20 transition-all px-4 h-8"
                   asChild
                 >
                   <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink size={12} className="md:w-3.5 md:h-3.5" />
+                    <ExternalLink size={12} />
                   </a>
                 </Button>
               </div>
@@ -241,28 +97,32 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="py-20 md:py-32 relative">
+    <section id="projects" className="section-padding relative">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-4 md:space-y-6 mb-12 md:mb-20">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] md:text-xs font-bold tracking-widest uppercase">
-              <Zap size={12} className="md:w-3.5 md:h-3.5" /> My Portfolio
+          <div className="text-center space-y-4 md:space-y-6 mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
+              <Zap size={14} /> My Portfolio
             </div>
-            <h2 className="text-4xl md:text-7xl font-black text-gradient tracking-tight">Engineering Excellence</h2>
-            <p className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
-              A comprehensive list of my work, ranging from complex mobile architectures to high-performance web applications.
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+              Featured <span className="text-gradient">Projects</span>
+            </h2>
+            <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed px-4">
+              A selection of my work, from mobile architectures to web applications.
             </p>
           </div>
 
           <LayoutGroup>
             <Tabs defaultValue="flutter" className="w-full">
-              <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-4 no-scrollbar">
-                <TabsList className="bg-secondary/50 border border-border p-1 md:p-1.5 rounded-full h-12 md:h-16 inline-flex min-w-max">
-                  <TabsTrigger value="flutter" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
-                    Mobile Apps <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
+              <div className="flex justify-center mb-10 md:mb-12 overflow-x-auto pb-2">
+                <TabsList className="bg-secondary/50 border border-border/50 p-1 rounded-full h-11 inline-flex">
+                  <TabsTrigger value="flutter" className="rounded-full px-6 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                    <Smartphone size={14} className="inline mr-1.5 -ml-0.5" />
+                    Mobile <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
                   </TabsTrigger>
-                  <TabsTrigger value="frontend" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
-                    Web Projects <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
+                  <TabsTrigger value="frontend" className="rounded-full px-6 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                    <Globe size={14} className="inline mr-1.5 -ml-0.5" />
+                    Web <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -273,11 +133,11 @@ const Projects = () => {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                    exit={{ opacity: 0, y: -10 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {flutterProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem} transition={defaultTransition}>
+                      <motion.div key={project.title} variants={staggerItem}>
                         <ProjectCard project={project} isFlutter={true} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}
@@ -289,11 +149,11 @@ const Projects = () => {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                    exit={{ opacity: 0, y: -10 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {frontendProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem} transition={defaultTransition}>
+                      <motion.div key={project.title} variants={staggerItem}>
                         <ProjectCard project={project} isFlutter={false} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}
@@ -305,28 +165,26 @@ const Projects = () => {
             <Dialog open={open} onOpenChange={setOpen}>
               <AnimatePresence>
                 {open && selected && (
-                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card elevated-card border-0 p-6 md:p-10 max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card border-border/50 p-6 md:p-8 max-h-[90vh] overflow-y-auto">
                     <motion.div
-                      initial={reducedMotion ? {} : { opacity: 0, scale: 0.95 }}
+                      initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={reducedMotion ? {} : { opacity: 0, scale: 0.95 }}
+                      exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                       transition={{ duration: 0.2 }}
                     >
                       <DialogHeader>
-                        <motion.div layoutId={`title-${selected.title}`}>
-                          <DialogTitle className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 text-foreground">{selected.title}</DialogTitle>
-                        </motion.div>
-                        <DialogDescription className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+                        <DialogTitle className="text-xl md:text-3xl font-bold mb-3 text-foreground">{selected.title}</DialogTitle>
+                        <DialogDescription className="text-sm md:text-base text-muted-foreground leading-relaxed">
                           {selected.description}
                         </DialogDescription>
                       </DialogHeader>
 
-                      <div className="space-y-6 md:space-y-10 mt-6 md:mt-8">
+                      <div className="space-y-6 md:space-y-8 mt-6">
                         <div>
-                          <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Tech Stack Integration</h4>
-                          <div className="flex flex-wrap gap-1.5 md:gap-2">
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Tech Stack</h4>
+                          <div className="flex flex-wrap gap-2">
                             {selected.techStack?.map((t, i) => (
-                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/30 text-foreground px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs backdrop-blur-sm">
+                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/40 text-muted-foreground px-3 py-1.5 rounded-full text-xs">
                                 {t}
                               </Badge>
                             ))}
@@ -334,21 +192,21 @@ const Projects = () => {
                         </div>
 
                         <div>
-                          <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Core Deliverables</h4>
-                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Key Features</h4>
+                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {selected.features.map((f, i) => (
-                              <li key={i} className="flex items-start gap-2.5 md:gap-3 text-muted-foreground text-xs md:text-sm leading-snug">
-                                <Code2 size={16} className="text-blue-500 mt-0.5 shrink-0 md:w-4 md:h-4" /> {f}
+                              <li key={i} className="flex items-start gap-2.5 text-muted-foreground text-sm leading-snug">
+                                <Code2 size={14} className="text-primary mt-0.5 shrink-0" /> {f}
                               </li>
                             ))}
                           </ul>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-6 md:pt-8 border-t border-border/30">
-                          <Button className="flex-1 rounded-full h-12 md:h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 font-bold text-white shadow-lg shadow-blue-500/25 text-sm md:text-base transition-all" asChild>
+                        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border/30">
+                          <Button className="flex-1 rounded-full h-11 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 text-sm transition-all" asChild>
                             <a href={selected.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
                           </Button>
-                          <Button variant="outline" className="flex-1 rounded-full h-12 md:h-14 border-border/40 bg-background/30 backdrop-blur-sm hover:bg-background/50 font-bold text-sm md:text-base transition-all" asChild>
+                          <Button variant="outline" className="flex-1 rounded-full h-11 border-border/50 hover:border-primary/50 hover:text-primary text-sm transition-all" asChild>
                             <a href={selected.github} target="_blank" rel="noopener noreferrer">Source Code</a>
                           </Button>
                         </div>

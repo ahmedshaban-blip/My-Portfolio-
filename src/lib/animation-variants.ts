@@ -4,21 +4,21 @@ import type { Variants, Transition } from "framer-motion";
 
 export const springBouncy: Transition = {
   type: "spring",
-  stiffness: 400,
-  damping: 17,
+  stiffness: 350,
+  damping: 20,
   mass: 0.8,
 };
 
 export const springGentle: Transition = {
   type: "spring",
   stiffness: 200,
-  damping: 28,
+  damping: 20,
   mass: 1,
 };
 
 export const springSnappy: Transition = {
   type: "spring",
-  stiffness: 500,
+  stiffness: 400,
   damping: 25,
   mass: 0.5,
 };
@@ -79,14 +79,14 @@ export const staggerContainer: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
+      staggerChildren: 0.06,
+      delayChildren: 0.05,
     },
   },
 };
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  hidden: { opacity: 0, y: 16, scale: 0.98 },
   visible: {
     opacity: 1,
     y: 0,
@@ -101,14 +101,14 @@ export const heroStaggerContainer: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.3,
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
 
 export const heroWordReveal: Variants = {
-  hidden: { opacity: 0, y: 40, rotateX: 15 },
+  hidden: { opacity: 0, y: 30, rotateX: 10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -118,7 +118,7 @@ export const heroWordReveal: Variants = {
 };
 
 export const heroFadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
@@ -129,7 +129,7 @@ export const heroFadeUp: Variants = {
 // ─── Scroll Reveal (bouncy slide-up) ─────────────────────────────────
 
 export const revealOnScroll: Variants = {
-  hidden: { opacity: 0, y: 50 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
@@ -140,7 +140,7 @@ export const revealOnScroll: Variants = {
 // ─── Parallax-Aware Scroll Reveal ─────────────────────────────────────
 
 export const revealOnScrollParallax: Variants = {
-  hidden: { opacity: 0, y: 80 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
@@ -149,7 +149,7 @@ export const revealOnScrollParallax: Variants = {
 };
 
 export const revealOnScrollParallaxIntense: Variants = {
-  hidden: { opacity: 0, y: 100 },
+  hidden: { opacity: 0, y: 60 },
   visible: {
     opacity: 1,
     y: 0,

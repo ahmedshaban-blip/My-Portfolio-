@@ -1,102 +1,92 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Smartphone, Globe, Database, Palette, Code2, Server } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { HoverCard } from "@/components/animations/HoverCard";
 
 const Skills = () => {
-  const flutterSkills = [
-    "Flutter & Dart",
-    "Clean Architecture (MVVM)",
-    "Bloc",
-    "Cubit",
-    "GetX",
-    "Provider",
-    "REST APIs",
-    "JSON Parsing",
-    "Firebase Authentication",
-    "Firestore",
-    "Firebase Storage",
-    "Push Notifications",
-    "Flutter Animations",
-    "Responsive UI",
-    "Stripe Integration",
-    "PayPal Integration",
-    "Git & GitHub",
-  ];
-
-  const frontendSkills = [
-    "HTML5",
-    "CSS3",
-    "JavaScript (ES6+)",
-    "React 18",
-    "Redux Toolkit",
-    "Tailwind CSS",
-    "Vite",
-    "React Router v6",
-    "RESTful APIs",
-    "Firebase Auth",
-    "Firestore",
-    "Supabase Storage",
-    "i18next",
-    "Accessible UI",
-    "SPA Architecture",
-    "Vercel",
-    "Git & GitHub",
+  const skillCategories = [
+    {
+      icon: <Smartphone className="w-5 h-5" />,
+      title: "Mobile Development",
+      description: "Flutter & React Native",
+      skills: ["Flutter & Dart", "React Native", "Clean Architecture (MVVM)", "Bloc/Cubit", "GetX", "Provider", "Flutter Animations"],
+      color: "text-primary",
+      bg: "bg-primary/10"
+    },
+    {
+      icon: <Globe className="w-5 h-5" />,
+      title: "Frontend Web",
+      description: "React & Modern Web",
+      skills: ["React 18", "Redux Toolkit", "JavaScript (ES6+)", "Tailwind CSS", "Vite", "React Router v6", "SPA Architecture"],
+      color: "text-accent",
+      bg: "bg-accent/10"
+    },
+    {
+      icon: <Database className="w-5 h-5" />,
+      title: "Backend & APIs",
+      description: "Services & Integration",
+      skills: ["REST APIs", "Firebase Auth", "Firestore", "Supabase Storage", "Firebase Storage", "Push Notifications", "i18next"],
+      color: "text-success",
+      bg: "bg-success/10"
+    },
+    {
+      icon: <Code2 className="w-5 h-5" />,
+      title: "Core Technologies",
+      description: "Foundations & Tools",
+      skills: ["HTML5", "CSS3", "TypeScript", "Git & GitHub", "JSON Parsing", "RESTful APIs", "Vercel"],
+      color: "text-warning",
+      bg: "bg-warning/10"
+    },
   ];
 
   const chip =
-    "px-4 py-2 text-sm font-medium rounded-full border border-border/60 bg-background/50 hover:bg-accent transition-colors cursor-default";
+    "px-3 py-1.5 text-xs font-medium rounded-full border border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-default";
 
   return (
-    <section id="skills" className="py-24 bg-background">
+    <section id="skills" className="section-padding relative">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12">
           <RevealOnScroll>
             <div className="text-center space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Technical <span className="gradient-text">Skills</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-bold tracking-widest uppercase border border-accent/20">
+                <Code2 size={14} /> My Expertise
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                Technical <span className="text-gradient">Skills</span>
               </h2>
-              <div className="w-20 h-1 gradient-primary mx-auto rounded-full" />
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Focused stack for building production-ready mobile and web apps.
               </p>
             </div>
           </RevealOnScroll>
 
-          <RevealOnScroll delay={0.1}>
-            <Tabs defaultValue="flutter" className="w-full">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12">
-                <TabsTrigger value="flutter" className="text-base">Flutter</TabsTrigger>
-                <TabsTrigger value="frontend" className="text-base">Front-end</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="flutter">
-                <Card className="glass p-8 border-border/60 rounded-3xl">
-                  <h3 className="text-2xl font-semibold mb-6">Flutter & Mobile</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {flutterSkills.map((skill, index) => (
-                      <Badge key={index} variant="outline" className={chip}>
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="frontend">
-                <Card className="glass p-8 border-border/60 rounded-3xl">
-                  <h3 className="text-2xl font-semibold mb-6">Front-end Web</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {frontendSkills.map((skill, index) => (
-                      <Badge key={index} variant="outline" className={chip}>
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </RevealOnScroll>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {skillCategories.map((category, index) => (
+              <RevealOnScroll key={category.title} delay={index * 0.05}>
+                <HoverCard scale={1.01}>
+                  <Card className="modern-card border-border/50 rounded-2xl p-6 h-full">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className={`w-12 h-12 rounded-xl ${category.bg} ${category.color} flex items-center justify-center`}>
+                        {category.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg text-foreground">{category.title}</h3>
+                        <p className="text-sm text-muted-foreground">{category.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {category.skills.map((skill) => (
+                        <Badge key={skill} variant="outline" className={chip}>
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </Card>
+                </HoverCard>
+              </RevealOnScroll>
+            ))}
+          </div>
         </div>
       </div>
     </section>

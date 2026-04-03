@@ -121,13 +121,13 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-const listeners: Array<(state: State) => void> = [];
+const listenersRef: { current: Array<(state: State) => void> } = { current: [] };
 
 let memoryState: State = { toasts: [] };
 
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action);
-  listeners.forEach((listener) => {
+  listenersRef.current?.forEach((listener) => {
     listener(memoryState);
   });
 }
@@ -167,14 +167,14 @@ function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
 
   React.useEffect(() => {
-    listeners.push(setState);
+    listenersRef.current?.push(setState);
     return () => {
-      const index = listeners.indexOf(setState);
-      if (index > -1) {
-        listeners.splice(index, 1);
+      const index = listenersRef.current?.indexOf(setState);
+      if (index !== undefined && index > -1) {
+        listenersRef.current?.splice(index, 1);
       }
     };
-  }, [state]);
+  }, []);
 
   return {
     ...state,

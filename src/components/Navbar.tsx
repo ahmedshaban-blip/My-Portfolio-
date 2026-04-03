@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { Menu, X, Download, Moon, Sun, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
+import { cn, downloadCV } from "@/lib/utils";
 import { useAnimationContext } from "@/context/AnimationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollSpy } from "@/hooks/use-scrollspy";
@@ -25,10 +25,10 @@ const ModeToggle = () => {
   }
 
   return (
-    <Button 
-      variant="outline" 
-      size="icon" 
-      className="rounded-full border-border glass-effect bg-background/50 hover:bg-accent transition-all duration-300"
+    <Button
+      variant="outline"
+      size="icon"
+      className="rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-all duration-300"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
@@ -46,7 +46,7 @@ const ReducedMotionToggle = () => {
       variant="outline"
       size="icon"
       className={cn(
-        "rounded-full border-border glass-effect bg-background/50 hover:bg-accent transition-all duration-300",
+        "rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-all duration-300",
         reducedMotion && "bg-amber-500/10 border-amber-500/30"
       )}
       onClick={toggleReducedMotion}
@@ -69,17 +69,7 @@ const links = [
 ];
 
 const handleDownloadCV = (type: "flutter" | "frontend") => {
-  const link = document.createElement("a");
-  if (type === "flutter") {
-    link.href = "/Ahmed Shaban--Flutter Developer.pdf";
-    link.download = "Ahmed-Shaban-Flutter-CV.pdf";
-  } else {
-    link.href = "/Ahmed Shaban Front--End Web Developer.pdf";
-    link.download = "Ahmed-Shaban-Frontend-CV.pdf";
-  }
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadCV(type);
 };
 
 const Navbar = () => {
@@ -112,7 +102,7 @@ const Navbar = () => {
       )}>
         <div className="flex items-center justify-between">
           <a href="#home" className="text-xl font-bold tracking-tighter whitespace-nowrap hover:opacity-80 transition-opacity">
-            AHMED <span className="text-blue-500">SHABAN</span>
+            AHMED <span className="text-primary">SHABAN</span>
           </a>
 
           {/* Desktop links with animated active indicator */}
@@ -120,19 +110,19 @@ const Navbar = () => {
             {links.map((link) => {
               const isActive = activeId === link.href.slice(1);
               return (
-                <a 
-                  key={link.name} 
-                  href={link.href} 
+                <a
+                  key={link.name}
+                  href={link.href}
                   className={cn(
                     "text-sm font-medium transition-colors relative py-1",
-                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-primary"
                   )}
                 >
                   {link.name}
                   {isActive && !reducedMotion && (
                     <motion.div
                       layoutId="navbar-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
                       transition={springTransition}
                     />
                   )}
@@ -145,17 +135,17 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <ReducedMotionToggle />
             <ModeToggle />
-            <Button 
-              size="sm" 
-              className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 transition-all active:scale-95 shadow-md shadow-blue-500/20"
+            <Button
+              size="sm"
+              className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 transition-all active:scale-95 shadow-md shadow-primary/20"
               onClick={() => handleDownloadCV("flutter")}
             >
               <Download className="w-4 h-4 mr-2" /> Flutter CV
             </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="rounded-full bg-background/50 backdrop-blur-sm px-5 border-border hover:bg-accent transition-all active:scale-95"
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full bg-background/50 backdrop-blur-sm px-5 border-border/60 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200 active:scale-95"
               onClick={() => handleDownloadCV("frontend")}
             >
               <Download className="w-4 h-4 mr-2" /> Frontend CV
@@ -184,18 +174,18 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={reducedMotion ? {} : { opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] rounded-[2.5rem] md:hidden z-[110]"
+              className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-2xl rounded-[2rem] md:hidden z-[110]"
             >
                <div className="flex flex-col gap-6">
                   {links.map((link) => {
                     const isActive = activeId === link.href.slice(1);
                     return (
-                      <a 
-                        key={link.name} 
-                        href={link.href} 
+                      <a
+                        key={link.name}
+                        href={link.href}
                         className={cn(
                           "text-center text-xl font-bold transition-colors py-2 border-b border-border/50 last:border-none",
-                          isActive ? "text-blue-500" : "text-foreground hover:text-blue-500"
+                          isActive ? "text-primary" : "text-foreground hover:text-primary"
                         )}
                         onClick={() => setIsOpen(false)}
                       >
@@ -205,15 +195,15 @@ const Navbar = () => {
                   })}
                   
                   <div className="grid grid-cols-1 gap-4 pt-6">
-                    <Button 
-                      className="rounded-full bg-blue-600 hover:bg-blue-700 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-blue-500/20"
+                    <Button
+                      className="rounded-full bg-primary hover:bg-primary/90 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-primary/20"
                       onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
                     >
                       <Download className="w-5 h-5 mr-2" /> Flutter CV
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="rounded-full bg-secondary border-border text-foreground w-full h-14 text-lg font-bold hover:bg-accent transition-all active:scale-95"
+                    <Button
+                      variant="outline"
+                      className="rounded-full bg-secondary border-border/60 text-foreground w-full h-14 text-lg font-bold hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200 active:scale-95"
                       onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
                     >
                       <Download className="w-5 h-5 mr-2" /> Frontend CV

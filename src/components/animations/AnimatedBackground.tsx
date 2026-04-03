@@ -20,21 +20,26 @@ const CODE_SNIPPETS = [
   "StreamBuilder<Project>(...)",
 ];
 
+// FIX #9: Responsive particle count for better mobile performance
+const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 8 : 15;
+// FIX #9: Lower DPR cap for better performance (was 2, now 1.5)
+const MAX_DPR = 1.5;
+
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { reducedMotion } = useAnimationContext();
   const animRef = useRef<number>(0);
-  
+
   // Use useMemo to generate stable particles
   const particles = useMemo(() => {
-    return Array.from({ length: 15 }, () => ({
+    return Array.from({ length: PARTICLE_COUNT }, () => ({
       text: CODE_SNIPPETS[Math.floor(Math.random() * CODE_SNIPPETS.length)],
-      x: Math.random() * 100, // percentage
-      y: Math.random() * 100, // percentage
+      x: Math.random() * 100,
+      y: Math.random() * 100,
       speed: 0.05 + Math.random() * 0.1,
       size: 10 + Math.random() * 6,
       opacity: 0.03 + Math.random() * 0.08,
-      offset: Math.random() * 100
+      offset: Math.random() * 100,
     }));
   }, []);
 
@@ -74,11 +79,11 @@ export function AnimatedBackground() {
 
     // 2. Draw Floating Code Snippets
     ctx.font = `600 ${12 * (window.devicePixelRatio || 1)}px 'JetBrains Mono', 'Fira Code', monospace`;
-    
+
     for (const p of particles) {
       const x = (p.x / 100) * w;
       const moveY = (time * p.speed * 50 * speedScale + (p.y / 100) * h) % h;
-      
+
       const fade = Math.sin(time * 0.5 + p.offset) * 0.5 + 0.5;
       const finalOpacity = p.opacity * fade * speedScale;
 
@@ -89,12 +94,20 @@ export function AnimatedBackground() {
     animRef.current = requestAnimationFrame(draw);
   }, [reducedMotion, particles]);
 
+  // FIX #1: Separate effect for draw function changes
+  // Cancels old animation before starting new one when reducedMotion changes
+  useEffect(() => {
+    cancelAnimationFrame(animRef.current);
+    animRef.current = requestAnimationFrame(draw);
+  }, [draw]);
+
+  // FIX #2 + #9: Main setup effect with visibility handling and optimized DPR
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
@@ -103,13 +116,24 @@ export function AnimatedBackground() {
 
     resize();
     window.addEventListener("resize", resize);
-    animRef.current = requestAnimationFrame(draw);
+
+    // FIX #2: Pause animation when tab is hidden to save CPU/GPU
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animRef.current);
+      } else {
+        animRef.current = requestAnimationFrame(draw);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       cancelAnimationFrame(animRef.current);
     };
-  }, [draw]);
+  }, []);
 
   return (
     <canvas

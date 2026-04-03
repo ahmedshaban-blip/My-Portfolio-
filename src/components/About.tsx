@@ -1,5 +1,8 @@
-import { User, Code2, Globe2, Sparkles, Smartphone, Terminal, GraduationCap } from "lucide-react";
+import { User, Code2, Globe2, Smartphone, Terminal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { HoverCard } from "@/components/animations/HoverCard";
+import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animation-variants";
 
 const About = () => {
   const highlights = [
@@ -41,64 +44,74 @@ const About = () => {
             
             {/* Left Side: Content */}
             <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">
-                  <User size={14} /> About Me
+              <RevealOnScroll>
+                <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">
+                    <User size={14} /> About Me
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+                    Passionate Developer <br />
+                    <span className="text-primary">Solving Problems</span> Through Code
+                  </h2>
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                  Passionate Developer <br />
-                  <span className="text-primary">Solving Problems</span> Through Code
-                </h2>
-              </div>
+              </RevealOnScroll>
 
-              <div className="space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
-                <p>
-                  I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-bold italic underline decoration-primary/30">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-bold">Faculty of Computer and Information, Minya University</span>, where I graduated with an <span className="text-foreground font-bold">A+</span> in my final project.
-                </p>
-                <p>
-                  During my internship at the <span className="text-foreground">Information Technology Institute (ITI)</span>, I worked as a Front-end and Cross-Platform Developer, gaining hands-on experience with <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>. This experience sharpened my skills in building production-ready applications with clean, maintainable code.
-                </p>
-                <p>
-                  I specialize in creating <span className="text-foreground font-semibold">cross-platform mobile applications</span> using <span className="text-primary font-bold">Flutter</span> and <span className="text-primary font-bold">React Native</span> with Clean Architecture and seamless API integrations. On the web side, I build responsive web applications using <span className="text-primary font-bold">React</span> and Redux Toolkit.
-                </p>
-              </div>
+              <RevealOnScroll delay={0.1}>
+                <div className="space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
+                  <p>
+                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-bold italic underline decoration-primary/30">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-bold">Faculty of Computer and Information, Minya University</span>, where I graduated with an <span className="text-foreground font-bold">A+</span> in my final project.
+                  </p>
+                  <p>
+                    During my internship at the <span className="text-foreground">Information Technology Institute (ITI)</span>, I worked as a Front-end and Cross-Platform Developer, gaining hands-on experience with <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>. This experience sharpened my skills in building production-ready applications with clean, maintainable code.
+                  </p>
+                  <p>
+                    I specialize in creating <span className="text-foreground font-semibold">cross-platform mobile applications</span> using <span className="text-primary font-bold">Flutter</span> and <span className="text-primary font-bold">React Native</span> with Clean Architecture and seamless API integrations. On the web side, I build responsive web applications using <span className="text-primary font-bold">React</span> and Redux Toolkit.
+                  </p>
+                </div>
+              </RevealOnScroll>
 
-              <div className="pt-4 flex flex-wrap gap-6">
-                <div className="space-y-1">
-                  <p className="text-2xl font-bold text-foreground">10+</p>
-                  <p className="text-sm text-muted-foreground">Projects Completed</p>
+              <RevealOnScroll delay={0.2}>
+                <div className="pt-4 flex flex-wrap gap-6">
+                  <div className="space-y-1">
+                    <p className="text-2xl font-bold text-foreground">10+</p>
+                    <p className="text-sm text-muted-foreground">Projects Completed</p>
+                  </div>
+                  <div className="w-px h-12 bg-border hidden sm:block" />
+                  <div className="space-y-1">
+                    <p className="text-2xl font-bold text-foreground">ITI</p>
+                    <p className="text-sm text-muted-foreground">Certified Intern</p>
+                  </div>
+                  <div className="w-px h-12 bg-border hidden sm:block" />
+                  <div className="space-y-1">
+                    <p className="text-2xl font-bold text-foreground">A+</p>
+                    <p className="text-sm text-muted-foreground">Final Project Grade</p>
+                  </div>
                 </div>
-                <div className="w-px h-12 bg-border hidden sm:block" />
-                <div className="space-y-1">
-                  <p className="text-2xl font-bold text-foreground">ITI</p>
-                  <p className="text-sm text-muted-foreground">Certified Intern</p>
-                </div>
-                <div className="w-px h-12 bg-border hidden sm:block" />
-                <div className="space-y-1">
-                  <p className="text-2xl font-bold text-foreground">A+</p>
-                  <p className="text-sm text-muted-foreground">Final Project Grade</p>
-                </div>
-              </div>
+              </RevealOnScroll>
             </div>
 
             {/* Right Side: Highlights Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {highlights.map((item, index) => (
-                <Card key={index} className="glass-effect border-border rounded-3xl group hover:border-primary/50 transition-all duration-500">
-                  <CardContent className="p-8 space-y-4">
-                    <div className={`w-12 h-12 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center transition-transform group-hover:scale-110`}>
-                      {item.icon}
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-xl">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <RevealOnScroll delay={0.2}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {highlights.map((item, index) => (
+                  <HoverCard key={index} scale={1.02}>
+                    <Card className="glass-effect border-border rounded-3xl group hover:border-primary/50 transition-all duration-500">
+                      <CardContent className="p-8 space-y-4">
+                        <div className={`w-12 h-12 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                          {item.icon}
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="font-bold text-xl">{item.title}</h3>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {item.description}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </HoverCard>
+                ))}
+              </div>
+            </RevealOnScroll>
 
           </div>
         </div>

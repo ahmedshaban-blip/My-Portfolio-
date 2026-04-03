@@ -34,20 +34,20 @@
   .dark {
     /* الوضع الداكن المريح - Slate Dark Theme */
     /* استبدال الأسود بـ Deep Slate (رمادي مزرق داكن جداً) */
-    --background: 222 47% 4%; 
+    --background: 222 47% 4%;
     --foreground: 213 31% 91%;
-    
+
     /* البطاقات تأخذ درجة أفتح قليلاً لتعطي عمقاً (Depth) */
     --card: 222 47% 6%;
     --card-foreground: 213 31% 91%;
-    
+
     --popover: 222 47% 4%;
     --popover-foreground: 213 31% 91%;
-    
+
     /* اللون الأساسي (الأزرق) */
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    
+
     /* ألوان الأسطح الثانوية والحدود - جعلناها هادئة وغير فاقعة */
     --secondary: 222 47% 10%;
     --secondary-foreground: 210 40% 98%;
@@ -55,13 +55,15 @@
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 222 47% 10%;
     --accent-foreground: 210 40% 98%;
-    
-    --border: 217 32% 14%; /* حدود خفيفة جداً */
+
+    --border: 217 32% 14%;
+    /* حدود خفيفة جداً */
     --input: 217 32% 14%;
     --ring: 224.3 76.3% 48%;
-    
+
     /* ألوان الـ Mesh Gradient في الخلفية */
-    --mesh-bg: #020617; /* Slate 950 */
+    --mesh-bg: #020617;
+    /* Slate 950 */
     --mesh-color-1: rgba(59, 130, 246, 0.12);
     --mesh-color-2: rgba(139, 92, 246, 0.08);
   }
@@ -70,17 +72,27 @@
 @layer utilities {
   .premium-mesh {
     background-color: var(--mesh-bg);
-    background-image: 
+    background-image:
       radial-gradient(at 0% 0%, var(--mesh-color-1) 0px, transparent 50%),
       radial-gradient(at 100% 100%, var(--mesh-color-2) 0px, transparent 50%);
-    background-attachment: fixed;
+  }
+
+  @media (min-width: 768px) {
+    .premium-mesh {
+      background-attachment: fixed;
+    }
   }
 
   .glass-effect {
-    @apply backdrop-blur-xl border shadow-2xl transition-all duration-300;
-    /* تحسين الشفافية لتناسب الألوان الجديدة */
+    @apply border shadow-2xl transition-all duration-300;
     background-color: hsla(var(--background) / 0.65);
     border-color: hsla(var(--border) / 0.6);
+  }
+
+  @media (min-width: 768px) {
+    .glass-effect {
+      @apply backdrop-blur-xl;
+    }
   }
 
   .text-gradient {
@@ -99,6 +111,19 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Animation utilities */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* تحسين شكل السكرول بار ليكون متماشياً مع التصميم الجديد */

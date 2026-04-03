@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, memo } from "react";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Github, ExternalLink, Smartphone, Globe, Code2, Zap } from "lucide-react";
+import { HoverCard } from "@/components/animations/HoverCard";
+import { useAnimationContext } from "@/context/AnimationContext";
+import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animation-variants";
 
 type Project = {
   title: string;
@@ -16,204 +20,225 @@ type Project = {
   demo: string;
 };
 
+const flutterProjects: Project[] = [
+  {
+    title: "Enjez Mobile Application",
+    role: "Cross-Platform Developer",
+    description: "Connects users with trusted home service providers, allowing booking and payment management.",
+    techStack: ["React Native", "Expo", "Firebase", "PayPal", "RAG Technique"],
+    features: [
+      "Role-based access (Client / Provider)",
+      "Advanced Recommendation System for personalized services",
+      "Intelligent AI Chatbot integrated with RAG technique",
+      "Secure PayPal payment integration",
+      "Real-time service discovery and tracking"
+    ],
+    github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
+    demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
+  },
+  {
+    title: "E-Commerce Application",
+    role: "Flutter Developer",
+    description: "Full e-commerce experience with product browsing, cart, and secure Stripe payments.",
+    techStack: ["Flutter", "Dart", "Cubit", "Firebase Auth", "Stripe API"],
+    features: ["Secure authentication", "Real-time cart", "Stripe payment integration", "Responsive UI"],
+    github: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
+    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
+  },
+  {
+    title: "Movies Application",
+    role: "Flutter Developer",
+    description: "Movie browsing app using TMDb API with clean Cubit architecture and elegant UI.",
+    techStack: ["Flutter", "Dart", "Dio", "TMDb API", "Clean Architecture"],
+    features: ["Upcoming movies", "Favorites management", "Bilingual support", "Light/Dark themes"],
+    github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
+    demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
+  },
+  {
+    title: "Coffee Application",
+    role: "Flutter Developer",
+    description: "Coffee ordering experience with smooth animations and real-time delivery tracking.",
+    techStack: ["Flutter", "Dart", "Cubit", "OpenStreetMap", "Animations"],
+    features: ["Onboarding screens", "Size selection", "Real-time delivery tracking", "Order summary"],
+    github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
+    demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
+  },
+  {
+    title: "RSS Reader Pro",
+    role: "Flutter Developer",
+    description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
+    techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
+    features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
+    github: "https://github.com/ahmedshaban-blip/rss-reader",
+    demo: "https://github.com/ahmedshaban-blip/rss-reader",
+  },
+  {
+    title: "Flashcard Quiz",
+    role: "Flutter Developer",
+    description: "Study app using flashcards with flip animations and progress tracking.",
+    techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences"],
+    features: ["Flip animations", "Full CRUD", "Study mode", "Local storage persistence"],
+    github: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
+    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
+  },
+  {
+    title: "Currency Converter",
+    role: "Flutter Developer",
+    description: "Real-time currency conversion tool using a live exchange rate API.",
+    techStack: ["Flutter", "Dart", "Cubit", "REST API"],
+    features: ["Live exchange rates", "Fast calculation", "Clean interface"],
+    github: "https://github.com/ahmedshaban-blip/currency_converter",
+    demo: "https://github.com/ahmedshaban-blip/currency_converter",
+  },
+  {
+    title: "Scan QR",
+    role: "Flutter Developer",
+    description: "Fast and lightweight Barcode and QR code scanner application.",
+    techStack: ["Flutter", "Dart", "Barcode Scan Library"],
+    features: ["Instant scanning", "Display QR data", "Copy to clipboard"],
+    github: "https://github.com/ahmedshaban-blip/scan_qr",
+    demo: "https://github.com/ahmedshaban-blip/scan_qr",
+  },
+  {
+    title: "Scientific Research Discover",
+    role: "Flutter Developer",
+    description: "Discover, filter, and bookmark academic papers using public APIs.",
+    techStack: ["Flutter", "Dart", "REST API", "State Management"],
+    features: ["Academic search", "Filtering tools", "Personal bookmarks"],
+    github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
+    demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
+  },
+  {
+    title: "Random Quote Generator",
+    role: "Flutter Developer",
+    description: "Motivational tool providing daily random quotes with a minimalist design.",
+    techStack: ["Flutter", "Dart", "Cubit"],
+    features: ["Daily quotes", "Instant generation", "Clean typography"],
+    github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
+    demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
+  },
+];
+
+const frontendProjects: Project[] = [
+  {
+    title: "Enjez Services Website",
+    role: "Frontend Web Developer",
+    description: "Service booking platform connecting users with professional agencies.",
+    techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Stripe", "AI Integration"],
+    features: [
+      "Agency and Client dashboards",
+      "Smart Recommendation System for users",
+      "AI Chatbot with RAG support for automated assistance",
+      "Secure Stripe payment integration",
+      "Real-time agency messaging system"
+    ],
+    github: "https://github.com/ahmedshaban-blip/Enjez",
+    demo: "https://enjez.vercel.app/home",
+  },
+  {
+    title: "E-Commerce Website",
+    role: "Frontend Web Developer",
+    description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
+    techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
+    features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
+    github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
+    demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
+  },
+  {
+    title: "Up-Course E-learning",
+    role: "Frontend Web Developer",
+    description: "E-learning platform with dual auth, payments, and media management.",
+    techStack: ["React 18", "Redux", "Supabase", "PayPal", "Vite"],
+    features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
+    github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
+    demo: "https://up-course-1.vercel.app/",
+  },
+];
+
+const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotion, onSelect }: {
+  project: Project;
+  isFlutter: boolean;
+  reducedMotion: boolean;
+  onSelect: (p: Project) => void;
+}) {
+  return (
+    <HoverCard scale={reducedMotion ? 1 : 1.03}>
+      <motion.div layoutId={`card-${project.title}`} layout>
+        <Card className="modern-card elevated-card gradient-border-card flex flex-col h-full border-0 group">
+          <div className="noise-texture" />
+          <CardHeader className="p-6 md:p-8 relative z-10">
+            <div className="flex justify-between items-start mb-4 md:mb-6">
+              <motion.div
+                layoutId={`icon-${project.title}`}
+                className="p-3 md:p-4 rounded-2xl md:rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-blue-500 border border-blue-500/20 shadow-lg shadow-blue-500/10"
+              >
+                {isFlutter ? <Smartphone size={24} className="md:w-7 md:h-7" /> : <Globe size={24} className="md:w-7 md:h-7" />}
+              </motion.div>
+              <Badge variant="outline" className="border-border/40 bg-background/30 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold tracking-wider uppercase">
+                {project.role}
+              </Badge>
+            </div>
+
+            <motion.div layoutId={`title-${project.title}`}>
+              <CardTitle className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-foreground">
+                {project.title}
+              </CardTitle>
+            </motion.div>
+            <CardDescription className="text-sm md:text-md text-muted-foreground line-clamp-2 mb-4 md:mb-6 leading-relaxed">
+              {project.description}
+            </CardDescription>
+
+            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
+              {project.techStack.map((tech, i) => (
+                <span key={i} className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-foreground/70 bg-secondary/40 border border-border/30 px-2 md:px-3 py-1 rounded-full backdrop-blur-sm">
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3 mt-auto pt-4 md:pt-6 border-t border-border/30">
+              <Button variant="link" className="p-0 text-blue-500 hover:text-blue-600 text-xs md:text-sm transition-colors" asChild>
+                <a href={project.github} target="_blank" rel="noopener noreferrer">
+                  <Github size={14} className="md:w-4 md:h-4 mr-1.5 md:mr-2" /> Github
+                </a>
+              </Button>
+
+              <div className="ml-auto flex gap-1.5 md:gap-2">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="rounded-full text-[10px] md:text-xs px-3 md:px-4 h-8 md:h-9 bg-secondary/50 hover:bg-secondary/80 border border-border/30 backdrop-blur-sm transition-all"
+                  onClick={() => onSelect(project)}
+                >
+                  Details
+                </Button>
+                <Button
+                  size="sm"
+                  className="rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 text-sm font-bold shadow-lg shadow-blue-500/25 transition-all px-3 md:px-4 h-8 md:h-9"
+                  asChild
+                >
+                  <a href={project.demo} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink size={12} className="md:w-3.5 md:h-3.5" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+      </motion.div>
+    </HoverCard>
+  );
+});
+
 const Projects = () => {
-  // FULL ORIGINAL FLUTTER DATA
-  const flutterProjects: Project[] = [
-    {
-      title: "Enjez Mobile Application",
-      role: "Cross-Platform Developer",
-      description: "Connects users with trusted home service providers, allowing booking and payment management.",
-      techStack: ["React Native", "Expo", "Firebase", "PayPal", "RAG Technique"],
-      features: [
-        "Role-based access (Client / Provider)", 
-        "Advanced Recommendation System for personalized services", 
-        "Intelligent AI Chatbot integrated with RAG technique", 
-        "Secure PayPal payment integration",
-        "Real-time service discovery and tracking"
-      ],
-      github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
-      demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
-    },
-    {
-      title: "E-Commerce Application",
-      role: "Flutter Developer",
-      description: "Full e-commerce experience with product browsing, cart, and secure Stripe payments.",
-      techStack: ["Flutter", "Dart", "Cubit", "Firebase Auth", "Stripe API"],
-      features: ["Secure authentication", "Real-time cart", "Stripe payment integration", "Responsive UI"],
-      github: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
-      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
-    },
-    {
-      title: "Movies Application",
-      role: "Flutter Developer",
-      description: "Movie browsing app using TMDb API with clean Cubit architecture and elegant UI.",
-      techStack: ["Flutter", "Dart", "Dio", "TMDb API", "Clean Architecture"],
-      features: ["Upcoming movies", "Favorites management", "Bilingual support", "Light/Dark themes"],
-      github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
-      demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
-    },
-    {
-      title: "Coffee Application",
-      role: "Flutter Developer",
-      description: "Coffee ordering experience with smooth animations and real-time delivery tracking.",
-      techStack: ["Flutter", "Dart", "Cubit", "OpenStreetMap", "Animations"],
-      features: ["Onboarding screens", "Size selection", "Real-time delivery tracking", "Order summary"],
-      github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
-      demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
-    },
-    {
-      title: "RSS Reader Pro",
-      role: "Flutter Developer",
-      description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
-      techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
-      features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
-      github: "https://github.com/ahmedshaban-blip/rss-reader",
-      demo: "https://github.com/ahmedshaban-blip/rss-reader",
-    },
-    {
-      title: "Flashcard Quiz",
-      role: "Flutter Developer",
-      description: "Study app using flashcards with flip animations and progress tracking.",
-      techStack: ["Flutter", "Dart", "Cubit", "SharedPreferences"],
-      features: ["Flip animations", "Full CRUD", "Study mode", "Local storage persistence"],
-      github: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
-      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
-    },
-    {
-      title: "Currency Converter",
-      role: "Flutter Developer",
-      description: "Real-time currency conversion tool using a live exchange rate API.",
-      techStack: ["Flutter", "Dart", "Cubit", "REST API"],
-      features: ["Live exchange rates", "Fast calculation", "Clean interface"],
-      github: "https://github.com/ahmedshaban-blip/currency_converter",
-      demo: "https://github.com/ahmedshaban-blip/currency_converter",
-    },
-    {
-      title: "Scan QR",
-      role: "Flutter Developer",
-      description: "Fast and lightweight Barcode and QR code scanner application.",
-      techStack: ["Flutter", "Dart", "Barcode Scan Library"],
-      features: ["Instant scanning", "Display QR data", "Copy to clipboard"],
-      github: "https://github.com/ahmedshaban-blip/scan_qr",
-      demo: "https://github.com/ahmedshaban-blip/scan_qr",
-    },
-    {
-      title: "Scientific Research Discover",
-      role: "Flutter Developer",
-      description: "Discover, filter, and bookmark academic papers using public APIs.",
-      techStack: ["Flutter", "Dart", "REST API", "State Management"],
-      features: ["Academic search", "Filtering tools", "Personal bookmarks"],
-      github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
-      demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
-    },
-    {
-      title: "Random Quote Generator",
-      role: "Flutter Developer",
-      description: "Motivational tool providing daily random quotes with a minimalist design.",
-      techStack: ["Flutter", "Dart", "Cubit"],
-      features: ["Daily quotes", "Instant generation", "Clean typography"],
-      github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
-      demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
-    },
-  ];
-
-  // FULL ORIGINAL FRONTEND DATA
-  const frontendProjects: Project[] = [
-    {
-      title: "Enjez Services Website",
-      role: "Frontend Web Developer",
-      description: "Service booking platform connecting users with professional agencies.",
-      techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Stripe", "AI Integration"],
-      features: [
-        "Agency and Client dashboards", 
-        "Smart Recommendation System for users", 
-        "AI Chatbot with RAG support for automated assistance", 
-        "Secure Stripe payment integration",
-        "Real-time agency messaging system"
-      ],
-      github: "https://github.com/ahmedshaban-blip/Enjez",
-      demo: "https://enjez.vercel.app/home",
-    },
-    {
-      title: "E-Commerce Website",
-      role: "Frontend Web Developer",
-      description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
-      techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
-      features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
-      github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
-      demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
-    },
-    {
-      title: "Up-Course E-learning",
-      role: "Frontend Web Developer",
-      description: "E-learning platform with dual auth, payments, and media management.",
-      techStack: ["React 18", "Redux", "Supabase", "PayPal", "Vite"],
-      features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
-      github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
-      demo: "https://up-course-1.vercel.app/",
-    },
-  ];
-
+  const { reducedMotion } = useAnimationContext();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
 
-  const ProjectCard = ({ project, isFlutter }: { project: Project; isFlutter: boolean }) => (
-    <Card className="group glass-effect rounded-3xl md:rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 transition-all duration-500 flex flex-col h-full border-border">
-      <CardHeader className="p-6 md:p-8">
-        <div className="flex justify-between items-start mb-4 md:mb-6">
-          <div className="p-3 md:p-4 rounded-2xl md:rounded-3xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
-            {isFlutter ? <Smartphone size={24} className="md:w-7 md:h-7" /> : <Globe size={24} className="md:w-7 md:h-7" />}
-          </div>
-          <Badge variant="outline" className="border-border px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold tracking-wider uppercase">
-            {project.role}
-          </Badge>
-        </div>
-        
-        <CardTitle className="text-xl md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-blue-500 transition-colors">
-          {project.title}
-        </CardTitle>
-        <CardDescription className="text-sm md:text-md text-muted-foreground line-clamp-2 mb-4 md:mb-6 leading-relaxed">
-          {project.description}
-        </CardDescription>
-
-        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
-          {project.techStack.map((tech, i) => (
-            <span key={i} className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-muted-foreground bg-secondary/50 border border-border px-2 md:px-3 py-1 rounded-full">
-              {tech}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3 mt-auto pt-4 md:pt-6 border-t border-border">
-          <Button variant="link" className="p-0 text-blue-500 hover:text-blue-600 text-xs md:text-sm" asChild>
-            <a href={project.github} target="_blank" rel="noopener noreferrer">
-              <Github size={14} className="md:w-4 md:h-4 mr-1.5 md:mr-2" /> Github
-            </a>
-          </Button>
-          
-          <div className="ml-auto flex gap-1.5 md:gap-2">
-            <Button 
-              size="sm" 
-              variant="secondary" 
-              className="rounded-full text-[10px] md:text-xs px-3 md:px-4 h-8 md:h-9 bg-secondary border-border hover:bg-accent text-foreground" 
-              onClick={() => { setSelected(project); setOpen(true); }}
-            >
-              Details
-            </Button>
-            <Button 
-              size="sm" 
-              className="rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all px-3 md:px-4 h-8 md:h-9 font-bold" 
-              asChild
-            >
-              <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={12} className="md:w-3.5 md:h-3.5" />
-              </a>
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-    </Card>
-  );
+  const handleSelect = (p: Project) => {
+    setSelected(p);
+    setOpen(true);
+  };
 
   return (
     <section id="projects" className="py-20 md:py-32 relative">
@@ -229,74 +254,111 @@ const Projects = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="flutter" className="w-full">
-            <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-4 no-scrollbar">
-              <TabsList className="bg-secondary/50 border border-border p-1 md:p-1.5 rounded-full h-12 md:h-16 inline-flex min-w-max">
-                <TabsTrigger value="flutter" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
-                  Mobile Apps <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="frontend" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
-                  Web Projects <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="flutter" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in duration-700">
-              {flutterProjects.map((project, idx) => (
-                <ProjectCard key={idx} project={project} isFlutter={true} />
-              ))}
-            </TabsContent>
-
-            <TabsContent value="frontend" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in duration-700">
-              {frontendProjects.map((project, idx) => (
-                <ProjectCard key={idx} project={project} isFlutter={false} />
-              ))}
-            </TabsContent>
-          </Tabs>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-[95vw] md:max-w-2xl glass-effect border-border rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 text-foreground">{selected?.title}</DialogTitle>
-                <DialogDescription className="text-sm md:text-lg text-muted-foreground leading-relaxed">
-                  {selected?.description}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-6 md:space-y-10 mt-6 md:mt-8">
-                <div>
-                  <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Tech Stack Integration</h4>
-                  <div className="flex flex-wrap gap-1.5 md:gap-2">
-                    {selected?.techStack?.map((t, i) => (
-                      <Badge key={i} variant="outline" className="bg-secondary/50 border-border text-foreground px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs">
-                        {t}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Core Deliverables</h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                    {selected?.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2.5 md:gap-3 text-muted-foreground text-xs md:text-sm leading-snug">
-                        <Code2 size={16} className="text-blue-500 mt-0.5 shrink-0 md:w-4 md:h-4" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-6 md:pt-8 border-t border-border">
-                   <Button className="flex-1 rounded-full h-12 md:h-14 bg-blue-600 hover:bg-blue-700 font-bold text-white shadow-lg shadow-blue-500/20 text-sm md:text-base" asChild>
-                    <a href={selected?.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
-                   </Button>
-                   <Button variant="outline" className="flex-1 rounded-full h-12 md:h-14 border-border bg-background text-foreground hover:bg-accent font-bold text-sm md:text-base transition-colors" asChild>
-                    <a href={selected?.github} target="_blank" rel="noopener noreferrer">Source Code</a>
-                   </Button>
-                </div>
+          <LayoutGroup>
+            <Tabs defaultValue="flutter" className="w-full">
+              <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-4 no-scrollbar">
+                <TabsList className="bg-secondary/50 border border-border p-1 md:p-1.5 rounded-full h-12 md:h-16 inline-flex min-w-max">
+                  <TabsTrigger value="flutter" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+                    Mobile Apps <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="frontend" className="rounded-full px-6 md:px-12 text-sm md:text-lg font-semibold data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+                    Web Projects <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </DialogContent>
-          </Dialog>
+
+              <AnimatePresence mode="wait">
+                <TabsContent value="flutter" key="flutter" asChild>
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                  >
+                    {flutterProjects.map((project) => (
+                      <motion.div key={project.title} variants={staggerItem} transition={defaultTransition}>
+                        <ProjectCard project={project} isFlutter={true} reducedMotion={reducedMotion} onSelect={handleSelect} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </TabsContent>
+
+                <TabsContent value="frontend" key="frontend" asChild>
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                  >
+                    {frontendProjects.map((project) => (
+                      <motion.div key={project.title} variants={staggerItem} transition={defaultTransition}>
+                        <ProjectCard project={project} isFlutter={false} reducedMotion={reducedMotion} onSelect={handleSelect} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </TabsContent>
+              </AnimatePresence>
+            </Tabs>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <AnimatePresence>
+                {open && selected && (
+                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card elevated-card border-0 p-6 md:p-10 max-h-[90vh] overflow-y-auto">
+                    <motion.div
+                      initial={reducedMotion ? {} : { opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={reducedMotion ? {} : { opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <DialogHeader>
+                        <motion.div layoutId={`title-${selected.title}`}>
+                          <DialogTitle className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 text-foreground">{selected.title}</DialogTitle>
+                        </motion.div>
+                        <DialogDescription className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+                          {selected.description}
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-6 md:space-y-10 mt-6 md:mt-8">
+                        <div>
+                          <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Tech Stack Integration</h4>
+                          <div className="flex flex-wrap gap-1.5 md:gap-2">
+                            {selected.techStack?.map((t, i) => (
+                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/30 text-foreground px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs backdrop-blur-sm">
+                                {t}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-blue-500 mb-3 md:mb-4">Core Deliverables</h4>
+                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            {selected.features.map((f, i) => (
+                              <li key={i} className="flex items-start gap-2.5 md:gap-3 text-muted-foreground text-xs md:text-sm leading-snug">
+                                <Code2 size={16} className="text-blue-500 mt-0.5 shrink-0 md:w-4 md:h-4" /> {f}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-6 md:pt-8 border-t border-border/30">
+                          <Button className="flex-1 rounded-full h-12 md:h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 font-bold text-white shadow-lg shadow-blue-500/25 text-sm md:text-base transition-all" asChild>
+                            <a href={selected.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
+                          </Button>
+                          <Button variant="outline" className="flex-1 rounded-full h-12 md:h-14 border-border/40 bg-background/30 backdrop-blur-sm hover:bg-background/50 font-bold text-sm md:text-base transition-all" asChild>
+                            <a href={selected.github} target="_blank" rel="noopener noreferrer">Source Code</a>
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </DialogContent>
+                )}
+              </AnimatePresence>
+            </Dialog>
+          </LayoutGroup>
         </div>
       </div>
     </section>

@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
-import { Menu, X, Download, Moon, Sun } from "lucide-react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { Menu, X, Download, Moon, Sun, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useAnimationContext } from "@/context/AnimationContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { useScrollSpy } from "@/hooks/use-scrollspy";
+import { springTransition } from "@/lib/animation-variants";
 
-// مكون ModeToggle المطور للتبديل المباشر بضغطة واحدة
 const ModeToggle = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -35,37 +38,69 @@ const ModeToggle = () => {
   );
 };
 
+const ReducedMotionToggle = () => {
+  const { reducedMotion, toggleReducedMotion } = useAnimationContext();
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      className={cn(
+        "rounded-full border-border glass-effect bg-background/50 hover:bg-accent transition-all duration-300",
+        reducedMotion && "bg-amber-500/10 border-amber-500/30"
+      )}
+      onClick={toggleReducedMotion}
+      title={reducedMotion ? "Enable animations" : "Reduce motion"}
+    >
+      <Eye className={cn("h-[1.2rem] w-[1.2rem]", reducedMotion ? "text-amber-500" : "text-foreground")} />
+      <span className="sr-only">Toggle reduced motion</span>
+    </Button>
+  );
+};
+
+const sectionIds = ["home", "about", "skills", "projects", "experience", "contact"];
+
+const links = [
+  { name: "About", href: "#about" },
+  { name: "Skills", href: "#skills" },
+  { name: "Projects", href: "#projects" },
+  { name: "Experience", href: "#experience" },
+  { name: "Contact", href: "#contact" },
+];
+
+const handleDownloadCV = (type: "flutter" | "frontend") => {
+  const link = document.createElement("a");
+  if (type === "flutter") {
+    link.href = "/Ahmed Shaban--Flutter Developer.pdf";
+    link.download = "Ahmed-Shaban-Flutter-CV.pdf";
+  } else {
+    link.href = "/Ahmed Shaban Front--End Web Developer.pdf";
+    link.download = "Ahmed-Shaban-Frontend-CV.pdf";
+  }
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { reducedMotion } = useAnimationContext();
+  const activeId = useScrollSpy(sectionIds);
+  const scrollTick = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      if (scrollTick.current) return;
+      scrollTick.current = true;
+      requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 40);
+        scrollTick.current = false;
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleDownloadCV = (type: "flutter" | "frontend") => {
-    const link = document.createElement("a");
-    if (type === "flutter") {
-      link.href = "/Ahmed Shaban--Flutter Developer.pdf";
-      link.download = "Ahmed-Shaban-Flutter-CV.pdf";
-    } else {
-      link.href = "/Ahmed Shaban Front--End Web Developer.pdf";
-      link.download = "Ahmed-Shaban-Frontend-CV.pdf";
-    }
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const links = [
-    { name: "About", href: "#about" },
-    { name: "Skills", href: "#skills" },
-    { name: "Projects", href: "#projects" },
-    { name: "Experience", href: "#experience" },
-    { name: "Contact", href: "#contact" },
-  ];
 
   return (
     <header className="fixed top-6 left-0 right-0 z-[100] px-4">
@@ -80,21 +115,35 @@ const Navbar = () => {
             AHMED <span className="text-blue-500">SHABAN</span>
           </a>
 
-          {/* روابط سطح المكتب */}
-          <div className="hidden lg:flex items-center gap-6">
-            {links.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.href} 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
+          {/* Desktop links with animated active indicator */}
+          <div className="hidden lg:flex items-center gap-6 relative">
+            {links.map((link) => {
+              const isActive = activeId === link.href.slice(1);
+              return (
+                <a 
+                  key={link.name} 
+                  href={link.href} 
+                  className={cn(
+                    "text-sm font-medium transition-colors relative py-1",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {link.name}
+                  {isActive && !reducedMotion && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
+                      transition={springTransition}
+                    />
+                  )}
+                </a>
+              );
+            })}
           </div>
 
-          {/* أزرار الأكشن لسطح المكتب */}
+          {/* Desktop action buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <ReducedMotionToggle />
             <ModeToggle />
             <Button 
               size="sm" 
@@ -113,8 +162,9 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* أيقونة المنيو للموبايل */}
+          {/* Mobile menu icon */}
           <div className="flex items-center gap-2 md:hidden">
+            <ReducedMotionToggle />
             <ModeToggle />
             <button 
               className="text-foreground p-2 rounded-full hover:bg-accent transition-colors" 
@@ -126,40 +176,53 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* قائمة الموبايل المنسدلة - تم حل مشكلة الشفافية كلياً */}
-        {isOpen && (
-          <div className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] rounded-[2.5rem] md:hidden animate-in fade-in slide-in-from-top-6 duration-300 z-[110]">
-             <div className="flex flex-col gap-6">
-                {links.map((link) => (
-                  <a 
-                    key={link.name} 
-                    href={link.href} 
-                    className="text-center text-xl font-bold text-foreground hover:text-blue-500 transition-colors py-2 border-b border-border/50 last:border-none" 
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                
-                {/* أزرار التحميل للموبايل */}
-                <div className="grid grid-cols-1 gap-4 pt-6">
-                  <Button 
-                    className="rounded-full bg-blue-600 hover:bg-blue-700 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-blue-500/20"
-                    onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
-                  >
-                    <Download className="w-5 h-5 mr-2" /> Flutter CV
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="rounded-full bg-secondary border-border text-foreground w-full h-14 text-lg font-bold hover:bg-accent transition-all active:scale-95"
-                    onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
-                  >
-                    <Download className="w-5 h-5 mr-2" /> Frontend CV
-                  </Button>
-                </div>
-             </div>
-          </div>
-        )}
+        {/* Mobile dropdown */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={reducedMotion ? {} : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reducedMotion ? {} : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] rounded-[2.5rem] md:hidden z-[110]"
+            >
+               <div className="flex flex-col gap-6">
+                  {links.map((link) => {
+                    const isActive = activeId === link.href.slice(1);
+                    return (
+                      <a 
+                        key={link.name} 
+                        href={link.href} 
+                        className={cn(
+                          "text-center text-xl font-bold transition-colors py-2 border-b border-border/50 last:border-none",
+                          isActive ? "text-blue-500" : "text-foreground hover:text-blue-500"
+                        )}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </a>
+                    );
+                  })}
+                  
+                  <div className="grid grid-cols-1 gap-4 pt-6">
+                    <Button 
+                      className="rounded-full bg-blue-600 hover:bg-blue-700 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-blue-500/20"
+                      onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
+                    >
+                      <Download className="w-5 h-5 mr-2" /> Flutter CV
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full bg-secondary border-border text-foreground w-full h-14 text-lg font-bold hover:bg-accent transition-all active:scale-95"
+                      onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
+                    >
+                      <Download className="w-5 h-5 mr-2" /> Frontend CV
+                    </Button>
+                  </div>
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </header>
   );

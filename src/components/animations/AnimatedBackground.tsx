@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useMemo } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { useAnimationContext } from "@/context/AnimationContext";
 
 const CODE_SNIPPETS = [
@@ -20,127 +20,164 @@ const CODE_SNIPPETS = [
   "StreamBuilder<Project>(...)",
 ];
 
-// FIX #9: Responsive particle count for better mobile performance
-const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 8 : 15;
-// FIX #9: Lower DPR cap for better performance (was 2, now 1.5)
-const MAX_DPR = 1.5;
+// PERFORMANCE: Reduced particle count significantly
+const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 4 : 8;
+// PERFORMANCE: Lower DPR cap for better rendering performance
+const MAX_DPR = 1.25;
+// PERFORMANCE: Throttle frame rate to 30fps for background (33ms interval)
+const FRAME_INTERVAL = 33;
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { reducedMotion } = useAnimationContext();
   const animRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
+  const isAnimatingRef = useRef<boolean>(true);
 
-  // Use useMemo to generate stable particles
+  // Stable particles generated once
   const particles = useMemo(() => {
     return Array.from({ length: PARTICLE_COUNT }, () => ({
       text: CODE_SNIPPETS[Math.floor(Math.random() * CODE_SNIPPETS.length)],
       x: Math.random() * 100,
       y: Math.random() * 100,
       speed: 0.05 + Math.random() * 0.1,
-      size: 10 + Math.random() * 6,
       opacity: 0.03 + Math.random() * 0.08,
       offset: Math.random() * 100,
     }));
   }, []);
 
-  const draw = useCallback(() => {
+  // PERFORMANCE: Pre-compute font string to avoid recreation every frame
+  const fontRef = useRef<string>("");
+
+  // Main animation loop with frame throttling
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    const w = canvas.width;
-    const h = canvas.height;
-    const time = Date.now() * 0.001;
-    const speedScale = reducedMotion ? 0.2 : 1;
+    // Set font once
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    fontRef.current = `600 ${12 * dpr}px 'JetBrains Mono', 'Fira Code', monospace`;
 
-    ctx.clearRect(0, 0, w, h);
+    let rafId: number;
 
-    // 1. Draw Mesh Gradients
-    const meshSpeed = reducedMotion ? 0 : 0.15;
-    const gradients = [
-      { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 220, offset: 0 },
-      { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 270, offset: 2 },
-      { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 200, offset: 4 },
-    ];
+    const draw = (timestamp: number) => {
+      // PERFORMANCE: Throttle to 30fps
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      if (elapsed < FRAME_INTERVAL) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTimeRef.current = timestamp;
 
-    for (const g of gradients) {
-      const px = g.x + Math.sin(time * meshSpeed + g.offset) * w * 0.08;
-      const py = g.y + Math.cos(time * meshSpeed * 0.7 + g.offset) * h * 0.06;
+      if (!isAnimatingRef.current) return;
 
-      const grad = ctx.createRadialGradient(px, py, 0, px, py, g.r);
-      grad.addColorStop(0, `hsla(${g.hue}, 80%, 60%, ${reducedMotion ? 0.05 : 0.12})`);
-      grad.addColorStop(0.5, `hsla(${g.hue}, 70%, 50%, 0.03)`);
-      grad.addColorStop(1, `hsla(${g.hue}, 60%, 40%, 0)`);
+      const w = canvas.width;
+      const h = canvas.height;
+      const time = Date.now() * 0.001;
+      const speedScale = reducedMotion ? 0.2 : 1;
 
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, w, h);
-    }
+      ctx.clearRect(0, 0, w, h);
 
-    // 2. Draw Floating Code Snippets
-    ctx.font = `600 ${12 * (window.devicePixelRatio || 1)}px 'JetBrains Mono', 'Fira Code', monospace`;
+      // 1. Draw Mesh Gradients (simplified)
+      const meshSpeed = reducedMotion ? 0 : 0.15;
+      const gradients = [
+        { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 220, offset: 0 },
+        { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 270, offset: 2 },
+        { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 200, offset: 4 },
+      ];
 
-    for (const p of particles) {
-      const x = (p.x / 100) * w;
-      const moveY = (time * p.speed * 50 * speedScale + (p.y / 100) * h) % h;
+      for (const g of gradients) {
+        const px = g.x + Math.sin(time * meshSpeed + g.offset) * w * 0.08;
+        const py = g.y + Math.cos(time * meshSpeed * 0.7 + g.offset) * h * 0.06;
 
-      const fade = Math.sin(time * 0.5 + p.offset) * 0.5 + 0.5;
-      const finalOpacity = p.opacity * fade * speedScale;
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, g.r);
+        grad.addColorStop(0, `hsla(${g.hue}, 80%, 60%, ${reducedMotion ? 0.05 : 0.12})`);
+        grad.addColorStop(0.5, `hsla(${g.hue}, 70%, 50%, 0.03)`);
+        grad.addColorStop(1, `hsla(${g.hue}, 60%, 40%, 0)`);
 
-      ctx.fillStyle = `hsla(213, 31%, 91%, ${finalOpacity})`;
-      ctx.fillText(p.text, x, moveY);
-    }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
 
-    animRef.current = requestAnimationFrame(draw);
+      // PERFORMANCE: Set font once per resize (outside particle loop)
+      ctx.font = fontRef.current;
+
+      // 2. Draw Floating Code Snippets (reduced count, optimized)
+      for (const p of particles) {
+        const x = (p.x / 100) * w;
+        const moveY = (time * p.speed * 50 * speedScale + (p.y / 100) * h) % h;
+
+        // PERFORMANCE: Simplified fade calculation
+        const fade = Math.sin(time * 0.5 + p.offset) * 0.5 + 0.5;
+        const finalOpacity = p.opacity * fade * speedScale;
+
+        ctx.fillStyle = `hsla(213, 31%, 91%, ${finalOpacity})`;
+        ctx.fillText(p.text, x, moveY);
+      }
+
+      rafId = requestAnimationFrame(draw);
+    };
+
+    rafId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, [reducedMotion, particles]);
 
-  // FIX #1: Separate effect for draw function changes
-  // Cancels old animation before starting new one when reducedMotion changes
-  useEffect(() => {
-    cancelAnimationFrame(animRef.current);
-    animRef.current = requestAnimationFrame(draw);
-  }, [draw]);
-
-  // FIX #2 + #9: Main setup effect with visibility handling and optimized DPR
+  // Canvas setup and resize handler
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const setupCanvas = () => {
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
+      // Update font after resize
+      fontRef.current = `600 ${12 * dpr}px 'JetBrains Mono', 'Fira Code', monospace`;
     };
 
-    resize();
-    window.addEventListener("resize", resize);
+    setupCanvas();
 
-    // FIX #2: Pause animation when tab is hidden to save CPU/GPU
+    // PERFORMANCE: Debounced resize
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(setupCanvas, 100);
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    // Pause animation when tab is hidden
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        cancelAnimationFrame(animRef.current);
+        isAnimatingRef.current = false;
       } else {
-        animRef.current = requestAnimationFrame(draw);
+        isAnimatingRef.current = true;
+        lastFrameTimeRef.current = 0; // Reset frame timer to avoid burst
       }
     };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange, { passive: true });
 
     return () => {
-      window.removeEventListener("resize", resize);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      cancelAnimationFrame(animRef.current);
+      isAnimatingRef.current = false;
     };
   }, []);
 
+  // PERFORMANCE: Removed willChange: "transform" (not needed for 2D canvas)
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       aria-hidden="true"
-      style={{ opacity: 0.8, willChange: "transform" }}
+      style={{ opacity: 0.8 }}
     />
   );
 }

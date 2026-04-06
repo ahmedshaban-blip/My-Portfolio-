@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    /* Light Mode - Clean & Professional */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    /* Light Mode - Soft & Eye-Friendly */
+    --background: 210 20% 96%;
+    --foreground: 220 10% 25%;
+    --card: 210 20% 98%;
+    --card-foreground: 220 10% 25%;
+    --popover: 210 20% 98%;
+    --popover-foreground: 220 10% 25%;
     --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
     --primary-glow: 221 83% 65%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --secondary: 215 20% 94%;
+    --secondary-foreground: 220 10% 25%;
+    --muted: 215 15% 90%;
+    --muted-foreground: 215 15% 40%;
     --accent: 262 83% 58%;
     --accent-foreground: 210 40% 98%;
     --accent-glow: 262 83% 70%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214 20% 85%;
+    --input: 214 20% 85%;
     --ring: 221 83% 53%;
     --radius: 1rem;
     --success: 142 76% 36%;
@@ -30,9 +30,9 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --mesh-bg: 210 20% 98%;
-    --mesh-color-1: rgba(59, 130, 246, 0.08);
-    --mesh-color-2: rgba(147, 51, 234, 0.05);
+    --mesh-bg: 210 20% 94%;
+    --mesh-color-1: rgba(59, 130, 246, 0.06);
+    --mesh-color-2: rgba(147, 51, 234, 0.04);
   }
 
   .dark {

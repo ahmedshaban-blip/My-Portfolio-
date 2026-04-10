@@ -1,5 +1,5 @@
 import { useState, memo } from "react";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotio
 }) {
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02}>
-      <motion.div layout>
+      <div>
         <Card className="modern-card flex flex-col h-full border-border/50 group overflow-hidden">
           <CardHeader className="p-6 relative z-10">
             <div className="flex justify-between items-start mb-5">
@@ -28,7 +28,7 @@ const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotio
               >
                 {isFlutter ? <Smartphone size={22} /> : <Globe size={22} />}
               </div>
-              <Badge variant="outline" className="border-border/40 bg-background/30 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
+              <Badge variant="outline" className="border-border/40 bg-background/30 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
                 {project.role}
               </Badge>
             </div>
@@ -81,7 +81,7 @@ const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotio
             </div>
           </CardHeader>
         </Card>
-      </motion.div>
+      </div>
     </HoverCard>
   );
 });
@@ -112,8 +112,7 @@ const Projects = () => {
             </p>
           </div>
 
-          <LayoutGroup>
-            <Tabs defaultValue="flutter" className="w-full">
+          <Tabs defaultValue="flutter" className="w-full">
               <div className="flex justify-center mb-10 md:mb-12 overflow-x-auto pb-2">
                 <TabsList className="bg-secondary/50 border border-border/50 p-1 rounded-full h-11 inline-flex">
                   <TabsTrigger value="flutter" className="rounded-full px-6 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
@@ -132,12 +131,13 @@ const Projects = () => {
                   <motion.div
                     variants={staggerContainer}
                     initial="hidden"
-                    animate="visible"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {flutterProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem}>
+                      <motion.div key={project.title} variants={staggerItem} style={{ willChange: "transform" }}>
                         <ProjectCard project={project} isFlutter={true} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}
@@ -148,12 +148,13 @@ const Projects = () => {
                   <motion.div
                     variants={staggerContainer}
                     initial="hidden"
-                    animate="visible"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {frontendProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem}>
+                      <motion.div key={project.title} variants={staggerItem} style={{ willChange: "transform" }}>
                         <ProjectCard project={project} isFlutter={false} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}
@@ -165,7 +166,7 @@ const Projects = () => {
             <Dialog open={open} onOpenChange={setOpen}>
               <AnimatePresence>
                 {open && selected && (
-                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card border-border/50 p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card bg-white dark:bg-card/50 border-border/50 p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
                     <motion.div
                       initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -173,8 +174,8 @@ const Projects = () => {
                       transition={{ duration: 0.2 }}
                     >
                       <DialogHeader>
-                        <DialogTitle className="text-xl md:text-3xl font-bold mb-3 text-foreground">{selected.title}</DialogTitle>
-                        <DialogDescription className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                        <DialogTitle className="text-xl md:text-3xl font-bold mb-3 text-black dark:text-foreground">{selected.title}</DialogTitle>
+                        <DialogDescription className="text-sm md:text-base text-zinc-700 dark:text-muted-foreground leading-relaxed">
                           {selected.description}
                         </DialogDescription>
                       </DialogHeader>
@@ -184,7 +185,7 @@ const Projects = () => {
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Tech Stack</h4>
                           <div className="flex flex-wrap gap-2">
                             {selected.techStack?.map((t, i) => (
-                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/40 text-muted-foreground px-3 py-1.5 rounded-full text-xs">
+                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/40 text-zinc-800 dark:text-muted-foreground px-3 py-1.5 rounded-full text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-default">
                                 {t}
                               </Badge>
                             ))}
@@ -195,7 +196,7 @@ const Projects = () => {
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Key Features</h4>
                           <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {selected.features.map((f, i) => (
-                              <li key={i} className="flex items-start gap-2.5 text-muted-foreground text-sm leading-snug">
+                              <li key={i} className="flex items-start gap-2.5 text-zinc-800 dark:text-muted-foreground text-sm leading-snug">
                                 <Code2 size={14} className="text-primary mt-0.5 shrink-0" /> {f}
                               </li>
                             ))}
@@ -203,10 +204,10 @@ const Projects = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border/30">
-                          <Button className="flex-1 rounded-full h-11 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 text-sm transition-all" asChild>
+                          <Button className="flex-1 rounded-full h-11 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 text-sm transition-all duration-300" asChild>
                             <a href={selected.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
                           </Button>
-                          <Button variant="outline" className="flex-1 rounded-full h-11 border-border/50 hover:border-primary/50 hover:text-primary text-sm transition-all" asChild>
+                          <Button variant="outline" className="flex-1 rounded-full h-11 border-border/50 hover:bg-primary/10 hover:border-primary/50 hover:text-primary text-sm transition-all duration-300" asChild>
                             <a href={selected.github} target="_blank" rel="noopener noreferrer">Source Code</a>
                           </Button>
                         </div>
@@ -216,7 +217,6 @@ const Projects = () => {
                 )}
               </AnimatePresence>
             </Dialog>
-          </LayoutGroup>
         </div>
       </div>
     </section>

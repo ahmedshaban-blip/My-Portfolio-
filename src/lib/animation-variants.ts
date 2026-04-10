@@ -86,12 +86,11 @@ export const staggerContainer: Variants = {
 };
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 16, scale: 0.98 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { ...springBouncy },
+    transition: { type: "spring", stiffness: 260, damping: 20 },
   },
 };
 

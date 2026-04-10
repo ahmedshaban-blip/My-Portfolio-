@@ -24,8 +24,8 @@ const CODE_SNIPPETS = [
 const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 4 : 8;
 // PERFORMANCE: Lower DPR cap for better rendering performance
 const MAX_DPR = 1.25;
-// PERFORMANCE: Throttle frame rate to 30fps for background (33ms interval)
-const FRAME_INTERVAL = 33;
+// PERFORMANCE: Lower frame rate for background animations (25fps is enough)
+const FRAME_INTERVAL = 40;
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -171,13 +171,13 @@ export function AnimatedBackground() {
     };
   }, []);
 
-  // PERFORMANCE: Removed willChange: "transform" (not needed for 2D canvas)
+  // PERFORMANCE: Use will-change to promote to a compositor layer
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       aria-hidden="true"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.8, willChange: "transform" }}
     />
   );
 }

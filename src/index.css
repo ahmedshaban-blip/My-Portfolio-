@@ -71,15 +71,19 @@
 @layer utilities {
   .premium-mesh {
     background-color: var(--mesh-bg);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .premium-mesh::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background-image:
       radial-gradient(at 0% 0%, var(--mesh-color-1) 0px, transparent 50%),
       radial-gradient(at 100% 100%, var(--mesh-color-2) 0px, transparent 50%);
-  }
-
-  @media (min-width: 768px) {
-    .premium-mesh {
-      background-attachment: fixed;
-    }
+    pointer-events: none;
   }
 
   .glass-effect {
@@ -113,7 +117,13 @@
   }
 
   .modern-card {
-    @apply rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300;
+    @apply rounded-2xl border border-border/50 bg-card/50 transition-all duration-300;
+  }
+
+  @media (min-width: 768px) {
+    .modern-card {
+      @apply backdrop-blur-sm;
+    }
   }
 
   .modern-card:hover {
@@ -123,10 +133,14 @@
 
   .section-padding {
     @apply py-20 md:py-32;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
   }
 
   .section-padding-sm {
     @apply py-16 md:py-24;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 300px;
   }
 }
 

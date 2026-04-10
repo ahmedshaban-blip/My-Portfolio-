@@ -78,8 +78,8 @@ const Hero = () => {
           {/* Letter-by-Letter Title Reveal */}
           <StaggerReveal
             as="h1"
-            mode="letter"
-            staggerDelay={0.035}
+            mode="word"
+            staggerDelay={0.12}
             delay={0.2}
             className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-tight text-gradient"
           >

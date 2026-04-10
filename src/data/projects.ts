@@ -130,7 +130,7 @@ export const frontendProjects: Project[] = [
     techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
     features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
     github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
-    demo: "https://ahmedshaban-blip.github.io/E-Commerce-WebSite/project%20js%20team/LoginPage/loginPage.html",
+    demo: "https://elmatgar.vercel.app/",
   },
   {
     title: "Up-Course E-learning",
@@ -139,6 +139,6 @@ export const frontendProjects: Project[] = [
     techStack: ["React 18", "Redux", "Supabase", "PayPal", "Vite"],
     features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
     github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
-    demo: "https://up-course-1.vercel.app/",
+    demo: "https://e-learning-now.vercel.app/",
   },
 ];

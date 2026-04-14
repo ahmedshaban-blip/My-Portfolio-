@@ -26,3 +26,5 @@ Analyzer
 memory-bank
 plans
 .clinerules
+.agents/react-doctor/AGENTS.md
+.agents/react-doctor/SKILL.md

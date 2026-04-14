@@ -1,14 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from "react";
-
-interface AnimationContextValue {
-  reducedMotion: boolean;
-  toggleReducedMotion: () => void;
-  activeSection: string;
-  setActiveSection: (id: string) => void;
-  scrolled: boolean;
-}
-
-const AnimationContext = createContext<AnimationContextValue | null>(null);
+import { useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from "react";
+import { AnimationContext } from "@/context/animation-context-store";
 
 const STORAGE_KEY = "prefers-reduced-motion";
 
@@ -68,8 +59,3 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAnimationContext() {
-  const ctx = useContext(AnimationContext);
-  if (!ctx) throw new Error("useAnimationContext must be used within AnimationProvider");
-  return ctx;
-}

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StaggerReveal } from "@/components/animations/StaggerReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { downloadCV } from "@/lib/utils";
 
 const springHighBounce = {

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { cn } from "@/lib/utils";
 import { springBouncy } from "@/lib/animation-variants";
 

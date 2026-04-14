@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Github, ExternalLink, Smartphone, Globe, Code2, Zap } from "lucide-react";
 import { HoverCard } from "@/components/animations/HoverCard";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animation-variants";
 import { flutterProjects, frontendProjects, type Project } from "@/data/projects";
 

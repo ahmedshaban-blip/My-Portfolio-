@@ -3,7 +3,7 @@ import { Menu, X, Download, Moon, Sun, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { cn, downloadCV } from "@/lib/utils";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollSpy } from "@/hooks/use-scrollspy";
 import { springTransition } from "@/lib/animation-variants";

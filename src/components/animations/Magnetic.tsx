@@ -1,6 +1,6 @@
 import { useRef, useCallback, type MouseEvent } from "react";
 import { motion } from "framer-motion";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { magneticTransition } from "@/lib/animation-variants";
 
 interface MagneticProps {

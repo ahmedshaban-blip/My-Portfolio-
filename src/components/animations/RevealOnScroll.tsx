@@ -1,5 +1,5 @@
 import { motion, type Variants } from "framer-motion";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { revealOnScroll, springBouncy } from "@/lib/animation-variants";
 
 interface RevealOnScrollProps {

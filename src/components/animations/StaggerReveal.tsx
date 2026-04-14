@@ -1,6 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import { useMemo } from "react";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { heroStaggerContainer, heroWordReveal } from "@/lib/animation-variants";
 
 interface StaggerRevealProps {

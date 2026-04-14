@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from "react";
-import { useAnimationContext } from "@/context/AnimationContext";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
 
 const CODE_SNIPPETS = [
   "import { useState } from 'react';",

@@ -10,6 +10,29 @@ export type Project = {
 
 export const flutterProjects: Project[] = [
   {
+    title: "CV Builder App",
+    role: "Flutter Developer",
+    description: "Built a cross-platform Flutter application to create, edit, and export ATS-friendly resumes with secure, real-time sync across devices.",
+    techStack: ["Flutter", "Dart", "Firebase", "Google Sign-In", "Firebase Auth", "Provider State Management"],
+    features: [
+      "Create, edit, and export ATS-friendly resumes",
+      "Secure authentication using Firebase Auth and Google Sign-In",
+      "Real-time data sync across devices with Firebase",
+      "Seamless cross-platform experience"
+    ],
+    github: "https://github.com/ahmedshaban-blip/Cv_Builder",
+    demo: "https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder",
+  },
+  {
+    title: "RSS Reader Pro",
+    role: "Flutter Developer",
+    description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
+    techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
+    features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
+    github: "https://github.com/ahmedshaban-blip/rss-reader",
+    demo: "https://play.google.com/store/apps/details?id=com.rssreader.pro",
+  },
+  {
     title: "Enjez Mobile Application",
     role: "Cross-Platform Developer",
     description: "Connects users with trusted home service providers, allowing booking and payment management.",
@@ -51,15 +74,7 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
   },
-  {
-    title: "RSS Reader Pro",
-    role: "Flutter Developer",
-    description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
-    techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
-    features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
-    github: "https://github.com/ahmedshaban-blip/rss-reader",
-    demo: "https://github.com/ahmedshaban-blip/rss-reader",
-  },
+
   {
     title: "Flashcard Quiz",
     role: "Flutter Developer",

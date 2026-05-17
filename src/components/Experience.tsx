@@ -25,7 +25,7 @@ const Experience = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto space-y-12">
-          
+
           <RevealOnScroll>
             <div className="text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
@@ -53,6 +53,92 @@ const Experience = () => {
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                          Front-end (ERP Next, React.js) and Flutter Developer
+                        </h3>
+                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">Present</Badge>
+                      </div>
+                      <p className="text-lg text-primary font-semibold">
+                        Truck World | Saudi Arabia - Full Time
+                      </p>
+                      <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                        <span className="flex items-center gap-1.5"><Calendar size={14} /> Jan 2026 – Present</span>
+                      </div>
+                    </div>
+
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
+                      {[
+                        "Develop and maintain web applications using React.js",
+                        "Build responsive and user-friendly UI from Figma and Adobe XD",
+                        "Integrate RESTful APIs and handle data flow efficiently",
+                        "Collaborate with designers and backend developers for seamless integration",
+                        "Use Git for version control and effective team collaboration",
+                        "Build HR management applications"
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
+                          <span className="text-sm leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={0.15}>
+              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
+                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+                      <Briefcase className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-5">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                          Flutter Developer
+                        </h3>
+                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">Present</Badge>
+                      </div>
+                      <p className="text-lg text-primary font-semibold">
+                        Sawa | Alexandria - Part Time
+                      </p>
+                      <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                        <span className="flex items-center gap-1.5"><Calendar size={14} /> Feb 2026 – Present</span>
+                      </div>
+                    </div>
+
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
+                      {[
+                        "Develop and maintain mobile applications using Flutter and Dart",
+                        "Build responsive and user-friendly UI from Figma and Adobe XD",
+                        "Integrate RESTful APIs and handle data flow efficiently",
+                        "Assist in app deployment on Google Play and Apple App Store"
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
+                          <span className="text-sm leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={0.2}>
+              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
+                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+                      <Briefcase className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-5">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
                           Front-end and Cross-Platform Developer
                         </h3>
                         <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">2025</Badge>
@@ -65,7 +151,7 @@ const Experience = () => {
                         <span className="flex items-center gap-1.5"><MapPin size={14} /> Egypt</span>
                       </div>
                     </div>
-                    
+
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
                       {[
                         "Developed production-ready mobile screens using Flutter",
@@ -88,7 +174,7 @@ const Experience = () => {
               </Card>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={0.2}>
+            <RevealOnScroll delay={0.25}>
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -119,7 +205,7 @@ const Experience = () => {
                         <span className="text-success font-bold text-lg">A+</span>
                       </span>
                     </div>
-                    
+
                     <p className="text-muted-foreground leading-relaxed">
                       Solid foundation in software engineering, algorithms, and problem-solving, with a focus on delivering high-quality architectural solutions.
                     </p>
@@ -128,7 +214,7 @@ const Experience = () => {
               </Card>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={0.3}>
+            <RevealOnScroll delay={0.35}>
               <Card className="modern-card border-border/50 rounded-2xl p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2.5 rounded-xl bg-accent/10 text-accent">

@@ -10,7 +10,7 @@ const Skills = () => {
       icon: <Smartphone className="w-5 h-5" />,
       title: "Mobile Development",
       description: "Flutter & React Native",
-      skills: ["Flutter & Dart", "React Native", "Clean Architecture (MVVM)", "Bloc/Cubit", "GetX", "Provider", "Flutter Animations"],
+      skills: ["Flutter & Dart", "React Native", "Clean Architecture (MVVM)", "Bloc/Cubit", "GetX", "Provider", "Web Socket", "Flutter Animations"],
       color: "text-primary",
       bg: "bg-primary/10"
     },

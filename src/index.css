@@ -36,35 +36,35 @@
   }
 
   .dark {
-    /* Dark Mode - Deep Slate Theme */
-    --background: 222 47% 4%;
-    --foreground: 213 31% 91%;
-    --card: 222 47% 6%;
-    --card-foreground: 213 31% 91%;
-    --popover: 222 47% 4%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --primary-glow: 217 91% 70%;
-    --secondary: 222 47% 10%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 10%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 263 70% 65%;
-    --accent-foreground: 210 40% 98%;
-    --accent-glow: 263 70% 75%;
-    --border: 217 32% 14%;
-    --input: 217 32% 14%;
-    --ring: 217 91% 60%;
-    --success: 142 76% 46%;
-    --warning: 38 92% 60%;
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Dark Mode - Bespoke Luxury Obsidian & Gold Theme */
+    --background: 240 6% 3.5%;
+    --foreground: 0 0% 93%;
+    --card: 240 6% 5.5%;
+    --card-foreground: 0 0% 93%;
+    --popover: 240 6% 3.5%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 38 85% 62%;
+    --primary-foreground: 240 6% 3.5%;
+    --primary-glow: 38 85% 72%;
+    --secondary: 240 6% 8.5%;
+    --secondary-foreground: 0 0% 93%;
+    --muted: 240 6% 8.5%;
+    --muted-foreground: 240 4% 65%;
+    --accent: 24 80% 55%;
+    --accent-foreground: 0 0% 93%;
+    --accent-glow: 24 80% 65%;
+    --border: 240 6% 12%;
+    --input: 240 6% 12%;
+    --ring: 38 85% 62%;
+    --success: 142 65% 55%;
+    --warning: 38 90% 58%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 93%;
 
-    /* Mesh Gradient Colors */
-    --mesh-bg: #020617;
-    --mesh-color-1: rgba(59, 130, 246, 0.12);
-    --mesh-color-2: rgba(139, 92, 246, 0.08);
+    /* Mesh Gradient Colors - Premium Warm Mist */
+    --mesh-bg: #060608;
+    --mesh-color-1: rgba(240, 184, 76, 0.08);
+    --mesh-color-2: rgba(227, 117, 52, 0.05);
   }
 }
 

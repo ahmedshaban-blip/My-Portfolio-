@@ -124,6 +124,43 @@ export const flutterProjects: Project[] = [
 
 export const frontendProjects: Project[] = [
   {
+    title: "Melano – Luxury Cosmetics E-Commerce Platform",
+    role: "Frontend Web Developer",
+    description: "A modern, luxurious e-commerce platform for high-end cosmetics built with React 19, Vite 8, and Supabase. Melano combines a refined customer storefront with a streamlined admin dashboard, delivering an elegant shopping and store management experience.",
+    techStack: ["React 19", "Redux Toolkit", "Tailwind CSS", "Supabase", "AI Integration"],
+    features: [
+      "Product discovery by collections, categories, brands, offers, and detailed product pages",
+      "Catalog search with preserved search context during authentication",
+      "Real-time shopping cart updates",
+      "Wishlist for saving favorite products",
+      "Secure checkout with cash on delivery, wallet, and InstaPay payment options",
+      "Interactive 4-stage order tracking",
+      "One-click order reordering",
+      "WhatsApp customer service integration",
+      "Detailed checkout and order financial breakdown",
+      "User registration and login with Google authentication",
+      "Unavailable product callback requests with Egyptian phone validation and contact consent",
+      "Responsive mobile, tablet, and desktop experience",
+      "Installable PWA with page-level SEO metadata",
+      "Admin product CRUD management",
+      "Inventory and stock level tracking",
+      "Pricing, discounts, and promotional offer management",
+      "Order management with global Command Palette search",
+      "Dynamic database shipping and cash-on-delivery fee settings",
+      "Category and brand management",
+      "Sales and inventory analytics reports",
+      "Zero-result search insights",
+      "Realtime product availability request management",
+      "Manual WhatsApp and phone follow-up actions",
+      "Availability request notes and status tracking",
+      "Realtime low-stock and availability notifications",
+      "Browser notification support with dashboard links"
+    ],
+    github: "https://github.com/ahmedshaban-blip/Melano",
+    demo: "https://melano.store",
+  },
+
+  {
     title: "Enjez Services Website",
     role: "Frontend Web Developer",
     description: "Service booking platform connecting users with professional agencies.",

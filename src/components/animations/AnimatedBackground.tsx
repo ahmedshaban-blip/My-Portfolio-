@@ -80,22 +80,32 @@ export function AnimatedBackground() {
 
       ctx.clearRect(0, 0, w, h);
 
+      const isDark = document.documentElement.classList.contains("dark");
+
       // 1. Draw Mesh Gradients (simplified)
       const meshSpeed = reducedMotion ? 0 : 0.15;
-      const gradients = [
-        { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 220, offset: 0 },
-        { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 270, offset: 2 },
-        { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 200, offset: 4 },
-      ];
+      const gradients = isDark
+        ? [
+            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 38, saturation: 85, lightness: 62, offset: 0 },  // Gold
+            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 24, saturation: 80, lightness: 55, offset: 2 },   // Copper/Amber
+            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 42, saturation: 80, lightness: 58, offset: 4 },  // Warm Gold Glow
+          ]
+        : [
+            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 220, saturation: 80, lightness: 60, offset: 0 },
+            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 270, saturation: 70, lightness: 50, offset: 2 },
+            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 200, saturation: 60, lightness: 40, offset: 4 },
+          ];
 
       for (const g of gradients) {
         const px = g.x + Math.sin(time * meshSpeed + g.offset) * w * 0.08;
         const py = g.y + Math.cos(time * meshSpeed * 0.7 + g.offset) * h * 0.06;
 
         const grad = ctx.createRadialGradient(px, py, 0, px, py, g.r);
-        grad.addColorStop(0, `hsla(${g.hue}, 80%, 60%, ${reducedMotion ? 0.05 : 0.12})`);
-        grad.addColorStop(0.5, `hsla(${g.hue}, 70%, 50%, 0.03)`);
-        grad.addColorStop(1, `hsla(${g.hue}, 60%, 40%, 0)`);
+        const s = g.saturation;
+        const l = g.lightness;
+        grad.addColorStop(0, `hsla(${g.hue}, ${s}%, ${l}%, ${reducedMotion ? 0.04 : 0.08})`);
+        grad.addColorStop(0.5, `hsla(${g.hue}, ${s - 10}%, ${l - 15}%, 0.02)`);
+        grad.addColorStop(1, `hsla(${g.hue}, ${s - 20}%, ${l - 20}%, 0)`);
 
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
@@ -113,7 +123,9 @@ export function AnimatedBackground() {
         const fade = Math.sin(time * 0.5 + p.offset) * 0.5 + 0.5;
         const finalOpacity = p.opacity * fade * speedScale;
 
-        ctx.fillStyle = `hsla(213, 31%, 91%, ${finalOpacity})`;
+        ctx.fillStyle = isDark
+          ? `hsla(240, 5%, 90%, ${finalOpacity})`
+          : `hsla(220, 10%, 25%, ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
 

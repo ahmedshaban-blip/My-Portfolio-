@@ -1,7 +1,11 @@
 import { Github, Linkedin, Mail } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const whatsappUrl = `https://wa.me/201114975104?text=${encodeURIComponent(
+    "Hello Ahmed, I saw your portfolio and would like to connect"
+  )}`;
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id.replace("#", ""));
@@ -80,6 +84,15 @@ const Footer = () => {
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="h-5 w-5" />
+                </a>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-all duration-200 hover:scale-110"
+                  aria-label="WhatsApp"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
                 </a>
               </div>
             </div>

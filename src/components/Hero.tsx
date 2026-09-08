@@ -167,9 +167,9 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Right Column: Personal Image Showcase with Floating Badges */}
+          {/* Right Column: Personal Image Showcase with Floating Badges & Mobile Stats */}
           <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2">
-            <motion.div variants={heroElementFadeUp} className="relative flex items-center justify-center">
+            <motion.div variants={heroElementFadeUp} className="relative flex flex-col items-center justify-center">
               {/* Ambient background glow */}
               <div className="absolute w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-tr from-primary/25 to-accent/20 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -186,11 +186,11 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: 10+ Projects (Positioned at mid-left outside head area) */}
+                {/* Floating Badge 1: 10+ Projects (Desktop & Tablet only) */}
                 <motion.div
                   animate={reducedMotion ? {} : { y: [0, -8, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-[20%] sm:top-[22%] -left-6 sm:-left-16 md:-left-20 lg:-left-24 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20 whitespace-nowrap"
+                  className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                     <FolderGit2 className="w-4 h-4" />
@@ -201,11 +201,11 @@ const Hero = () => {
                   </div>
                 </motion.div>
 
-                {/* Floating Badge 2: Cross-Platform Specialist */}
+                {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only) */}
                 <motion.div
                   animate={reducedMotion ? {} : { y: [0, 8, 0] }}
                   transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-                  className="absolute -bottom-2 -right-2 sm:bottom-4 sm:-right-6 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20"
+                  className="hidden sm:flex absolute sm:bottom-4 sm:-right-6 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent">
                     <Layers className="w-4 h-4" />
@@ -215,6 +215,29 @@ const Hero = () => {
                     <p className="text-[10px] text-muted-foreground">Clean Architecture</p>
                   </div>
                 </motion.div>
+              </div>
+
+              {/* Mobile-Only Stats Cards (Clean row directly below the photo) */}
+              <div className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
+                <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <FolderGit2 className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">10+ Projects</p>
+                    <p className="text-[9px] text-muted-foreground truncate">Completed</p>
+                  </div>
+                </div>
+
+                <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-accent/10 text-accent shrink-0">
+                    <Layers className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">Flutter & React</p>
+                    <p className="text-[9px] text-muted-foreground truncate">Clean Architecture</p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>

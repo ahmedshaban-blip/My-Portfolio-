@@ -1,4 +1,4 @@
-import { Smartphone, Globe, Database, Palette, Code2, Server } from "lucide-react";
+import { Smartphone, Globe, Database, Code2, Terminal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
@@ -38,6 +38,20 @@ const Skills = () => {
       color: "text-warning",
       bg: "bg-warning/10"
     },
+    {
+      icon: <Terminal className="w-5 h-5" />,
+      title: "AI-Assisted Development",
+      description: "Accelerated Velocity & Clean Code",
+      skills: [
+        "Claude (Claude Code)",
+        "OpenAI Codex / ChatGPT",
+        "Prompt Engineering & Workflow Automation",
+        "AI-Driven Testing & Code Review"
+      ],
+      color: "text-accent",
+      bg: "bg-accent/10",
+      colSpan: "md:col-span-2"
+    },
   ];
 
   const chip =
@@ -63,8 +77,12 @@ const Skills = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {skillCategories.map((category, index) => (
-              <RevealOnScroll key={category.title} delay={index * 0.05}>
-                <HoverCard scale={1.01}>
+              <RevealOnScroll
+                key={category.title}
+                delay={index * 0.05}
+                className={category.colSpan || ""}
+              >
+                <HoverCard scale={1.01} className="h-full">
                   <Card className="modern-card border-border/50 rounded-2xl p-6 h-full">
                     <div className="flex items-center gap-4 mb-6">
                       <div className={`w-12 h-12 rounded-xl ${category.bg} ${category.color} flex items-center justify-center`}>

@@ -1,4 +1,10 @@
+export type ProjectKind = "mobile" | "web";
+
+export type DemoKind = "play" | "live" | "video" | "source";
+
 export type Project = {
+  slug: string;
+  kind: ProjectKind;
   title: string;
   role: string;
   description: string;
@@ -6,10 +12,18 @@ export type Project = {
   features: string[];
   github: string;
   demo: string;
+  /** Label + icon hint for the primary demo action. */
+  demoKind: DemoKind;
+  /** Local cover art served from /public (e.g. "/projects/melano/cover.png"). */
+  coverImage: string;
+  /** Local gallery images served from /public. Empty when only a cover exists. */
+  screenshots: string[];
 };
 
 export const flutterProjects: Project[] = [
   {
+    slug: "cv-builder",
+    kind: "mobile",
     title: "CV Builder App",
     role: "Flutter Developer",
     description: "Built a cross-platform Flutter application to create, edit, and export ATS-friendly resumes with secure, real-time sync across devices.",
@@ -22,8 +36,20 @@ export const flutterProjects: Project[] = [
     ],
     github: "https://github.com/ahmedshaban-blip/Cv_Builder",
     demo: "https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder",
+    demoKind: "play",
+    coverImage: "/projects/cv-builder/shot-2.webp",
+    screenshots: [
+      "/projects/cv-builder/shot-1.webp",
+      "/projects/cv-builder/shot-2.webp",
+      "/projects/cv-builder/shot-3.webp",
+      "/projects/cv-builder/shot-4.webp",
+      "/projects/cv-builder/shot-5.webp",
+      "/projects/cv-builder/shot-6.webp",
+    ],
   },
   {
+    slug: "rss-reader-pro",
+    kind: "mobile",
     title: "RSS Reader Pro",
     role: "Flutter Developer",
     description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
@@ -31,8 +57,20 @@ export const flutterProjects: Project[] = [
     features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
     github: "https://github.com/ahmedshaban-blip/rss-reader",
     demo: "https://play.google.com/store/apps/details?id=com.rssreader.pro",
+    demoKind: "play",
+    coverImage: "/projects/rss-reader-pro/shot-2.webp",
+    screenshots: [
+      "/projects/rss-reader-pro/shot-1.webp",
+      "/projects/rss-reader-pro/shot-2.webp",
+      "/projects/rss-reader-pro/shot-3.webp",
+      "/projects/rss-reader-pro/shot-4.webp",
+      "/projects/rss-reader-pro/shot-5.webp",
+      "/projects/rss-reader-pro/shot-6.webp",
+    ],
   },
   {
+    slug: "enjez-mobile",
+    kind: "mobile",
     title: "Enjez Mobile Application",
     role: "Cross-Platform Developer",
     description: "Connects users with trusted home service providers, allowing booking and payment management.",
@@ -46,8 +84,13 @@ export const flutterProjects: Project[] = [
     ],
     github: "https://github.com/ahmedshaban-blip/EnjezMobileAppVersion",
     demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
+    demoKind: "video",
+    coverImage: "/projects/enjez-mobile/cover.png",
+    screenshots: ["/projects/enjez-mobile/cover.png"],
   },
   {
+    slug: "ecommerce-app",
+    kind: "mobile",
     title: "E-Commerce Application",
     role: "Flutter Developer",
     description: "Full e-commerce experience with product browsing, cart, and secure Stripe payments.",
@@ -55,8 +98,13 @@ export const flutterProjects: Project[] = [
     features: ["Secure authentication", "Real-time cart", "Stripe payment integration", "Responsive UI"],
     github: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
+    demoKind: "source",
+    coverImage: "/projects/ecommerce-app/cover.png",
+    screenshots: ["/projects/ecommerce-app/cover.png"],
   },
   {
+    slug: "movies-app",
+    kind: "mobile",
     title: "Movies Application",
     role: "Flutter Developer",
     description: "Movie browsing app using TMDb API with clean Cubit architecture and elegant UI.",
@@ -64,8 +112,13 @@ export const flutterProjects: Project[] = [
     features: ["Upcoming movies", "Favorites management", "Bilingual support", "Light/Dark themes"],
     github: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
     demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
+    demoKind: "source",
+    coverImage: "/projects/movies-app/cover.png",
+    screenshots: ["/projects/movies-app/cover.png"],
   },
   {
+    slug: "coffee-app",
+    kind: "mobile",
     title: "Coffee Application",
     role: "Flutter Developer",
     description: "Coffee ordering experience with smooth animations and real-time delivery tracking.",
@@ -73,9 +126,14 @@ export const flutterProjects: Project[] = [
     features: ["Onboarding screens", "Size selection", "Real-time delivery tracking", "Order summary"],
     github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
+    demoKind: "source",
+    coverImage: "/projects/coffee-app/cover.png",
+    screenshots: ["/projects/coffee-app/cover.png"],
   },
 
   {
+    slug: "flashcard-quiz",
+    kind: "mobile",
     title: "Flashcard Quiz",
     role: "Flutter Developer",
     description: "Study app using flashcards with flip animations and progress tracking.",
@@ -83,8 +141,13 @@ export const flutterProjects: Project[] = [
     features: ["Flip animations", "Full CRUD", "Study mode", "Local storage persistence"],
     github: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
+    demoKind: "source",
+    coverImage: "/projects/flashcard-quiz/cover.png",
+    screenshots: ["/projects/flashcard-quiz/cover.png"],
   },
   {
+    slug: "currency-converter",
+    kind: "mobile",
     title: "Currency Converter",
     role: "Flutter Developer",
     description: "Real-time currency conversion tool using a live exchange rate API.",
@@ -92,8 +155,13 @@ export const flutterProjects: Project[] = [
     features: ["Live exchange rates", "Fast calculation", "Clean interface"],
     github: "https://github.com/ahmedshaban-blip/currency_converter",
     demo: "https://github.com/ahmedshaban-blip/currency_converter",
+    demoKind: "source",
+    coverImage: "/projects/currency-converter/cover.png",
+    screenshots: ["/projects/currency-converter/cover.png"],
   },
   {
+    slug: "scan-qr",
+    kind: "mobile",
     title: "Scan QR",
     role: "Flutter Developer",
     description: "Fast and lightweight Barcode and QR code scanner application.",
@@ -101,8 +169,13 @@ export const flutterProjects: Project[] = [
     features: ["Instant scanning", "Display QR data", "Copy to clipboard"],
     github: "https://github.com/ahmedshaban-blip/scan_qr",
     demo: "https://github.com/ahmedshaban-blip/scan_qr",
+    demoKind: "source",
+    coverImage: "/projects/scan-qr/cover.png",
+    screenshots: ["/projects/scan-qr/cover.png"],
   },
   {
+    slug: "research-discover",
+    kind: "mobile",
     title: "Scientific Research Discover",
     role: "Flutter Developer",
     description: "Discover, filter, and bookmark academic papers using public APIs.",
@@ -110,8 +183,13 @@ export const flutterProjects: Project[] = [
     features: ["Academic search", "Filtering tools", "Personal bookmarks"],
     github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
     demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
+    demoKind: "source",
+    coverImage: "/projects/research-discover/cover.png",
+    screenshots: ["/projects/research-discover/cover.png"],
   },
   {
+    slug: "random-quote",
+    kind: "mobile",
     title: "Random Quote Generator",
     role: "Flutter Developer",
     description: "Motivational tool providing daily random quotes with a minimalist design.",
@@ -119,11 +197,16 @@ export const flutterProjects: Project[] = [
     features: ["Daily quotes", "Instant generation", "Clean typography"],
     github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
+    demoKind: "source",
+    coverImage: "/projects/random-quote/cover.png",
+    screenshots: ["/projects/random-quote/cover.png"],
   },
 ];
 
 export const frontendProjects: Project[] = [
   {
+    slug: "melano",
+    kind: "web",
     title: "Melano – Luxury Cosmetics E-Commerce Platform",
     role: "Frontend Web Developer",
     description: "A modern, luxurious e-commerce platform for high-end cosmetics built with React 19, Vite 8, and Supabase. Melano combines a refined customer storefront with a streamlined admin dashboard, delivering an elegant shopping and store management experience.",
@@ -158,9 +241,14 @@ export const frontendProjects: Project[] = [
     ],
     github: "https://github.com/ahmedshaban-blip/Melano",
     demo: "https://melano.store",
+    demoKind: "live",
+    coverImage: "/projects/melano/cover.png",
+    screenshots: ["/projects/melano/cover.png"],
   },
 
   {
+    slug: "enjez-web",
+    kind: "web",
     title: "Enjez Services Website",
     role: "Frontend Web Developer",
     description: "Service booking platform connecting users with professional agencies.",
@@ -174,8 +262,13 @@ export const frontendProjects: Project[] = [
     ],
     github: "https://github.com/ahmedshaban-blip/Enjez",
     demo: "https://enjez.vercel.app/home",
+    demoKind: "live",
+    coverImage: "/projects/enjez-web/cover.png",
+    screenshots: ["/projects/enjez-web/cover.png"],
   },
   {
+    slug: "elmatgar",
+    kind: "web",
     title: "E-Commerce Website",
     role: "Frontend Web Developer",
     description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
@@ -183,8 +276,13 @@ export const frontendProjects: Project[] = [
     features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
     github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
     demo: "https://elmatgar.vercel.app/",
+    demoKind: "live",
+    coverImage: "/projects/elmatgar/cover.png",
+    screenshots: ["/projects/elmatgar/cover.png"],
   },
   {
+    slug: "upcourse",
+    kind: "web",
     title: "Up-Course E-learning",
     role: "Frontend Web Developer",
     description: "E-learning platform with dual auth, payments, and media management.",
@@ -192,5 +290,8 @@ export const frontendProjects: Project[] = [
     features: ["Instructor Dashboard", "YouTube Integration", "Course CRUD", "Enrollment system"],
     github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
     demo: "https://e-learning-now.vercel.app/",
+    demoKind: "live",
+    coverImage: "/projects/upcourse/cover.png",
+    screenshots: ["/projects/upcourse/cover.png"],
   },
 ];

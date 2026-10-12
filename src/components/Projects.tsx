@@ -5,55 +5,221 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Github, ExternalLink, Smartphone, Globe, Code2, Zap } from "lucide-react";
+import {
+  Github,
+  ExternalLink,
+  Smartphone,
+  Globe,
+  Code2,
+  Zap,
+  Play,
+  Clapperboard,
+  ImageOff,
+  Expand,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { HoverCard } from "@/components/animations/HoverCard";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
-import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animation-variants";
-import { flutterProjects, frontendProjects, type Project } from "@/data/projects";
+import { staggerContainer, staggerItem } from "@/lib/animation-variants";
+import { flutterProjects, frontendProjects, type Project, type DemoKind } from "@/data/projects";
+import { cn } from "@/lib/utils";
 
-const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotion, onSelect }: {
+const DEMO_META: Record<DemoKind, { label: string; Icon: typeof ExternalLink }> = {
+  play: { label: "Google Play", Icon: Play },
+  live: { label: "Live Demo", Icon: ExternalLink },
+  video: { label: "Video Demo", Icon: Clapperboard },
+  source: { label: "Source Code", Icon: Github },
+};
+
+function demoHost(demo: string): string {
+  try {
+    return new URL(demo).hostname.replace(/^www\./, "");
+  } catch {
+    return demo;
+  }
+}
+
+/** CLS-safe image with skeleton + graceful fallback. */
+const ProjectImage = memo(function ProjectImage({
+  src,
+  alt,
+  className,
+  eager = false,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  eager?: boolean;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <div className={cn("relative overflow-hidden bg-secondary/50", className)}>
+      {!loaded && !failed && (
+        <div className="absolute inset-0 animate-pulse bg-secondary/70" aria-hidden="true" />
+      )}
+      {failed ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/60 px-4 text-center text-muted-foreground">
+          <ImageOff size={20} aria-hidden="true" />
+          <span className="text-xs font-medium">Preview unavailable</span>
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+          className={cn(
+            "h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105",
+            !loaded && "opacity-0",
+          )}
+        />
+      )}
+    </div>
+  );
+});
+
+/** Portrait device-frame teaser for real store screenshots. */
+function MobileCardMedia({ project, onOpen }: { project: Project; onOpen: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`View ${project.title} screenshots`}
+      className="group block w-full cursor-zoom-in bg-secondary/30 px-8 pt-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="mx-auto block w-36 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-40">
+        <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
+          <span className="h-1 w-10 rounded-full bg-border" />
+        </span>
+        <ProjectImage
+          src={project.coverImage}
+          alt={`${project.title} app preview`}
+          className="aspect-[9/16]"
+        />
+      </span>
+    </button>
+  );
+}
+
+/** Landscape teaser: browser frame for web, flat frame for single-cover mobile. */
+function LandscapeCardMedia({
+  project,
+  onOpen,
+  browserChrome,
+}: {
+  project: Project;
+  onOpen: () => void;
+  browserChrome: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`View ${project.title} preview`}
+      className="group block w-full cursor-zoom-in p-4 pb-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="block overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
+        {browserChrome && (
+          <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
+            <span className="h-2 w-2 rounded-full bg-border" />
+            <span className="h-2 w-2 rounded-full bg-border" />
+            <span className="h-2 w-2 rounded-full bg-border" />
+            <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+              {demoHost(project.demo)}
+            </span>
+          </span>
+        )}
+        <ProjectImage
+          src={project.coverImage}
+          alt={`${project.title} preview`}
+          className="aspect-[16/10]"
+        />
+      </span>
+    </button>
+  );
+}
+
+const ProjectCard = memo(function ProjectCard({
+  project,
+  isFlutter,
+  reducedMotion,
+  onSelect,
+}: {
   project: Project;
   isFlutter: boolean;
   reducedMotion: boolean;
   onSelect: (p: Project) => void;
 }) {
+  const hasGallery = project.screenshots.length > 1;
+  const demo = DEMO_META[project.demoKind];
+  const open = () => onSelect(project);
+
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02}>
-      <div>
-        <Card className="modern-card flex flex-col h-full border-border/50 group overflow-hidden">
-          <CardHeader className="p-6 relative z-10">
-            <div className="flex justify-between items-start mb-5">
-              <div
-                className={`p-3 rounded-xl ${isFlutter ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-accent/10 text-accent border border-accent/20'} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+      <article>
+        <Card className="modern-card group flex h-full flex-col overflow-hidden border-border/50">
+          {project.kind === "mobile" && hasGallery ? (
+            <MobileCardMedia project={project} onOpen={open} />
+          ) : (
+            <LandscapeCardMedia project={project} onOpen={open} browserChrome={project.kind === "web"} />
+          )}
+
+          <CardHeader className="relative z-10 flex flex-1 flex-col p-6">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <span
+                className={cn(
+                  "rounded-xl border p-2.5 shadow-sm",
+                  isFlutter
+                    ? "border-primary/20 bg-primary/10 text-primary"
+                    : "border-accent/20 bg-accent/10 text-accent",
+                )}
+                aria-hidden="true"
               >
-                {isFlutter ? <Smartphone size={22} /> : <Globe size={22} />}
-              </div>
-              <Badge variant="outline" className="border-border/40 bg-background/30 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
+                {isFlutter ? <Smartphone size={18} /> : <Globe size={18} />}
+              </span>
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/40 bg-background/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider"
+              >
                 {project.role}
               </Badge>
             </div>
 
-            <CardTitle className="text-lg md:text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors duration-200">
+            <CardTitle className="mb-2 text-lg font-bold text-foreground transition-colors duration-200 group-hover:text-primary md:text-xl">
               {project.title}
             </CardTitle>
-            
-            <CardDescription className="text-sm text-muted-foreground line-clamp-2 mb-5 leading-relaxed">
+
+            <CardDescription className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
               {project.description}
             </CardDescription>
 
-            <div className="flex flex-wrap gap-2 mb-6">
-              {project.techStack.slice(0, 4).map((tech, i) => (
-                <span key={i} className="text-[10px] font-medium text-muted-foreground bg-secondary/40 border border-border/30 px-2.5 py-1 rounded-full">
+            <div className="mb-5 flex flex-wrap gap-2">
+              {project.techStack.slice(0, 4).map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-border/30 bg-secondary/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
+                >
                   {tech}
                 </span>
               ))}
               {project.techStack.length > 4 && (
-                <span className="text-[10px] font-medium text-muted-foreground">+{project.techStack.length - 4}</span>
+                <span className="px-1 py-1 text-[10px] font-medium text-muted-foreground">
+                  +{project.techStack.length - 4}
+                </span>
               )}
             </div>
 
-            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-border/30">
-              <Button variant="link" className="p-0 text-primary hover:text-primary/80 text-sm transition-colors" asChild>
+            <div className="mt-auto flex items-center gap-3 border-t border-border/30 pt-4">
+              <Button
+                variant="link"
+                className="p-0 text-sm text-primary transition-colors hover:text-primary/80"
+                asChild
+              >
                 <a href={project.github} target="_blank" rel="noopener noreferrer">
                   <Github size={14} className="mr-1.5" /> Github
                 </a>
@@ -63,160 +229,357 @@ const ProjectCard = memo(function ProjectCard({ project, isFlutter, reducedMotio
                 <Button
                   size="sm"
                   variant="outline"
-                  className="rounded-full text-xs px-4 h-8 border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200"
-                  onClick={() => onSelect(project)}
+                  className="h-8 rounded-full border-border/40 px-4 text-xs transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                  onClick={open}
                 >
                   Details
                 </Button>
                 <Button
                   size="sm"
-                  className="rounded-full bg-primary text-white hover:bg-primary/90 text-xs shadow-md shadow-primary/20 transition-all px-4 h-8"
+                  className="h-8 rounded-full bg-primary px-4 text-xs text-white shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
                   asChild
                 >
-                  <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink size={12} />
+                  <a href={project.demo} target="_blank" rel="noopener noreferrer" aria-label={`${demo.label} for ${project.title}`}>
+                    <demo.Icon size={12} className="mr-1" /> {demo.label}
                   </a>
                 </Button>
               </div>
             </div>
           </CardHeader>
         </Card>
-      </div>
+      </article>
     </HoverCard>
   );
 });
+
+type LightboxState = { title: string; images: string[]; index: number } | null;
+
+function GalleryStrip({
+  project,
+  onExpand,
+}: {
+  project: Project;
+  onExpand: (index: number) => void;
+}) {
+  if (project.screenshots.length <= 1) return null;
+  return (
+    <div
+      className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3"
+      role="list"
+      aria-label={`${project.title} screenshots`}
+    >
+      {project.screenshots.map((src, i) => (
+        <figure key={src} role="listitem" className="w-40 shrink-0 snap-start md:w-48">
+          <button
+            type="button"
+            onClick={() => onExpand(i)}
+            aria-label={`Expand screenshot ${i + 1} of ${project.title}`}
+            className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 shadow-sm transition-all duration-200 hover:border-primary/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
+              <span className="h-1 w-8 rounded-full bg-border" />
+            </span>
+            <ProjectImage
+              src={src}
+              alt={`${project.title} screenshot ${i + 1}`}
+              className="aspect-[9/16]"
+            />
+          </button>
+          <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
+            {project.features[i % project.features.length]}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+function WebHero({
+  project,
+  onExpand,
+}: {
+  project: Project;
+  onExpand: () => void;
+}) {
+  return (
+    <figure>
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
+        <div className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full bg-border" />
+          <span className="h-2.5 w-2.5 rounded-full bg-border" />
+          <span className="h-2.5 w-2.5 rounded-full bg-border" />
+          <span className="ml-2 max-w-[16rem] truncate rounded-md bg-background px-2 py-0.5 text-xs text-muted-foreground">
+            {demoHost(project.demo)}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onExpand}
+          aria-label={`Expand ${project.title} full preview`}
+          className="group relative block w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ProjectImage
+            src={project.coverImage}
+            alt={`${project.title} full page preview`}
+            className="aspect-video"
+            eager
+          />
+          <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full border border-border/50 bg-background/90 px-3 py-1.5 text-xs font-medium text-foreground opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+            <Expand size={12} aria-hidden="true" /> Expand
+          </span>
+        </button>
+      </div>
+      <figcaption className="mt-2 text-xs text-muted-foreground">
+        Live preview · {demoHost(project.demo)} — select to inspect at full resolution.
+      </figcaption>
+    </figure>
+  );
+}
 
 const Projects = () => {
   const { reducedMotion } = useAnimationContext();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
+  const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   const handleSelect = (p: Project) => {
     setSelected(p);
     setOpen(true);
   };
 
+  const expandFrom = (p: Project, index: number) =>
+    setLightbox({ title: p.title, images: p.screenshots, index });
+
+  const stepLightbox = (dir: 1 | -1) =>
+    setLightbox((lb) =>
+      lb ? { ...lb, index: (lb.index + dir + lb.images.length) % lb.images.length } : lb,
+    );
+
   return (
     <section id="projects" className="section-padding relative">
       <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-4 md:space-y-6 mb-12 md:mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 space-y-4 text-center md:mb-16 md:space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
               <Zap size={14} /> My Portfolio
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
               Featured <span className="text-gradient">Projects</span>
             </h2>
-            <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="mx-auto max-w-2xl px-4 text-base leading-relaxed text-muted-foreground md:text-lg">
               A selection of my work, from mobile architectures to web applications.
             </p>
           </div>
 
           <Tabs defaultValue="flutter" className="w-full">
-              <div className="flex justify-center mb-10 md:mb-12 overflow-x-auto pb-2">
-                <TabsList className="bg-secondary/50 border border-border/50 p-1 rounded-full h-11 inline-flex">
-                  <TabsTrigger value="flutter" className="rounded-full px-6 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
-                    <Smartphone size={14} className="inline mr-1.5 -ml-0.5" />
-                    Mobile <span className="hidden sm:inline ml-1">({flutterProjects.length})</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="frontend" className="rounded-full px-6 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
-                    <Globe size={14} className="inline mr-1.5 -ml-0.5" />
-                    Web <span className="hidden sm:inline ml-1">({frontendProjects.length})</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+            <div className="mb-10 flex justify-center overflow-x-auto pb-2 md:mb-12">
+              <TabsList className="inline-flex h-11 rounded-full border border-border/50 bg-secondary/50 p-1">
+                <TabsTrigger
+                  value="flutter"
+                  className="rounded-full px-6 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Smartphone size={14} className="-ml-0.5 mr-1.5 inline" />
+                  Mobile <span className="ml-1 hidden sm:inline">({flutterProjects.length})</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="frontend"
+                  className="rounded-full px-6 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Globe size={14} className="-ml-0.5 mr-1.5 inline" />
+                  Web <span className="ml-1 hidden sm:inline">({frontendProjects.length})</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-              <AnimatePresence mode="wait">
-                <TabsContent value="flutter" key="flutter" asChild>
+            <AnimatePresence mode="wait">
+              <TabsContent value="flutter" key="flutter" asChild>
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                >
+                  {flutterProjects.map((project) => (
+                    <motion.div key={project.slug} variants={staggerItem}>
+                      <ProjectCard
+                        project={project}
+                        isFlutter={true}
+                        reducedMotion={reducedMotion}
+                        onSelect={handleSelect}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </TabsContent>
+
+              <TabsContent value="frontend" key="frontend" asChild>
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                >
+                  {frontendProjects.map((project) => (
+                    <motion.div key={project.slug} variants={staggerItem}>
+                      <ProjectCard
+                        project={project}
+                        isFlutter={false}
+                        reducedMotion={reducedMotion}
+                        onSelect={handleSelect}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </TabsContent>
+            </AnimatePresence>
+          </Tabs>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <AnimatePresence>
+              {open && selected && (
+                <DialogContent className="modern-card max-h-[90vh] w-full max-w-[95vw] overflow-y-auto border-border/50 bg-white p-6 shadow-2xl dark:bg-card/50 md:max-w-4xl md:p-8">
                   <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.1 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {flutterProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem}>
-                        <ProjectCard project={project} isFlutter={true} reducedMotion={reducedMotion} onSelect={handleSelect} />
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </TabsContent>
+                    <DialogHeader>
+                      <DialogTitle className="mb-3 text-xl font-bold text-black dark:text-foreground md:text-3xl">
+                        {selected.title}
+                      </DialogTitle>
+                      <DialogDescription className="text-sm leading-relaxed text-zinc-700 dark:text-muted-foreground md:text-base">
+                        {selected.description}
+                      </DialogDescription>
+                    </DialogHeader>
 
-                <TabsContent value="frontend" key="frontend" asChild>
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.1 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  >
-                    {frontendProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem}>
-                        <ProjectCard project={project} isFlutter={false} reducedMotion={reducedMotion} onSelect={handleSelect} />
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </TabsContent>
-              </AnimatePresence>
-            </Tabs>
+                    <div className="mt-6 space-y-6 md:space-y-8">
+                      <div>
+                        <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
+                          {selected.kind === "mobile" && selected.screenshots.length > 1
+                            ? "Screens"
+                            : "Preview"}
+                        </h4>
+                        {selected.kind === "mobile" && selected.screenshots.length > 1 ? (
+                          <GalleryStrip project={selected} onExpand={(i) => expandFrom(selected, i)} />
+                        ) : (
+                          <WebHero project={selected} onExpand={() => expandFrom(selected, 0)} />
+                        )}
+                      </div>
 
-            <Dialog open={open} onOpenChange={setOpen}>
-              <AnimatePresence>
-                {open && selected && (
-                  <DialogContent className="max-w-[95vw] md:max-w-2xl modern-card bg-white dark:bg-card/50 border-border/50 p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
-                    <motion.div
-                      initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <DialogHeader>
-                        <DialogTitle className="text-xl md:text-3xl font-bold mb-3 text-black dark:text-foreground">{selected.title}</DialogTitle>
-                        <DialogDescription className="text-sm md:text-base text-zinc-700 dark:text-muted-foreground leading-relaxed">
-                          {selected.description}
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-6 md:space-y-8 mt-6">
-                        <div>
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Tech Stack</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {selected.techStack?.map((t, i) => (
-                              <Badge key={i} variant="outline" className="bg-secondary/40 border-border/40 text-zinc-800 dark:text-muted-foreground px-3 py-1.5 rounded-full text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-default">
-                                {t}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">Key Features</h4>
-                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {selected.features.map((f, i) => (
-                              <li key={i} className="flex items-start gap-2.5 text-zinc-800 dark:text-muted-foreground text-sm leading-snug">
-                                <Code2 size={14} className="text-primary mt-0.5 shrink-0" /> {f}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border/30">
-                          <Button className="flex-1 rounded-full h-11 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 text-sm transition-all duration-300" asChild>
-                            <a href={selected.demo} target="_blank" rel="noopener noreferrer">Live Preview</a>
-                          </Button>
-                          <Button variant="outline" className="flex-1 rounded-full h-11 border-border/50 hover:bg-primary/10 hover:border-primary/50 hover:text-primary text-sm transition-all duration-300" asChild>
-                            <a href={selected.github} target="_blank" rel="noopener noreferrer">Source Code</a>
-                          </Button>
+                      <div>
+                        <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
+                          Tech Stack
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selected.techStack?.map((t) => (
+                            <Badge
+                              key={t}
+                              variant="outline"
+                              className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-zinc-800 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:text-muted-foreground"
+                            >
+                              {t}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
-                    </motion.div>
-                  </DialogContent>
-                )}
-              </AnimatePresence>
-            </Dialog>
+
+                      <div>
+                        <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
+                          Key Features
+                        </h4>
+                        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                          {selected.features.map((f) => (
+                            <li
+                              key={f}
+                              className="flex items-start gap-2.5 text-sm leading-snug text-zinc-800 dark:text-muted-foreground"
+                            >
+                              <Code2 size={14} className="mt-0.5 shrink-0 text-primary" /> {f}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="flex flex-col gap-3 border-t border-border/30 pt-4 sm:flex-row">
+                        {(() => {
+                          const meta = DEMO_META[selected.demoKind];
+                          return (
+                            <Button
+                              className="h-11 flex-1 rounded-full bg-primary text-sm text-white shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
+                              asChild
+                            >
+                              <a href={selected.demo} target="_blank" rel="noopener noreferrer">
+                                <meta.Icon size={14} className="mr-2" /> {meta.label}
+                              </a>
+                            </Button>
+                          );
+                        })()}
+                        <Button
+                          variant="outline"
+                          className="h-11 flex-1 rounded-full border-border/50 text-sm transition-all duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                          asChild
+                        >
+                          <a href={selected.github} target="_blank" rel="noopener noreferrer">
+                            <Github size={14} className="mr-2" /> Source Code
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </DialogContent>
+              )}
+            </AnimatePresence>
+          </Dialog>
+
+          {/* Full-resolution lightbox */}
+          <Dialog open={lightbox !== null} onOpenChange={(v) => !v && setLightbox(null)}>
+            {lightbox && (
+              <DialogContent className="max-w-[95vw] border-border/50 bg-white p-4 shadow-2xl dark:bg-card md:max-w-5xl md:p-6">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-semibold md:text-lg">
+                    {lightbox.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground md:text-sm">
+                    Screenshot {lightbox.index + 1} of {lightbox.images.length}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="relative flex items-center justify-center gap-2">
+                  {lightbox.images.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      aria-label="Previous screenshot"
+                      className="z-10 shrink-0 rounded-full"
+                      onClick={() => stepLightbox(-1)}
+                    >
+                      <ChevronLeft size={18} />
+                    </Button>
+                  )}
+                  <img
+                    key={lightbox.images[lightbox.index]}
+                    src={lightbox.images[lightbox.index]}
+                    alt={`${lightbox.title} screenshot ${lightbox.index + 1} full resolution`}
+                    className="max-h-[70vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
+                  />
+                  {lightbox.images.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      aria-label="Next screenshot"
+                      className="z-10 shrink-0 rounded-full"
+                      onClick={() => stepLightbox(1)}
+                    >
+                      <ChevronRight size={18} />
+                    </Button>
+                  )}
+                </div>
+              </DialogContent>
+            )}
+          </Dialog>
         </div>
       </div>
     </section>

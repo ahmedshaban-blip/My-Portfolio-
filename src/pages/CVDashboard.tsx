@@ -11,11 +11,11 @@ import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getClou
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
-type UploadState = Record<CVTrack, { isUploading: boolean; previewVersion: number }>;
+type UploadState = Record<CVTrack, { isUploading: boolean; previewVersion: number; uploadedUrl: string; uploadedPublicId: string }>;
 
 const initialUploadState: UploadState = {
-  flutter: { isUploading: false, previewVersion: Date.now() },
-  frontend: { isUploading: false, previewVersion: Date.now() },
+  flutter: { isUploading: false, previewVersion: Date.now(), uploadedUrl: "", uploadedPublicId: "" },
+  frontend: { isUploading: false, previewVersion: Date.now(), uploadedUrl: "", uploadedPublicId: "" },
 };
 
 export default function CVDashboard() {
@@ -101,7 +101,15 @@ export default function CVDashboard() {
         throw new Error(result?.error?.message ?? "Cloudinary upload failed.");
       }
 
-      updateTrackState(track, { previewVersion: Date.now() });
+      const uploadedUrl = result?.secure_url ?? "";
+      const uploadedPublicId = result?.public_id ?? "";
+      const expectedPublicId = config.cloudinaryPublicId;
+
+      if (uploadedPublicId && uploadedPublicId !== expectedPublicId) {
+        throw new Error(`Uploaded as "${uploadedPublicId}" instead of "${expectedPublicId}".`);
+      }
+
+      updateTrackState(track, { previewVersion: Date.now(), uploadedUrl, uploadedPublicId });
       toast({ title: "CV updated", description: `${config.label} was uploaded successfully.` });
     } catch (error) {
       toast({
@@ -116,7 +124,7 @@ export default function CVDashboard() {
 
   const renderTrackPanel = (track: CVTrack) => {
     const config = CV_CONFIG[track];
-    const currentUrl = getCloudinaryRawUrl(track);
+    const currentUrl = uploadState[track].uploadedUrl || getCloudinaryRawUrl(track);
     const versionedPreviewUrl = currentUrl ? `${currentUrl}?v=${uploadState[track].previewVersion}` : "";
 
     return (
@@ -158,6 +166,12 @@ export default function CVDashboard() {
             <span className="h-1 w-1 rounded-full bg-muted-foreground/50" />
             <span>Permanent URL overwrite</span>
           </div>
+
+          {uploadState[track].uploadedPublicId && (
+            <div className="rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
+              Uploaded public ID: <span className="font-mono text-foreground">{uploadState[track].uploadedPublicId}</span>
+            </div>
+          )}
 
           {uploadState[track].isUploading && (
             <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">

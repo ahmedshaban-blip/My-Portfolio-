@@ -84,7 +84,13 @@ export const flutterProjects: Project[] = [
     demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
     demoKind: "video",
     coverImage: "/projects/enjez-mobile/cover.png",
-    screenshots: ["/projects/enjez-mobile/cover.png"],
+    screenshots: [
+      "/projects/enjez-mobile/cover.png",
+      "/projects/enjez-mobile/1.png",
+      "/projects/enjez-mobile/2.png",
+      "/projects/enjez-mobile/3.png",
+      "/projects/enjez-mobile/4.png",
+    ],
   },
   {
     slug: "ecommerce-app",
@@ -98,7 +104,13 @@ export const flutterProjects: Project[] = [
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_E-Commerce-Application",
     demoKind: "source",
     coverImage: "/projects/ecommerce-app/cover.png",
-    screenshots: ["/projects/ecommerce-app/cover.png"],
+    screenshots: [
+      "/projects/ecommerce-app/cover.png",
+      "/projects/ecommerce-app/1.png",
+      "/projects/ecommerce-app/2.png",
+      "/projects/ecommerce-app/3.png",
+      "/projects/ecommerce-app/4.png",
+    ],
   },
   {
     slug: "movies-app",
@@ -112,7 +124,13 @@ export const flutterProjects: Project[] = [
     demo: "https://github.com/ahmedshaban-blip/Flutter_Movies_App",
     demoKind: "source",
     coverImage: "/projects/movies-app/cover.png",
-    screenshots: ["/projects/movies-app/cover.png"],
+    screenshots: [
+      "/projects/movies-app/cover.png",
+      "/projects/movies-app/1.png",
+      "/projects/movies-app/2.png",
+      "/projects/movies-app/3.png",
+      "/projects/movies-app/4.png",
+    ],
   },
   {
     slug: "coffee-app",
@@ -125,8 +143,8 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     demo: "https://github.com/ahmedshaban-blip/CoffeeApplication",
     demoKind: "source",
-    coverImage: "/projects/coffee-app/cover.png",
-    screenshots: ["/projects/coffee-app/cover.png"],
+    coverImage: "/projects/flutter-cover.svg",
+    screenshots: ["/projects/flutter-cover.svg"],
   },
 
   {
@@ -141,7 +159,16 @@ export const flutterProjects: Project[] = [
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_FlashCardQuizApplication",
     demoKind: "source",
     coverImage: "/projects/flashcard-quiz/cover.png",
-    screenshots: ["/projects/flashcard-quiz/cover.png"],
+    screenshots: [
+      "/projects/flashcard-quiz/11.png",
+      "/projects/flashcard-quiz/1.png",
+      "/projects/flashcard-quiz/2.png",
+      "/projects/flashcard-quiz/3.png",
+      "/projects/flashcard-quiz/11-1.png",
+      "/projects/flashcard-quiz/22-1.png",
+      "/projects/flashcard-quiz/33-1.png",
+      "/projects/flashcard-quiz/44-1.png",
+    ],
   },
   {
     slug: "currency-converter",
@@ -154,8 +181,8 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/currency_converter",
     demo: "https://github.com/ahmedshaban-blip/currency_converter",
     demoKind: "source",
-    coverImage: "/projects/currency-converter/cover.png",
-    screenshots: ["/projects/currency-converter/cover.png"],
+    coverImage: "/projects/flutter-cover.svg",
+    screenshots: ["/projects/flutter-cover.svg"],
   },
   {
     slug: "scan-qr",
@@ -168,8 +195,8 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/scan_qr",
     demo: "https://github.com/ahmedshaban-blip/scan_qr",
     demoKind: "source",
-    coverImage: "/projects/scan-qr/cover.png",
-    screenshots: ["/projects/scan-qr/cover.png"],
+    coverImage: "/projects/flutter-cover.svg",
+    screenshots: ["/projects/flutter-cover.svg"],
   },
   {
     slug: "research-discover",
@@ -182,8 +209,8 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/scientific_research_discover",
     demo: "https://github.com/ahmedshaban-blip/scientific_research_discover",
     demoKind: "source",
-    coverImage: "/projects/research-discover/cover.png",
-    screenshots: ["/projects/research-discover/cover.png"],
+    coverImage: "/projects/flutter-cover.svg",
+    screenshots: ["/projects/flutter-cover.svg"],
   },
   {
     slug: "random-quote",
@@ -196,8 +223,8 @@ export const flutterProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
     demo: "https://github.com/ahmedshaban-blip/CodeAlpha_RandomQuoteGenerator",
     demoKind: "source",
-    coverImage: "/projects/random-quote/cover.png",
-    screenshots: ["/projects/random-quote/cover.png"],
+    coverImage: "/projects/flutter-cover.svg",
+    screenshots: ["/projects/flutter-cover.svg"],
   },
 ];
 

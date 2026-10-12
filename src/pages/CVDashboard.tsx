@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import { useToast } from "@/hooks/use-toast";
 import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCloudinaryUploadEndpoint } from "@/config/cv";
 
@@ -56,25 +57,43 @@ export default function CVDashboard() {
       return;
     }
 
-    if (!isCloudinaryConfigured || !config.uploadPreset) {
+    if (!isCloudinaryConfigured) {
       toast({
         title: "Cloudinary is not configured",
-        description: "Add the required VITE_CLOUDINARY_* environment variables first.",
+        description: "Add the required Cloudinary environment variables first.",
         variant: "destructive",
       });
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", config.uploadPreset);
-    formData.append("public_id", config.cloudinaryPublicId);
-    formData.append("overwrite", "true");
-    formData.append("invalidate", "true");
-
     updateTrackState(track, { isUploading: true });
 
     try {
+      const adminPin = sessionStorage.getItem(ADMIN_PIN_SESSION_KEY) ?? "";
+      const signatureResponse = await fetch("/api/cloudinary-signature", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminPin}`,
+        },
+        body: JSON.stringify({ track }),
+      });
+
+      const signaturePayload = await signatureResponse.json();
+
+      if (!signatureResponse.ok) {
+        throw new Error(signaturePayload?.error ?? "Could not sign Cloudinary upload.");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", signaturePayload.apiKey);
+      formData.append("timestamp", String(signaturePayload.timestamp));
+      formData.append("signature", signaturePayload.signature);
+      formData.append("public_id", signaturePayload.publicId);
+      formData.append("overwrite", "true");
+      formData.append("invalidate", "true");
+
       const response = await fetch(uploadEndpoint, { method: "POST", body: formData });
       const result = await response.json();
 
@@ -142,7 +161,7 @@ export default function CVDashboard() {
 
           {uploadState[track].isUploading && (
             <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
-              <Loader2 className="h-4 w-4 animate-spin" /> Uploading and invalidating Cloudinary cache...
+              <Loader2 className="h-4 w-4 animate-spin" /> Uploading CV to Cloudinary...
             </div>
           )}
 

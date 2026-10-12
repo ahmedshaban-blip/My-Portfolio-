@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const ADMIN_SESSION_KEY = "cv-vault-authenticated";
+export const ADMIN_PIN_SESSION_KEY = "cv-vault-pin";
 
 type AdminAuthGuardProps = {
   children: ReactNode;
@@ -55,6 +56,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
 
     if (pin === adminPin) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+      sessionStorage.setItem(ADMIN_PIN_SESSION_KEY, pin);
       setIsAuthenticated(true);
       setError("");
       return;

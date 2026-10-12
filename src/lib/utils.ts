@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { CV_CONFIG, CVTrack, getCloudinaryRawUrl } from "@/config/cv";
+import { CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCVDownloadUrl } from "@/config/cv";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -30,7 +30,7 @@ export async function downloadCV(type: CVTrack) {
   const cloudinaryUrl = getCloudinaryRawUrl(type);
 
   if (cloudinaryUrl && (await canReachRemoteCV(cloudinaryUrl))) {
-    triggerDownload(cloudinaryUrl, config.fileName);
+    triggerDownload(getCVDownloadUrl(type), config.fileName);
     return;
   }
 

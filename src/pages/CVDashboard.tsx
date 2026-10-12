@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import { useToast } from "@/hooks/use-toast";
-import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCloudinaryUploadEndpoint } from "@/config/cv";
+import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCloudinaryUploadEndpoint, getCVDownloadUrl } from "@/config/cv";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -189,7 +189,7 @@ export default function CVDashboard() {
                   </a>
                 </Button>
                 <Button asChild className="rounded-full shadow-md shadow-primary/20">
-                  <a href={currentUrl} download={config.fileName}>
+                  <a href={getCVDownloadUrl(track)} download={config.fileName}>
                     <FileUp className="h-4 w-4" /> Test download
                   </a>
                 </Button>

@@ -43,3 +43,5 @@ export const getCloudinaryUploadEndpoint = () => {
 
   return `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`;
 };
+
+export const getCVDownloadUrl = (track: CVTrack) => `/api/download-cv?track=${track}`;

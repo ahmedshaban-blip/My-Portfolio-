@@ -92,7 +92,7 @@ function MobileCardMedia({ project, onOpen }: { project: Project; onOpen: () => 
       aria-label={`View ${project.title} screenshots`}
       className="group block w-full cursor-zoom-in bg-secondary/30 px-8 pt-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <span className="mx-auto block w-36 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-40">
+      <span className="mx-auto block w-32 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-36">
         <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
           <span className="h-1 w-10 rounded-full bg-border" />
         </span>
@@ -160,8 +160,8 @@ const ProjectCard = memo(function ProjectCard({
   const open = () => onSelect(project);
 
   return (
-    <HoverCard scale={reducedMotion ? 1 : 1.02}>
-      <article>
+    <HoverCard scale={reducedMotion ? 1 : 1.02} className="h-full">
+      <article className="h-full">
         <Card className="modern-card group flex h-full flex-col overflow-hidden border-border/50">
           {project.kind === "mobile" && hasGallery ? (
             <MobileCardMedia project={project} onOpen={open} />
@@ -264,7 +264,7 @@ function GalleryStrip({
   if (project.screenshots.length <= 1) return null;
   return (
     <div
-      className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3"
+      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-3"
       role="list"
       aria-label={`${project.title} screenshots`}
     >
@@ -402,7 +402,7 @@ const Projects = () => {
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {flutterProjects.map((project) => (
-                    <motion.div key={project.slug} variants={staggerItem}>
+                    <motion.div key={project.slug} variants={staggerItem} className="h-full">
                       <ProjectCard
                         project={project}
                         isFlutter={true}
@@ -424,7 +424,7 @@ const Projects = () => {
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {frontendProjects.map((project) => (
-                    <motion.div key={project.slug} variants={staggerItem}>
+                    <motion.div key={project.slug} variants={staggerItem} className="h-full">
                       <ProjectCard
                         project={project}
                         isFlutter={false}
@@ -441,15 +441,16 @@ const Projects = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <AnimatePresence>
               {open && selected && (
-                <DialogContent className="modern-card max-h-[90vh] w-full max-w-[95vw] overflow-y-auto border-border/50 bg-white p-6 shadow-2xl dark:bg-card/50 md:max-w-4xl md:p-8">
+                <DialogContent className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-white p-0 shadow-2xl dark:bg-card/50 md:max-w-4xl">
                   <motion.div
                     initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.2 }}
+                    className="flex min-h-0 min-w-0 flex-1 flex-col"
                   >
-                    <DialogHeader>
-                      <DialogTitle className="mb-3 text-xl font-bold text-black dark:text-foreground md:text-3xl">
+                    <DialogHeader className="shrink-0 px-6 pt-6 text-left md:px-8 md:pt-7">
+                      <DialogTitle className="mb-3 pr-8 text-xl font-bold text-black dark:text-foreground md:text-3xl">
                         {selected.title}
                       </DialogTitle>
                       <DialogDescription className="text-sm leading-relaxed text-zinc-700 dark:text-muted-foreground md:text-base">
@@ -457,8 +458,8 @@ const Projects = () => {
                       </DialogDescription>
                     </DialogHeader>
 
-                    <div className="mt-6 space-y-6 md:space-y-8">
-                      <div>
+                    <div className="min-h-0 min-w-0 flex-1 space-y-6 overflow-y-auto px-6 py-6 md:space-y-8 md:px-8">
+                      <div className="min-w-0">
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
                           {selected.kind === "mobile" && selected.screenshots.length > 1
                             ? "Screens"
@@ -471,11 +472,11 @@ const Projects = () => {
                         )}
                       </div>
 
-                      <div>
+                      <div className="min-w-0">
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
                           Tech Stack
                         </h4>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex min-w-0 flex-wrap gap-2">
                           {selected.techStack?.map((t) => (
                             <Badge
                               key={t}
@@ -488,46 +489,48 @@ const Projects = () => {
                         </div>
                       </div>
 
-                      <div>
+                      <div className="min-w-0">
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
                           Key Features
                         </h4>
-                        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <ul className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
                           {selected.features.map((f) => (
                             <li
                               key={f}
-                              className="flex items-start gap-2.5 text-sm leading-snug text-zinc-800 dark:text-muted-foreground"
+                              className="flex min-w-0 items-start gap-2.5 text-sm leading-snug text-zinc-800 dark:text-muted-foreground"
                             >
                               <Code2 size={14} className="mt-0.5 shrink-0 text-primary" /> {f}
                             </li>
                           ))}
                         </ul>
                       </div>
+                    </div>
 
-                      <div className="flex flex-col gap-3 border-t border-border/30 pt-4 sm:flex-row">
-                        {(() => {
-                          const meta = DEMO_META[selected.demoKind];
-                          return (
-                            <Button
-                              className="h-11 flex-1 rounded-full bg-primary text-sm text-white shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
-                              asChild
-                            >
-                              <a href={selected.demo} target="_blank" rel="noopener noreferrer">
-                                <meta.Icon size={14} className="mr-2" /> {meta.label}
-                              </a>
-                            </Button>
-                          );
-                        })()}
-                        <Button
-                          variant="outline"
-                          className="h-11 flex-1 rounded-full border-border/50 text-sm transition-all duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-                          asChild
-                        >
-                          <a href={selected.github} target="_blank" rel="noopener noreferrer">
-                            <Github size={14} className="mr-2" /> Source Code
-                          </a>
-                        </Button>
-                      </div>
+                    <div className="flex shrink-0 flex-row gap-3 border-t border-border/30 px-6 py-4 md:px-8">
+                      {(() => {
+                        const meta = DEMO_META[selected.demoKind];
+                        return (
+                          <Button
+                            className="h-11 min-w-0 flex-1 rounded-full bg-primary text-sm text-white shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
+                            asChild
+                          >
+                            <a href={selected.demo} target="_blank" rel="noopener noreferrer">
+                              <meta.Icon size={14} className="mr-2 shrink-0" />{" "}
+                              <span className="truncate">{meta.label}</span>
+                            </a>
+                          </Button>
+                        );
+                      })()}
+                      <Button
+                        variant="outline"
+                        className="h-11 min-w-0 flex-1 rounded-full border-border/50 text-sm transition-all duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                        asChild
+                      >
+                        <a href={selected.github} target="_blank" rel="noopener noreferrer">
+                          <Github size={14} className="mr-2 shrink-0" />{" "}
+                          <span className="truncate">Source Code</span>
+                        </a>
+                      </Button>
                     </div>
                   </motion.div>
                 </DialogContent>

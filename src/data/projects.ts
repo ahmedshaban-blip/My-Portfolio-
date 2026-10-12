@@ -60,12 +60,10 @@ export const flutterProjects: Project[] = [
     demoKind: "play",
     coverImage: "/projects/rss-reader-pro/shot-2.webp",
     screenshots: [
-      "/projects/rss-reader-pro/shot-1.webp",
       "/projects/rss-reader-pro/shot-2.webp",
       "/projects/rss-reader-pro/shot-3.webp",
       "/projects/rss-reader-pro/shot-4.webp",
       "/projects/rss-reader-pro/shot-5.webp",
-      "/projects/rss-reader-pro/shot-6.webp",
     ],
   },
   {

@@ -63,6 +63,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   const timestamp = Math.round(Date.now() / 1000);
   const signedParams = {
+    access_mode: "public",
     invalidate: "true",
     overwrite: "true",
     public_id: CV_PUBLIC_IDS[track],

@@ -91,6 +91,7 @@ export default function CVDashboard() {
       formData.append("timestamp", String(signaturePayload.timestamp));
       formData.append("signature", signaturePayload.signature);
       formData.append("public_id", signaturePayload.publicId);
+      formData.append("access_mode", "public");
       formData.append("overwrite", "true");
       formData.append("invalidate", "true");
 

@@ -40,6 +40,7 @@ export function Magnetic({
       rafRef.current = requestAnimationFrame(() => {
         const el = ref.current;
         if (!el) return;
+        el.style.transition = "";
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
@@ -66,6 +67,7 @@ export function Magnetic({
   const handleMouseLeave = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (ref.current) {
+      ref.current.style.transition = "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)";
       ref.current.style.transform = "translate(0px, 0px)";
     }
   }, []);

@@ -32,7 +32,7 @@ const ModeToggle = () => {
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-blue-400" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-primary" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
@@ -137,7 +137,7 @@ const Navbar = () => {
             <ModeToggle />
             <Button
               size="sm"
-              className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 transition-all active:scale-95 shadow-md shadow-primary/20"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-all active:scale-95 shadow-md shadow-primary/20"
               onClick={() => handleDownloadCV("flutter")}
             >
               <Download className="w-4 h-4 mr-2" /> Flutter CV
@@ -173,7 +173,7 @@ const Navbar = () => {
               initial={reducedMotion ? {} : { opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reducedMotion ? {} : { opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-2xl rounded-[2rem] md:hidden z-[110]"
             >
                <div className="flex flex-col gap-6">
@@ -196,7 +196,7 @@ const Navbar = () => {
                   
                   <div className="grid grid-cols-1 gap-4 pt-6">
                     <Button
-                      className="rounded-full bg-primary hover:bg-primary/90 text-white w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-primary/20"
+                      className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-primary/20"
                       onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
                     >
                       <Download className="w-5 h-5 mr-2" /> Flutter CV

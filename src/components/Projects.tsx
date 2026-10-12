@@ -283,7 +283,7 @@ const ProjectCard = memo(function ProjectCard({
                 </Button>
                 <Button
                   size="sm"
-                  className="h-8 rounded-full bg-primary px-4 text-xs text-white shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
+                  className="h-8 rounded-full bg-primary px-4 text-xs text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
                   asChild
                 >
                   <a href={project.demo} target="_blank" rel="noopener noreferrer" aria-label={`${demo.label} for ${project.title}`}>
@@ -491,7 +491,7 @@ const Projects = () => {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeOut" } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {flutterProjects.map((project) => (
@@ -513,7 +513,7 @@ const Projects = () => {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeOut" } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {frontendProjects.map((project) => (
@@ -534,19 +534,19 @@ const Projects = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <AnimatePresence>
               {open && selected && (
-                <DialogContent className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-white p-0 shadow-2xl dark:bg-card/50 md:max-w-4xl">
+                <DialogContent className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-card p-0 shadow-2xl md:max-w-4xl">
                   <motion.div
                     initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                     className="flex min-h-0 min-w-0 flex-1 flex-col"
                   >
                     <DialogHeader className="shrink-0 px-6 pt-6 text-left md:px-8 md:pt-7">
-                      <DialogTitle className="mb-3 pr-8 text-xl font-bold text-black dark:text-foreground md:text-3xl">
+                      <DialogTitle className="mb-3 pr-8 text-xl font-bold text-foreground md:text-3xl">
                         {selected.title}
                       </DialogTitle>
-                      <DialogDescription className="text-sm leading-relaxed text-zinc-700 dark:text-muted-foreground md:text-base">
+                      <DialogDescription className="text-sm leading-relaxed text-muted-foreground md:text-base">
                         {selected.description}
                       </DialogDescription>
                     </DialogHeader>
@@ -581,7 +581,7 @@ const Projects = () => {
                             <Badge
                               key={t}
                               variant="outline"
-                              className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-zinc-800 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:text-muted-foreground"
+                              className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
                             >
                               {t}
                             </Badge>
@@ -597,7 +597,7 @@ const Projects = () => {
                           {selected.features.map((f) => (
                             <li
                               key={f}
-                              className="flex min-w-0 items-start gap-2.5 text-sm leading-snug text-zinc-800 dark:text-muted-foreground"
+                              className="flex min-w-0 items-start gap-2.5 text-sm leading-snug text-muted-foreground"
                             >
                               <Code2 size={14} className="mt-0.5 shrink-0 text-primary" /> {f}
                             </li>
@@ -611,7 +611,7 @@ const Projects = () => {
                         const meta = DEMO_META[selected.demoKind];
                         return (
                           <Button
-                            className="h-11 min-w-0 flex-1 rounded-full bg-primary text-sm text-white shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
+                            className="h-11 min-w-0 flex-1 rounded-full bg-primary text-sm text-primary-foreground shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
                             asChild
                           >
                             <a href={selected.demo} target="_blank" rel="noopener noreferrer">
@@ -641,7 +641,7 @@ const Projects = () => {
           {/* Full-resolution lightbox */}
           <Dialog open={lightbox !== null} onOpenChange={(v) => !v && setLightbox(null)}>
             {lightbox && (
-              <DialogContent className="max-w-[95vw] border-border/50 bg-white p-4 shadow-2xl dark:bg-card md:max-w-5xl md:p-6">
+              <DialogContent className="max-w-[95vw] border-border/50 bg-card p-4 shadow-2xl md:max-w-5xl md:p-6">
                 <DialogHeader>
                   <DialogTitle className="text-base font-semibold md:text-lg">
                     {lightbox.title}
@@ -662,10 +662,13 @@ const Projects = () => {
                       <ChevronLeft size={18} />
                     </Button>
                   )}
-                  <img
+                  <motion.img
                     key={lightbox.images[lightbox.index]}
                     src={lightbox.images[lightbox.index]}
                     alt={`${lightbox.title} screenshot ${lightbox.index + 1} full resolution`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     className="max-h-[70vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
                   />
                   {lightbox.images.length > 1 && (

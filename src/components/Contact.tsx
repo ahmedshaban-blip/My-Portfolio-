@@ -185,7 +185,7 @@ const Contact = () => {
                   <Magnetic strength={0.15}>
                     <Button
                       type="submit"
-                      className="w-full bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (

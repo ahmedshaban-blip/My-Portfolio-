@@ -91,14 +91,14 @@ export function AnimatedBackground() {
       // 1. Draw Mesh Gradients (static — no per-frame drift for 90Hz idle)
       const gradients = isDark
         ? [
-            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 38, saturation: 85, lightness: 62, offset: 0 },  // Gold
-            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 24, saturation: 80, lightness: 55, offset: 2 },   // Copper/Amber
-            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 42, saturation: 80, lightness: 58, offset: 4 },  // Warm Gold Glow
+            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 160, saturation: 60, lightness: 45, offset: 0 },  // Emerald
+            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 36, saturation: 85, lightness: 58, offset: 2 },   // Amber
+            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 48, saturation: 70, lightness: 55, offset: 4 },  // Champagne Glow
           ]
         : [
-            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 220, saturation: 80, lightness: 60, offset: 0 },
-            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 270, saturation: 70, lightness: 50, offset: 2 },
-            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 200, saturation: 60, lightness: 40, offset: 4 },
+            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 162, saturation: 70, lightness: 32, offset: 0 },
+            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 32, saturation: 85, lightness: 45, offset: 2 },
+            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 150, saturation: 15, lightness: 70, offset: 4 },
           ];
 
       for (const g of gradients) {
@@ -129,8 +129,8 @@ export function AnimatedBackground() {
         const finalOpacity = p.opacity * fade * speedScale;
 
         ctx.fillStyle = isDark
-          ? `hsla(240, 5%, 90%, ${finalOpacity})`
-          : `hsla(220, 10%, 25%, ${finalOpacity})`;
+          ? `hsla(150, 8%, 90%, ${finalOpacity})`
+          : `hsla(160, 15%, 22%, ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
 

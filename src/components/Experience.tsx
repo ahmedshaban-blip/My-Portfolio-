@@ -46,7 +46,7 @@ const Experience = () => {
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-white" />
+                      <Briefcase className="h-8 w-8 text-primary-foreground" />
                     </div>
                   </div>
                   <div className="flex-1 space-y-5">
@@ -90,7 +90,7 @@ const Experience = () => {
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-white" />
+                      <Briefcase className="h-8 w-8 text-primary-foreground" />
                     </div>
                   </div>
                   <div className="flex-1 space-y-5">
@@ -132,7 +132,7 @@ const Experience = () => {
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-white" />
+                      <Briefcase className="h-8 w-8 text-primary-foreground" />
                     </div>
                   </div>
                   <div className="flex-1 space-y-5">

@@ -37,6 +37,11 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    document.documentElement.classList.toggle("reduced-motion", reducedMotion);
+    document.documentElement.style.scrollBehavior = reducedMotion ? "auto" : "";
+  }, [reducedMotion]);
+
+  useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handler = (e: MediaQueryListEvent) => {
       if (localStorage.getItem(STORAGE_KEY) === null) {

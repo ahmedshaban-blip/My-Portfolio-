@@ -34,7 +34,8 @@ const Hero = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      element.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
     }
   };
 
@@ -74,8 +75,8 @@ const Hero = () => {
             <motion.div variants={heroElementFadeUp}>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-sm">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
                 </span>
                 <span className="text-xs sm:text-sm font-semibold tracking-wide">Available for new opportunities</span>
               </div>
@@ -87,7 +88,7 @@ const Hero = () => {
               mode="word"
               staggerDelay={0.06}
               delay={0.1}
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-gradient"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-foreground"
             >
               Building Modern Mobile and Web Solutions
             </StaggerReveal>
@@ -109,7 +110,7 @@ const Hero = () => {
                 <Magnetic strength={0.25}>
                   <Button
                     size="lg"
-                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
                     onClick={() => scrollToSection("projects")}
                   >
                     View Projects <ArrowRight className="ml-2 w-5 h-5" />
@@ -221,7 +222,7 @@ const Hero = () => {
               </div>
 
               {/* Mobile-Only Stats Cards (Clean row directly below the photo) */}
-              <div className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
+              <motion.div variants={heroElementFadeUp} className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
                 <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
                   <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
                     <FolderGit2 className="w-3.5 h-3.5" />
@@ -241,7 +242,7 @@ const Hero = () => {
                     <p className="text-[9px] text-muted-foreground truncate">Clean Architecture</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </motion.div>

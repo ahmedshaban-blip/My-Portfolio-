@@ -4,22 +4,22 @@ Visual system design documentation for Ahmed Shaban's portfolio, outlining color
 
 ---
 
-## 🎨 Color Strategy: Committed Warm Luxury
+## 🎨 Color Strategy: Committed Emerald Luxury
 
-We completely reject generic AI-generated dark mode templates (typically `#020617` blue-slate with saturated purple/neon-blue glows). Instead, we use custom-tinted neutrals and metallic-luxe primary/accent tones to invoke a feeling of meticulous craft.
+We completely reject generic AI-generated dark mode templates (typically `#020617` blue-slate with saturated purple/neon-blue glows). Instead, we use green-tinted neutrals and a deep-emerald primary with warm amber/bronze accents to invoke a feeling of meticulous craft.
 
 ### 🌗 Theme Mappings
 
 #### Light Mode (Soft & Crisp)
-- **Background:** Soft blue-tinted cool gray (`210 20% 96%`)
-- **Primary:** Warm royal blue (`221 83% 53%`)
-- **Accent:** Royal purple (`262 83% 58%`)
+- **Background:** Soft green-tinted neutral (`150 15% 95%`)
+- **Primary:** Deep emerald (`162 70% 32%`)
+- **Accent:** Warm bronze (`32 85% 45%`)
 
-#### Dark Mode (Obsidian & Liquid Amber)
-- **Background:** Deepest carbon obsidian (`240 6% 3.5%`)
-- **Primary:** Luxury liquid gold / champagne (`38 85% 62%`)
-- **Accent:** Rich terracotta copper (`24 80% 55%`)
-- **Card Panels:** Muted rose-tinted charcoal (`240 6% 5.5%`)
+#### Dark Mode (Forest & Amber)
+- **Background:** Deepest green-tinted charcoal (`160 12% 4%`)
+- **Primary:** Luminous emerald (`160 60% 45%`)
+- **Accent:** Rich amber (`36 85% 58%`)
+- **Card Panels:** Green-tinted charcoal (`160 10% 6%`)
 
 ---
 

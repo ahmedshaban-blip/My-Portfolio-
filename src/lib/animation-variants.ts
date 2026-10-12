@@ -1,42 +1,47 @@
 import type { Variants, Transition } from "framer-motion";
 
-// ─── Spring Physics Presets ──────────────────────────────────────────
+// ─── 90Hz-safe professional motion ───────────────────────────────────
+// Transform + opacity only. Tween-based (predictable frame cost vs springs).
+// Subtle distances, short durations, light stagger.
+
+export const easeProfessional = [0.22, 1, 0.36, 1] as const;
+
+export const durationFast = 0.3;
+export const durationBase = 0.45;
+export const durationSlow = 0.6;
 
 export const springBouncy: Transition = {
-  type: "spring",
-  stiffness: 350,
-  damping: 20,
-  mass: 0.8,
+  type: "tween",
+  duration: durationBase,
+  ease: easeProfessional,
 };
 
 export const springGentle: Transition = {
-  type: "spring",
-  stiffness: 200,
-  damping: 20,
-  mass: 1,
+  type: "tween",
+  duration: durationBase,
+  ease: easeProfessional,
 };
 
 export const springSnappy: Transition = {
-  type: "spring",
-  stiffness: 400,
-  damping: 25,
-  mass: 0.5,
+  type: "tween",
+  duration: durationFast,
+  ease: easeProfessional,
 };
 
 export const springTransition: Transition = {
-  type: "spring",
-  stiffness: 300,
-  damping: 24,
+  type: "tween",
+  duration: durationFast,
+  ease: easeProfessional,
 };
 
 // ─── Variant Definitions ─────────────────────────────────────────────
 
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { ...springGentle },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
@@ -44,34 +49,34 @@ export const fadeIn: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.4 },
+    transition: { duration: durationFast, ease: "easeOut" },
   },
 };
 
 export const slideFromLeft: Variants = {
-  hidden: { opacity: 0, x: -50 },
+  hidden: { opacity: 0, x: -24 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 export const slideFromRight: Variants = {
-  hidden: { opacity: 0, x: 50 },
+  hidden: { opacity: 0, x: 24 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 export const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.85 },
+  hidden: { opacity: 0, scale: 0.96 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { ...springBouncy },
+    transition: { duration: durationFast, ease: easeProfessional },
   },
 };
 
@@ -86,11 +91,11 @@ export const staggerContainer: Variants = {
 };
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 260, damping: 20 },
+    transition: { duration: durationFast, ease: easeProfessional },
   },
 };
 
@@ -100,94 +105,101 @@ export const heroStaggerContainer: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
     },
   },
 };
 
 export const heroWordReveal: Variants = {
-  hidden: { opacity: 0, y: 30, rotateX: 10 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    rotateX: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 export const heroFadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { ...springGentle },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
-// ─── Scroll Reveal (bouncy slide-up) ─────────────────────────────────
+// ─── Scroll Reveal (subtle slide-up, once-only) ───────────────────────
 
 export const revealOnScroll: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 // ─── Parallax-Aware Scroll Reveal ─────────────────────────────────────
+// Kept for API compatibility. No scroll-linked motion — same subtle reveal.
 
 export const revealOnScrollParallax: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 export const revealOnScrollParallaxIntense: Variants = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { ...springBouncy },
+    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
 // ─── Magnetic Hover Offset ───────────────────────────────────────────
 
 export const magneticTransition: Transition = {
-  type: "spring",
-  stiffness: 150,
-  damping: 15,
-  mass: 0.1,
+  type: "tween",
+  duration: 0.2,
+  ease: "easeOut",
 };
 
 // ─── Default Fallback ────────────────────────────────────────────────
 
 export const defaultTransition = {
-  duration: 0.5,
-  ease: [0.25, 0.46, 0.45, 0.94] as const,
+  duration: durationFast,
+  ease: easeProfessional,
 };
 
 // ─── Mobile-Specific (compressed, lighter) ───────────────────────────
 
 export const mobileVariants: Record<string, Variants> = {
   fadeUp: {
-    hidden: { opacity: 0, y: 12 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   },
   fadeIn: {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.25 },
+      transition: { duration: 0.25, ease: "easeOut" },
+    },
+  },
+  scaleIn: {
+    hidden: { opacity: 0, scale: 0.97 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.25, ease: "easeOut" },
     },
   },
 };

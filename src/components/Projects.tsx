@@ -133,11 +133,11 @@ const Projects = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.1 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {flutterProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem} style={{ willChange: "transform" }}>
+                      <motion.div key={project.title} variants={staggerItem}>
                         <ProjectCard project={project} isFlutter={true} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}
@@ -150,11 +150,11 @@ const Projects = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.1 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
                     {frontendProjects.map((project) => (
-                      <motion.div key={project.title} variants={staggerItem} style={{ willChange: "transform" }}>
+                      <motion.div key={project.title} variants={staggerItem}>
                         <ProjectCard project={project} isFlutter={false} reducedMotion={reducedMotion} onSelect={handleSelect} />
                       </motion.div>
                     ))}

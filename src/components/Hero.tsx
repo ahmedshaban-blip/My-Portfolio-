@@ -8,29 +8,24 @@ import { downloadCV } from "@/lib/utils";
 import personalImage from "@/assets/personal_image.png";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
-const springHighBounce = {
-  type: "spring" as const,
-  stiffness: 350,
-  damping: 14,
-  mass: 0.6,
-};
+const heroEntranceEase = [0.22, 1, 0.36, 1] as const;
 
 const heroSectionStagger = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.5,
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
     },
   },
 };
 
 const heroElementFadeUp = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: springHighBounce,
+    transition: { duration: 0.45, ease: heroEntranceEase },
   },
 };
 
@@ -70,7 +65,7 @@ const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           variants={heroSectionStagger}
-          initial="hidden"
+          initial={reducedMotion ? "visible" : "hidden"}
           animate="visible"
           className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center max-w-7xl mx-auto"
         >
@@ -91,8 +86,8 @@ const Hero = () => {
             <StaggerReveal
               as="h1"
               mode="word"
-              staggerDelay={0.08}
-              delay={0.15}
+              staggerDelay={0.06}
+              delay={0.1}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-gradient"
             >
               Building Modern Mobile and Web Solutions
@@ -186,10 +181,9 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: 10+ Projects (Desktop & Tablet only) */}
+                {/* Floating Badge 1: 10+ Projects (Desktop & Tablet only, static for 90Hz idle) */}
                 <motion.div
-                  animate={reducedMotion ? {} : { y: [0, -8, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  variants={heroElementFadeUp}
                   className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
@@ -201,10 +195,9 @@ const Hero = () => {
                   </div>
                 </motion.div>
 
-                {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only) */}
+                {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only, static for 90Hz idle) */}
                 <motion.div
-                  animate={reducedMotion ? {} : { y: [0, 8, 0] }}
-                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+                  variants={heroElementFadeUp}
                   className="hidden sm:flex absolute sm:bottom-4 sm:-right-6 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent">

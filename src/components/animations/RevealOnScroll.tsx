@@ -1,46 +1,54 @@
 import { motion, type Variants } from "framer-motion";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
-import { revealOnScroll, springBouncy } from "@/lib/animation-variants";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { revealOnScroll, mobileVariants } from "@/lib/animation-variants";
 
 interface RevealOnScrollProps {
   variants?: Variants;
   delay?: number;
+  /** @deprecated No scroll-linked motion — kept for API compatibility. */
   parallax?: number;
   className?: string;
   children: React.ReactNode;
 }
 
 export function RevealOnScroll({
-  variants = revealOnScroll,
+  variants,
   delay = 0,
-  parallax = 0,
   className,
   children,
 }: RevealOnScrollProps) {
   const { reducedMotion } = useAnimationContext();
-  const effectiveParallax = reducedMotion ? 0 : parallax;
+  const isMobile = useIsMobile();
 
   if (reducedMotion) {
     return <div className={className}>{children}</div>;
   }
 
+  // Mobile keeps animation, but lighter/faster.
+  const base = variants ?? (isMobile ? mobileVariants.fadeUp : revealOnScroll);
   const customVariants: Variants =
-    effectiveParallax !== 0
+    delay !== 0
       ? {
-          hidden: { opacity: 0, y: 50 + effectiveParallax * 30 },
+          hidden: base.hidden,
           visible: {
-            opacity: 1,
-            y: 0,
-            transition: { ...springBouncy, delay },
+            ...(typeof base.visible === "object" ? base.visible : {}),
+            transition: {
+              ...((typeof base.visible === "object" &&
+              "transition" in (base.visible as object)
+                ? ((base.visible as { transition?: object }).transition ?? {})
+                : {}) as object),
+              delay: Math.min(delay, 0.2),
+            },
           },
         }
-      : variants;
+      : base;
 
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.1, margin: "-20px" }}
+      viewport={{ once: true, amount: 0.25, margin: "0px 0px -40px 0px" }}
       variants={customVariants}
       className={className}
     >

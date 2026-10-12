@@ -1,6 +1,7 @@
 import { motion, type Variants } from "framer-motion";
 import { useMemo } from "react";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { heroStaggerContainer, heroWordReveal } from "@/lib/animation-variants";
 
 interface StaggerRevealProps {
@@ -33,6 +34,7 @@ export function StaggerReveal({
   mode = "word",
 }: StaggerRevealProps) {
   const { reducedMotion } = useAnimationContext();
+  const isMobile = useIsMobile();
 
   const items = useMemo(
     () => (mode === "letter" ? children.split("") : children.split(" ")),
@@ -45,13 +47,13 @@ export function StaggerReveal({
   }
 
   const containerVariants: Variants =
-    delay !== undefined || staggerDelay !== undefined
+    delay !== undefined || staggerDelay !== undefined || isMobile
       ? {
           hidden: {},
           visible: {
             transition: {
-              staggerChildren: staggerDelay ?? (mode === "letter" ? 0.03 : 0.12),
-              delayChildren: delay ?? 0.3,
+              staggerChildren: staggerDelay ?? (isMobile ? 0.05 : mode === "letter" ? 0.03 : 0.08),
+              delayChildren: delay ?? (isMobile ? 0.1 : 0.15),
             },
           },
         }

@@ -20,12 +20,12 @@ const CODE_SNIPPETS = [
   "StreamBuilder<Project>(...)",
 ];
 
-// PERFORMANCE: Reduced particle count significantly
-const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 4 : 8;
-// PERFORMANCE: Lower DPR cap for better rendering performance
-const MAX_DPR = 1.25;
-// PERFORMANCE: Lower frame rate for background animations (25fps is enough)
-const FRAME_INTERVAL = 40;
+// PERFORMANCE: Minimal background work for 90Hz foreground animations.
+const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 0 : 5;
+// PERFORMANCE: Cap DPR at 1 — background is decorative.
+const MAX_DPR = 1;
+// PERFORMANCE: 20fps is enough for ambient background.
+const FRAME_INTERVAL = 50;
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -53,6 +53,12 @@ export function AnimatedBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    // Mobile: keep the static CSS mesh only, skip canvas work entirely.
+    if (particles.length === 0) {
+      const ctx = canvas.getContext("2d", { alpha: true });
+      ctx?.clearRect(0, 0, canvas.width || 1, canvas.height || 1);
+      return;
+    }
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
@@ -82,8 +88,7 @@ export function AnimatedBackground() {
 
       const isDark = document.documentElement.classList.contains("dark");
 
-      // 1. Draw Mesh Gradients (simplified)
-      const meshSpeed = reducedMotion ? 0 : 0.15;
+      // 1. Draw Mesh Gradients (static — no per-frame drift for 90Hz idle)
       const gradients = isDark
         ? [
             { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 38, saturation: 85, lightness: 62, offset: 0 },  // Gold
@@ -97,8 +102,8 @@ export function AnimatedBackground() {
           ];
 
       for (const g of gradients) {
-        const px = g.x + Math.sin(time * meshSpeed + g.offset) * w * 0.08;
-        const py = g.y + Math.cos(time * meshSpeed * 0.7 + g.offset) * h * 0.06;
+        const px = g.x;
+        const py = g.y;
 
         const grad = ctx.createRadialGradient(px, py, 0, px, py, g.r);
         const s = g.saturation;
@@ -183,13 +188,13 @@ export function AnimatedBackground() {
     };
   }, []);
 
-  // PERFORMANCE: Use will-change to promote to a compositor layer
+  // PERFORMANCE: No compositor hint on a full-screen canvas — avoids an extra layer.
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       aria-hidden="true"
-      style={{ opacity: 0.8, willChange: "transform" }}
+      style={{ opacity: 0.7 }}
     />
   );
 }

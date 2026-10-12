@@ -1,7 +1,13 @@
 import { useRef, useCallback, type MouseEvent } from "react";
 import { motion } from "framer-motion";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { magneticTransition } from "@/lib/animation-variants";
+
+function hasFinePointer() {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
 
 interface MagneticProps {
   children: React.ReactNode;
@@ -21,10 +27,14 @@ export function Magnetic({
   const rafRef = useRef(0);
   const styleRef = useRef<CSSStyleDeclaration | null>(null);
   const { reducedMotion } = useAnimationContext();
+  const isMobile = useIsMobile();
+  // Desktop-only interaction: no magnetic pull on touch / coarse pointers.
+  const finePointer = hasFinePointer();
+  const interactive = !reducedMotion && !isMobile && finePointer;
 
   const handleMouseMove = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
-      if (reducedMotion || !ref.current) return;
+      if (!interactive || !ref.current) return;
 
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
@@ -50,7 +60,7 @@ export function Magnetic({
         el.style.transform = `translate(${offsetRef.current.x}px, ${offsetRef.current.y}px)`;
       });
     },
-    [reducedMotion, strength, radius]
+    [interactive, strength, radius]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -60,7 +70,7 @@ export function Magnetic({
     }
   }, []);
 
-  if (reducedMotion) {
+  if (!interactive) {
     return <div className={className}>{children}</div>;
   }
 
@@ -72,7 +82,6 @@ export function Magnetic({
       onMouseLeave={handleMouseLeave}
       whileHover={{ scale: 1.02 }}
       transition={magneticTransition}
-      style={{ willChange: "transform" }}
     >
       {children}
     </motion.div>

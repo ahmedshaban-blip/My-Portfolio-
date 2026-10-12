@@ -5,7 +5,6 @@ import { StaggerReveal } from "@/components/animations/StaggerReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { downloadCV } from "@/lib/utils";
-import personalImage from "@/assets/personal_image.png";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const heroEntranceEase = [0.22, 1, 0.36, 1] as const;
@@ -172,12 +171,23 @@ const Hero = () => {
               <div className="relative group">
                 <div className="relative p-1.5 rounded-full bg-gradient-to-b from-primary/40 via-accent/30 to-border/40 shadow-2xl backdrop-blur-sm">
                   <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden bg-background ring-4 ring-background/60 shadow-inner">
-                    <img
-                      src={personalImage}
-                      alt="Ahmed Shaban"
-                      className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-105 select-none"
-                      loading="eager"
-                    />
+                    <picture>
+                      <source
+                        type="image/webp"
+                        srcSet="/images/personal-image-320.webp 320w, /images/personal-image-640.webp 640w, /images/personal-image-960.webp 960w"
+                        sizes="(min-width: 1024px) 320px, (min-width: 768px) 288px, (min-width: 640px) 240px, 192px"
+                      />
+                      <img
+                        src="/images/personal-image-640.webp"
+                        alt="Ahmed Shaban"
+                        width={640}
+                        height={640}
+                        className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-105 select-none"
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                      />
+                    </picture>
                   </div>
                 </div>
 

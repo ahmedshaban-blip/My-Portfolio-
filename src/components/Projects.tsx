@@ -144,6 +144,51 @@ function LandscapeCardMedia({
   );
 }
 
+/** Desktop project teaser: browser chrome + editorial multi-page stack. */
+function WebCardMedia({ project, onOpen }: { project: Project; onOpen: () => void }) {
+  const previewImages = project.screenshots.slice(0, 4);
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`View ${project.title} website screenshots`}
+      className="group block w-full cursor-zoom-in p-4 pb-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="block overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
+        <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
+          <span className="h-2 w-2 rounded-full bg-border" />
+          <span className="h-2 w-2 rounded-full bg-border" />
+          <span className="h-2 w-2 rounded-full bg-border" />
+          <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+            {demoHost(project.demo)} · {previewImages.length} screens
+          </span>
+        </span>
+        <span className="grid aspect-[16/10] grid-cols-[1.7fr_1fr] gap-1.5 bg-secondary/30 p-1.5">
+          <span className="overflow-hidden rounded-lg border border-border/40 bg-background shadow-sm">
+            <ProjectImage
+              src={previewImages[0] ?? project.coverImage}
+              alt={`${project.title} main page preview`}
+              className="h-full w-full"
+            />
+          </span>
+          <span className="grid min-h-0 grid-rows-3 gap-1.5">
+            {previewImages.slice(1, 4).map((src, index) => (
+              <span key={src} className="overflow-hidden rounded-md border border-border/40 bg-background shadow-sm">
+                <ProjectImage
+                  src={src}
+                  alt={`${project.title} page preview ${index + 2}`}
+                  className="h-full w-full"
+                />
+              </span>
+            ))}
+          </span>
+        </span>
+      </span>
+    </button>
+  );
+}
+
 const ProjectCard = memo(function ProjectCard({
   project,
   isFlutter,
@@ -163,7 +208,9 @@ const ProjectCard = memo(function ProjectCard({
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="h-full">
       <article className="h-full">
         <Card className="modern-card group flex h-full flex-col overflow-hidden border-border/50">
-          {project.kind === "mobile" && hasGallery ? (
+          {project.kind === "web" && hasGallery ? (
+            <WebCardMedia project={project} onOpen={open} />
+          ) : project.kind === "mobile" && hasGallery ? (
             <MobileCardMedia project={project} onOpen={open} />
           ) : (
             <LandscapeCardMedia project={project} onOpen={open} browserChrome={project.kind === "web"} />
@@ -287,6 +334,52 @@ function GalleryStrip({
           </button>
           <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
             {project.features[i % project.features.length]}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+function WebGalleryStrip({
+  project,
+  onExpand,
+}: {
+  project: Project;
+  onExpand: (index: number) => void;
+}) {
+  if (project.screenshots.length <= 1) return null;
+
+  return (
+    <div
+      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-3"
+      role="list"
+      aria-label={`${project.title} page screenshots`}
+    >
+      {project.screenshots.map((src, i) => (
+        <figure key={src} role="listitem" className="w-72 shrink-0 snap-start md:w-80">
+          <button
+            type="button"
+            onClick={() => onExpand(i)}
+            aria-label={`Expand page screenshot ${i + 1} of ${project.title}`}
+            className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="ml-2 truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+                Page {i + 1}
+              </span>
+            </span>
+            <ProjectImage
+              src={src}
+              alt={`${project.title} page screenshot ${i + 1}`}
+              className="aspect-video"
+            />
+          </button>
+          <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
+            {i === 0 ? "Landing page" : `Captured page ${i + 1}`}
           </figcaption>
         </figure>
       ))}
@@ -463,10 +556,17 @@ const Projects = () => {
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
                           {selected.kind === "mobile" && selected.screenshots.length > 1
                             ? "Screens"
+                            : selected.kind === "web" && selected.screenshots.length > 1
+                              ? "Website Screens"
                             : "Preview"}
                         </h4>
                         {selected.kind === "mobile" && selected.screenshots.length > 1 ? (
                           <GalleryStrip project={selected} onExpand={(i) => expandFrom(selected, i)} />
+                        ) : selected.kind === "web" && selected.screenshots.length > 1 ? (
+                          <div className="space-y-5">
+                            <WebHero project={selected} onExpand={() => expandFrom(selected, 0)} />
+                            <WebGalleryStrip project={selected} onExpand={(i) => expandFrom(selected, i)} />
+                          </div>
                         ) : (
                           <WebHero project={selected} onExpand={() => expandFrom(selected, 0)} />
                         )}

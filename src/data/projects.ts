@@ -267,8 +267,12 @@ export const frontendProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/Melano",
     demo: "https://melano.store",
     demoKind: "live",
-    coverImage: "/projects/melano/cover.png",
-    screenshots: ["/projects/melano/cover.png"],
+    coverImage: "/projects/melano/web-1-home.webp",
+    screenshots: [
+      "/projects/melano/web-1-home.webp",
+      "/projects/melano/web-2-collection.webp",
+      "/projects/melano/web-3-offers.webp",
+    ],
   },
 
   {
@@ -288,8 +292,13 @@ export const frontendProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/Enjez",
     demo: "https://enjez.vercel.app/home",
     demoKind: "live",
-    coverImage: "/projects/enjez-web/cover.png",
-    screenshots: ["/projects/enjez-web/cover.png"],
+    coverImage: "/projects/enjez-web/web-1-home.webp",
+    screenshots: [
+      "/projects/enjez-web/web-1-home.webp",
+      "/projects/enjez-web/web-2-services.webp",
+      "/projects/enjez-web/web-3-how-it-works.webp",
+      "/projects/enjez-web/web-4-about.webp",
+    ],
   },
   {
     slug: "elmatgar",
@@ -302,8 +311,13 @@ export const frontendProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",
     demo: "https://elmatgar.vercel.app/",
     demoKind: "live",
-    coverImage: "/projects/elmatgar/cover.png",
-    screenshots: ["/projects/elmatgar/cover.png"],
+    coverImage: "/projects/elmatgar/web-1-home.webp",
+    screenshots: [
+      "/projects/elmatgar/web-1-home.webp",
+      "/projects/elmatgar/web-2-category.webp",
+      "/projects/elmatgar/web-3-cart.webp",
+      "/projects/elmatgar/web-4-paypal.webp",
+    ],
   },
   {
     slug: "upcourse",
@@ -316,7 +330,12 @@ export const frontendProjects: Project[] = [
     github: "https://github.com/ahmedshaban-blip/E-Learning-WebSite-With-React-JS",
     demo: "https://e-learning-now.vercel.app/",
     demoKind: "live",
-    coverImage: "/projects/upcourse/cover.png",
-    screenshots: ["/projects/upcourse/cover.png"],
+    coverImage: "/projects/upcourse/web-1-home.webp",
+    screenshots: [
+      "/projects/upcourse/web-1-home.webp",
+      "/projects/upcourse/web-2-courses.webp",
+      "/projects/upcourse/web-3-about.webp",
+      "/projects/upcourse/web-4-contact.webp",
+    ],
   },
 ];

@@ -82,7 +82,7 @@ const Hero = () => {
               </div>
             </motion.div>
 
-            {/* Main Title */}
+            {/* Main Title — candidate-specific: name + current role anchor for recruiters */}
             <StaggerReveal
               as="h1"
               mode="word"
@@ -90,17 +90,28 @@ const Hero = () => {
               delay={0.1}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-foreground"
             >
-              Flutter Developer Shipping 10+ Mobile and Web Apps
+              Ahmed Shaban — Flutter & Front-end Developer at Truck World
             </StaggerReveal>
 
             {/* Subtext */}
             <motion.div variants={heroElementFadeUp}>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                I am <span className="text-foreground font-semibold">Ahmed Shaban</span>, a Computer Science graduate specializing in
+                Computer Science graduate specializing in
                 <span className="text-foreground font-semibold"> Flutter</span>,
                 <span className="text-foreground font-semibold"> React Native</span>, and
                 <span className="text-foreground font-semibold"> React</span>.
                 I build high-performance, cross-platform experiences with clean code.
+              </p>
+              <p className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
+                  Full-time · Truck World, Saudi Arabia
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
+                  Flutter · React · Clean Architecture
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
+                  Cairo, Egypt (GMT+2) · Remote-ready
+                </span>
               </p>
             </motion.div>
 

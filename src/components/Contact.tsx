@@ -132,16 +132,23 @@ const Contact = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto space-y-12">
           <RevealOnScroll>
-            <div className="text-center space-y-4">
-              <p className="text-xs font-bold tracking-[0.25em] uppercase text-accent">
-                05 · Get in touch
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-                Have a mobile or web role? Let&apos;s talk.
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Available for Flutter mobile apps, front-end web projects, and remote opportunities.
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
+                <Mail size={14} aria-hidden="true" />
+                <span>05 · Get in touch</span>
+                <span className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" aria-hidden="true" />
+                <span className="tabular-nums tracking-normal text-muted-foreground">
+                  replies within 24h
+                </span>
+              </div>
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+                  Have a mobile or web role? Let&apos;s talk.
+                </h2>
+                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
+                  Available for Flutter mobile apps, front-end web projects, and remote opportunities.
+                </p>
+              </div>
               <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock size={14} className="text-success" aria-hidden="true" />
                 Usually replies within 24 hours · Cairo, Egypt (GMT+2)
@@ -280,8 +287,8 @@ const Contact = () => {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    This opens your email app with the message pre-filled — nothing
-                    is sent until you press Send there.
+                    Recommended: open your email app with the message pre-filled — nothing
+                    is sent until you press Send there. No email app? Use Copy address below.
                   </p>
 
                   {mailtoBlocked && (
@@ -340,6 +347,9 @@ const Contact = () => {
                       </>
                     )}
                   </Button>
+                  <p className="pt-1 text-center text-xs text-muted-foreground">
+                    Currently full-time at Truck World · Open to remote Flutter / React roles — 2 apps live on Google Play.
+                  </p>
                 </form>
               </Card>
             </RevealOnScroll>

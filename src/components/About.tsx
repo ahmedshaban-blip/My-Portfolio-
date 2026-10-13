@@ -51,10 +51,18 @@ const About = () => {
                   <p className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
                     <span>01 · About me</span>
                     <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
+                    <span className="tabular-nums tracking-normal text-muted-foreground">
+                      Flutter · React · Clean Architecture
+                    </span>
                   </p>
-                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
-                    Passionate developer solving problems through code.
-                  </h2>
+                  <div className="flex flex-col gap-4">
+                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
+                      Passionate developer solving problems through code.
+                    </h2>
+                    <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
+                      Full-time at Truck World · 10+ apps shipped · 2 live on Google Play.
+                    </p>
+                  </div>
                 </div>
               </RevealOnScroll>
 
@@ -73,6 +81,7 @@ const About = () => {
               </RevealOnScroll>
 
               <RevealOnScroll delay={0.2}>
+                {/* Single home for the 10+ fact — ITI + A+ live in Experience. */}
                 <div className="pt-4 flex flex-wrap gap-6">
                   <div className="text-center sm:text-left">
                     <p className="text-3xl font-bold text-primary">10+</p>
@@ -80,13 +89,8 @@ const About = () => {
                   </div>
                   <div className="w-px h-16 bg-border/50 hidden sm:block" />
                   <div className="text-center sm:text-left">
-                    <p className="text-3xl font-bold text-accent">ITI</p>
-                    <p className="text-sm text-muted-foreground mt-1">Certified Intern</p>
-                  </div>
-                  <div className="w-px h-16 bg-border/50 hidden sm:block" />
-                  <div className="text-center sm:text-left">
-                    <p className="text-3xl font-bold text-success">A+</p>
-                    <p className="text-sm text-muted-foreground mt-1">Final Project Grade</p>
+                    <p className="text-3xl font-bold text-success">2</p>
+                    <p className="text-sm text-muted-foreground mt-1">Apps Live on Google Play</p>
                   </div>
                 </div>
               </RevealOnScroll>

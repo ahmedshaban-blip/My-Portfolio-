@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, memo } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -304,7 +304,7 @@ const ProjectCard = memo(function ProjectCard({
 
             <div className="mt-auto flex items-center gap-2 border-t border-border/30 pt-4">
               <Button
-                className="h-9 flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
+                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
                 onClick={open}
               >
                 View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
@@ -312,7 +312,7 @@ const ProjectCard = memo(function ProjectCard({
               <Button
                 size="icon"
                 variant="outline"
-                className="h-9 w-9 shrink-0 rounded-full border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                 asChild
               >
                 <a
@@ -366,6 +366,7 @@ function InlineViewer({
   const src = images[safeIndex];
   const portrait = project.kind === "mobile";
   const step = (dir: 1 | -1) => onIndex((safeIndex + dir + images.length) % images.length);
+  const touchX = useRef<number | null>(null);
 
   // Preload neighbours so arrow / thumbnail switching feels instant (no API — local files, just decode cost).
   useEffect(() => {
@@ -381,7 +382,19 @@ function InlineViewer({
 
   return (
     <figure className="min-w-0">
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-secondary/30 shadow-sm">
+      <div
+        className="overflow-hidden rounded-xl border border-border/60 bg-secondary/30 shadow-sm"
+        onTouchStart={(e) => {
+          touchX.current = e.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(e) => {
+          if (touchX.current === null || images.length <= 1) return;
+          const dx = e.changedTouches[0]?.clientX - touchX.current;
+          touchX.current = null;
+          if (Math.abs(dx) < 24) return;
+          step(dx < 0 ? 1 : -1);
+        }}
+      >
         {project.kind === "web" && (
           <div
             className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2"
@@ -452,7 +465,7 @@ function InlineViewer({
       <figcaption className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span className="min-w-0 flex-1 truncate">
           {portrait
-            ? "Full preview — browse with arrows or thumbnails."
+            ? "Full preview — swipe or use arrows / thumbnails."
             : `Live preview · ${demoHost(project.demo)}`}
         </span>
         {images.length > 1 && (

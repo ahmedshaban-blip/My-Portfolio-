@@ -195,3 +195,34 @@ html.reduced-motion {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
+
+/* Browser surfaces carry the Emerald Luxury palette */
+::selection {
+  background: hsl(var(--primary) / 0.28);
+  color: hsl(var(--foreground));
+}
+
+::-moz-selection {
+  background: hsl(var(--primary) / 0.28);
+  color: hsl(var(--foreground));
+}
+
+:focus-visible {
+  outline: 2px solid hsl(var(--ring) / 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input,
+textarea {
+  caret-color: hsl(var(--primary));
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+.tabular-nums,
+table {
+  font-variant-numeric: tabular-nums;
+}

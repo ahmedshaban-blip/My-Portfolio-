@@ -7,12 +7,6 @@ const Footer = () => {
     "Hello Ahmed, I saw your portfolio and would like to connect"
   )}`;
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id.replace("#", ""));
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    element?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
-  };
-
   const quickLinks = [
     { label: "Home", href: "#home" },
     { label: "About", href: "#about" },
@@ -44,10 +38,6 @@ const Footer = () => {
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToSection(link.href);
-                      }}
                       className="text-muted-foreground hover:text-primary transition-colors text-sm relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full"
                     >
                       {link.label}

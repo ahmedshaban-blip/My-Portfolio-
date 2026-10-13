@@ -74,7 +74,15 @@ const ProjectImage = memo(function ProjectImage({
           }}
         />
         {failed ? (
-          <ImageOff size={24} aria-hidden="true" className="relative text-muted-foreground" />
+          <button
+            type="button"
+            onClick={() => setFailed(false)}
+            aria-label={`Retry loading ${alt}`}
+            className="relative flex flex-col items-center gap-2 rounded-xl p-4 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          >
+            <ImageOff size={24} aria-hidden="true" />
+            <span className="text-xs font-medium underline underline-offset-4">Tap to retry</span>
+          </button>
         ) : (
           <img
             src={src}
@@ -99,6 +107,17 @@ const ProjectImage = memo(function ProjectImage({
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/60 px-4 text-center text-muted-foreground">
           <ImageOff size={20} aria-hidden="true" />
           <span className="text-xs font-medium">Preview unavailable</span>
+          <button
+            type="button"
+            onClick={() => {
+              setFailed(false);
+              setLoaded(false);
+            }}
+            aria-label={`Retry loading ${alt}`}
+            className="rounded-full border border-border/60 bg-background/80 px-3 py-1 text-[11px] font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          >
+            Retry
+          </button>
         </div>
       ) : (
         <img

@@ -126,6 +126,12 @@ const Navbar = () => {
                       transition={springTransition}
                     />
                   )}
+                  {isActive && reducedMotion && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
+                    />
+                  )}
                 </a>
               );
             })}
@@ -160,7 +166,9 @@ const Navbar = () => {
             <button 
               className="text-foreground p-2 rounded-full hover:bg-accent transition-colors" 
               onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle Menu"
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav-menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -176,6 +184,7 @@ const Navbar = () => {
               exit={reducedMotion ? {} : { opacity: 0, y: -8 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute top-[calc(100%+1.5rem)] left-0 right-0 p-8 bg-background border border-border shadow-2xl rounded-[2rem] md:hidden z-[110]"
+              id="mobile-nav-menu"
             >
                <div className="flex flex-col gap-6">
                   {links.map((link) => {

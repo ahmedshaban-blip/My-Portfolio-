@@ -2,17 +2,21 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatedBackground } from "@/components/animations/AnimatedBackground";
 import { AdminAuthGuard } from "@/components/admin/AdminAuthGuard";
 import { SECRET_ADMIN_PATH, useSecretHotkey } from "@/hooks/use-secret-hotkey";
 import { Suspense, lazy } from "react";
 const CVDashboard = lazy(() => import("./pages/CVDashboard"));
+// OPTIMIZE: react-query only serves the private admin route — keep it out of
+// the public initial bundle.
+const AdminQueryProvider = lazy(() =>
+  import("@/components/admin/AdminQueryProvider").then((m) => ({
+    default: m.AdminQueryProvider,
+  }))
+);
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-
-const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   useSecretHotkey();
@@ -25,7 +29,9 @@ const AppRoutes = () => {
         element={
           <AdminAuthGuard>
             <Suspense fallback={null}>
-              <CVDashboard />
+              <AdminQueryProvider>
+                <CVDashboard />
+              </AdminQueryProvider>
             </Suspense>
           </AdminAuthGuard>
         }
@@ -39,15 +45,13 @@ const AppRoutes = () => {
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
     <AnimatedBackground />
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </TooltipProvider>
   </ThemeProvider>
 );
 

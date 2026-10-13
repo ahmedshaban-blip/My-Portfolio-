@@ -22,7 +22,15 @@ function LogoTile({
     return (
       <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
         {src ? (
-          <img src={src} alt={alt ?? "Company logo"} loading="lazy" className="w-full h-full object-contain" />
+          <img
+            src={src}
+            alt={alt ?? "Company logo"}
+            loading="lazy"
+            decoding="async"
+            width={64}
+            height={64}
+            className="w-full h-full object-contain"
+          />
         ) : (
           children
         )}
@@ -80,7 +88,7 @@ const Experience = () => {
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <LogoTile src="/images/Truck%20World.png" alt="Truck World logo" />
+                    <LogoTile src="/images/truck-world-256.webp" alt="Truck World logo" />
                   </div>
                   <div className="flex-1 space-y-5">
                     <div className="space-y-2">
@@ -164,7 +172,7 @@ const Experience = () => {
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <LogoTile src="/images/ITI.png" alt="ITI logo" />
+                    <LogoTile src="/images/iti-256.webp" alt="ITI logo" />
                   </div>
                   <div className="flex-1 space-y-5">
                     <div className="space-y-2">

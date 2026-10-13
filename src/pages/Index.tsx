@@ -1,13 +1,28 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
-import Experience from "@/components/Experience";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+
+// OPTIMIZE: below-fold sections ship in deferred chunks so the initial bundle
+// stays Navbar + Hero (LCP). Min-height placeholders reserve space to keep CLS < 0.1.
+const About = lazy(() => import("@/components/About"));
+const Skills = lazy(() => import("@/components/Skills"));
+const Projects = lazy(() => import("@/components/Projects"));
+const Experience = lazy(() => import("@/components/Experience"));
+const Contact = lazy(() => import("@/components/Contact"));
+const Footer = lazy(() => import("@/components/Footer"));
+
+const BelowFold = ({
+  minHeight,
+  children,
+}: {
+  minHeight: string;
+  children: React.ReactNode;
+}) => (
+  <Suspense fallback={<div style={{ minHeight }} aria-hidden="true" />}>
+    {children}
+  </Suspense>
+);
 
 const BackToTop = () => {
   const [visible, setVisible] = useState(false);
@@ -49,12 +64,24 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Experience />
-      <Contact />
-      <Footer />
+      <BelowFold minHeight="60vh">
+        <About />
+      </BelowFold>
+      <BelowFold minHeight="60vh">
+        <Skills />
+      </BelowFold>
+      <BelowFold minHeight="120vh">
+        <Projects />
+      </BelowFold>
+      <BelowFold minHeight="120vh">
+        <Experience />
+      </BelowFold>
+      <BelowFold minHeight="80vh">
+        <Contact />
+      </BelowFold>
+      <BelowFold minHeight="30vh">
+        <Footer />
+      </BelowFold>
       <BackToTop />
     </div>
   );

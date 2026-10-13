@@ -91,7 +91,7 @@ const ProjectImage = memo(function ProjectImage({
             decoding="async"
             draggable={false}
             onError={() => setFailed(true)}
-            className="relative h-20 w-20 object-contain drop-shadow-lg sm:h-24 sm:w-24"
+            className="relative h-32 w-32 object-contain drop-shadow-lg sm:h-40 sm:w-40"
           />
         )}
       </div>
@@ -131,7 +131,7 @@ const ProjectImage = memo(function ProjectImage({
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           className={cn(
-            "h-full w-full object-cover object-top",
+            "h-full w-full object-contain",
             !loaded && "opacity-0",
           )}
         />
@@ -139,97 +139,6 @@ const ProjectImage = memo(function ProjectImage({
     </div>
   );
 });
-
-/** Portrait device-frame teaser for real store screenshots. */
-function MobileCardMedia({ project, onOpen }: { project: Project; onOpen: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`View ${project.title} screenshots`}
-      className="group block w-full cursor-zoom-in bg-secondary/30 px-8 pt-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <span className="mx-auto block w-32 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background pb-4 shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-36">
-        <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
-          <span className="h-1 w-10 rounded-full bg-border" />
-        </span>
-        <ProjectImage
-          src={project.coverImage}
-          alt={`${project.title} app preview`}
-          className="aspect-[9/16]"
-        />
-      </span>
-    </button>
-  );
-}
-
-/** Landscape teaser: browser frame for web, flat frame for single-cover mobile. */
-function LandscapeCardMedia({
-  project,
-  onOpen,
-  browserChrome,
-}: {
-  project: Project;
-  onOpen: () => void;
-  browserChrome: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`View ${project.title} preview`}
-      className="group block w-full cursor-zoom-in p-4 pb-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <span className="block overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
-        {browserChrome && (
-          <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
-            <span className="h-2 w-2 rounded-full bg-border" />
-            <span className="h-2 w-2 rounded-full bg-border" />
-            <span className="h-2 w-2 rounded-full bg-border" />
-            <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
-              {demoHost(project.demo)}
-            </span>
-          </span>
-        )}
-        <ProjectImage
-          src={project.coverImage}
-          alt={`${project.title} preview`}
-          className="aspect-[16/10]"
-        />
-      </span>
-    </button>
-  );
-}
-
-/** Desktop project teaser: browser chrome + single cover (grid stays light, full gallery lives in dialog). */
-function WebCardMedia({ project, onOpen }: { project: Project; onOpen: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`View ${project.title} website screenshots`}
-      className="group block w-full cursor-zoom-in p-4 pb-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <span className="block overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
-        <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
-          <span className="h-2 w-2 rounded-full bg-border" />
-          <span className="h-2 w-2 rounded-full bg-border" />
-          <span className="h-2 w-2 rounded-full bg-border" />
-          <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
-            {demoHost(project.demo)} · {project.screenshots.length} screens
-          </span>
-        </span>
-        <span className="block aspect-[16/10] bg-secondary/30">
-          <ProjectImage
-            src={project.coverImage}
-            alt={`${project.title} main page preview`}
-            className="h-full w-full"
-          />
-        </span>
-      </span>
-    </button>
-  );
-}
 
 const ProjectCard = memo(function ProjectCard({
   project,
@@ -242,20 +151,30 @@ const ProjectCard = memo(function ProjectCard({
   reducedMotion: boolean;
   onSelect: (p: Project) => void;
 }) {
-  const hasGallery = project.screenshots.length > 1;
   const open = () => onSelect(project);
 
   return (
-    <HoverCard scale={reducedMotion ? 1 : 1.02} className="h-full">
-      <article className="h-full">
-        <Card className="modern-card group flex h-full flex-col overflow-hidden border-border/50">
-          {project.kind === "web" && hasGallery ? (
-            <WebCardMedia project={project} onOpen={open} />
-          ) : project.kind === "mobile" && hasGallery ? (
-            <MobileCardMedia project={project} onOpen={open} />
-          ) : (
-            <LandscapeCardMedia project={project} onOpen={open} browserChrome={project.kind === "web"} />
-          )}
+    <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
+      <article className="flex w-full min-h-0 flex-1 flex-col">
+        <Card className="modern-card group flex flex-1 flex-col overflow-hidden border-border/50">
+          <div className="relative flex h-48 shrink-0 items-center justify-center overflow-hidden bg-secondary/30 sm:h-56 md:h-64">
+            {project.kind === "web" && (
+              <span className="absolute inset-x-0 top-0 z-10 flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2 backdrop-blur-sm" aria-hidden="true">
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background/80 px-2 py-0.5 text-[10px] text-muted-foreground">
+                  {demoHost(project.demo)}
+                </span>
+              </span>
+            )}
+            <ProjectImage
+              src={project.coverImage}
+              alt={`${project.title} cover preview`}
+              className="h-full w-full [&_img]:object-contain"
+              eager
+            />
+          </div>
 
           <CardHeader className="relative z-10 flex flex-1 flex-col p-6">
             <div className="mb-4 flex items-center justify-between gap-2">
@@ -782,10 +701,10 @@ const Projects = () => {
                   initial="hidden"
                   animate="visible"
                   exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
                 >
                   {flutterProjects.map((project) => (
-                    <motion.div key={project.slug} variants={staggerItem} className="h-full">
+                    <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
                       <ProjectCard
                         project={project}
                         isFlutter={true}
@@ -803,10 +722,10 @@ const Projects = () => {
                   initial="hidden"
                   animate="visible"
                   exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
                 >
                   {frontendProjects.map((project) => (
-                    <motion.div key={project.slug} variants={staggerItem} className="h-full">
+                    <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
                       <ProjectCard
                         project={project}
                         isFlutter={false}

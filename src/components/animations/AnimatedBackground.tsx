@@ -161,6 +161,17 @@ export function AnimatedBackground() {
 
     setupCanvas();
 
+    // PERFORMANCE: pause background work while user scrolls — scroll stays on compositor thread.
+    let scrollTimer: ReturnType<typeof setTimeout>;
+    const handleScroll = () => {
+      isAnimatingRef.current = false;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        if (!document.hidden) isAnimatingRef.current = true;
+      }, 250);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     // PERFORMANCE: Debounced resize
     let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
@@ -182,7 +193,9 @@ export function AnimatedBackground() {
 
     return () => {
       clearTimeout(resizeTimer);
+      clearTimeout(scrollTimer);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       isAnimatingRef.current = false;
     };

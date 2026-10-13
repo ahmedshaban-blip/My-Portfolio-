@@ -55,6 +55,41 @@ const ProjectImage = memo(function ProjectImage({
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  // Brand placeholder (e.g. flutter-cover.svg): full-bleed object-cover would
+  // crop/zoom the logo badly — render it centered at a proper size instead.
+  if (src.endsWith(".svg")) {
+    return (
+      <div
+        className={cn(
+          "relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/15 via-secondary/40 to-accent/10",
+          className,
+        )}
+      >
+        <div
+          className="absolute inset-0 opacity-40"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 30% 20%, hsl(var(--primary) / 0.15) 0, transparent 50%), radial-gradient(circle at 70% 80%, hsl(var(--accent) / 0.12) 0, transparent 50%)",
+          }}
+        />
+        {failed ? (
+          <ImageOff size={24} aria-hidden="true" className="relative text-muted-foreground" />
+        ) : (
+          <img
+            src={src}
+            alt={alt}
+            loading={eager ? "eager" : "lazy"}
+            decoding="async"
+            draggable={false}
+            onError={() => setFailed(true)}
+            className="relative h-20 w-20 object-contain drop-shadow-lg sm:h-24 sm:w-24"
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={cn("relative overflow-hidden bg-secondary/50", className)}>
       {!loaded && !failed && (
@@ -71,10 +106,12 @@ const ProjectImage = memo(function ProjectImage({
           alt={alt}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
+          fetchPriority={eager ? "high" : "low"}
+          draggable={false}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           className={cn(
-            "h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105",
+            "h-full w-full object-cover object-top",
             !loaded && "opacity-0",
           )}
         />
@@ -92,7 +129,7 @@ function MobileCardMedia({ project, onOpen }: { project: Project; onOpen: () => 
       aria-label={`View ${project.title} screenshots`}
       className="group block w-full cursor-zoom-in bg-secondary/30 px-8 pt-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <span className="mx-auto block w-32 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-36">
+      <span className="mx-auto block w-32 overflow-hidden rounded-t-2xl border border-b-0 border-border/60 bg-background pb-4 shadow-lg transition-transform duration-300 group-hover:-translate-y-1 sm:w-36">
         <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
           <span className="h-1 w-10 rounded-full bg-border" />
         </span>
@@ -144,10 +181,8 @@ function LandscapeCardMedia({
   );
 }
 
-/** Desktop project teaser: browser chrome + editorial multi-page stack. */
+/** Desktop project teaser: browser chrome + single cover (grid stays light, full gallery lives in dialog). */
 function WebCardMedia({ project, onOpen }: { project: Project; onOpen: () => void }) {
-  const previewImages = project.screenshots.slice(0, 4);
-
   return (
     <button
       type="button"
@@ -161,28 +196,15 @@ function WebCardMedia({ project, onOpen }: { project: Project; onOpen: () => voi
           <span className="h-2 w-2 rounded-full bg-border" />
           <span className="h-2 w-2 rounded-full bg-border" />
           <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
-            {demoHost(project.demo)} · {previewImages.length} screens
+            {demoHost(project.demo)} · {project.screenshots.length} screens
           </span>
         </span>
-        <span className="grid aspect-[16/10] grid-cols-[1.7fr_1fr] gap-1.5 bg-secondary/30 p-1.5">
-          <span className="overflow-hidden rounded-lg border border-border/40 bg-background shadow-sm">
-            <ProjectImage
-              src={previewImages[0] ?? project.coverImage}
-              alt={`${project.title} main page preview`}
-              className="h-full w-full"
-            />
-          </span>
-          <span className="grid min-h-0 grid-rows-3 gap-1.5">
-            {previewImages.slice(1, 4).map((src, index) => (
-              <span key={src} className="overflow-hidden rounded-md border border-border/40 bg-background shadow-sm">
-                <ProjectImage
-                  src={src}
-                  alt={`${project.title} page preview ${index + 2}`}
-                  className="h-full w-full"
-                />
-              </span>
-            ))}
-          </span>
+        <span className="block aspect-[16/10] bg-secondary/30">
+          <ProjectImage
+            src={project.coverImage}
+            alt={`${project.title} main page preview`}
+            className="h-full w-full"
+          />
         </span>
       </span>
     </button>
@@ -334,6 +356,18 @@ function InlineViewer({
   const portrait = project.kind === "mobile";
   const step = (dir: 1 | -1) => onIndex((safeIndex + dir + images.length) % images.length);
 
+  // Preload neighbours so arrow / thumbnail switching feels instant (no API — local files, just decode cost).
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const preload = (i: number) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = images[((i % images.length) + images.length) % images.length];
+    };
+    preload(safeIndex + 1);
+    preload(safeIndex - 1);
+  }, [safeIndex, images]);
+
   return (
     <figure className="min-w-0">
       <div className="overflow-hidden rounded-xl border border-border/60 bg-secondary/30 shadow-sm">
@@ -370,14 +404,22 @@ function InlineViewer({
             src={src}
             alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
             loading="eager"
+            fetchPriority="high"
             decoding="async"
-            initial={{ opacity: 0 }}
+            draggable={false}
+            initial={false}
             animate={{ opacity: 1 }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
+            style={{ opacity: 0 }}
+            onLoad={(e) => {
+              (e.target as HTMLImageElement).style.opacity = "1";
+            }}
             className={
-              portrait
-                ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
-                : "aspect-video w-full object-cover object-top"
+              src.endsWith(".svg")
+                ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
+                : portrait
+                  ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
+                  : "aspect-video w-full object-cover object-top"
             }
           />
           {images.length > 1 && (
@@ -645,14 +687,13 @@ const Projects = () => {
               </TabsList>
             </div>
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="sync" initial={false}>
               <TabsContent value="flutter" key="flutter" asChild>
                 <motion.div
                   variants={staggerContainer}
                   initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.1 }}
-                  exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeOut" } }}
+                  animate="visible"
+                  exit={{ opacity: 0, transition: { duration: 0.12 } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {flutterProjects.map((project) => (
@@ -672,9 +713,8 @@ const Projects = () => {
                 <motion.div
                   variants={staggerContainer}
                   initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.1 }}
-                  exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeOut" } }}
+                  animate="visible"
+                  exit={{ opacity: 0, transition: { duration: 0.12 } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
                   {frontendProjects.map((project) => (

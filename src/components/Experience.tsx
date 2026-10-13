@@ -1,8 +1,40 @@
-import { Briefcase, GraduationCap, Award, CheckCircle2, Calendar, MapPin } from "lucide-react";
+import type { ReactNode } from "react";
+import { GraduationCap, Award, CheckCircle2, Calendar, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { FlutterIcon } from "@/components/icons/FlutterIcon";
+
+/** Logo tile: every card accepts either an image logo or an icon. */
+function LogoTile({
+  src,
+  alt,
+  white,
+  children,
+}: {
+  src?: string;
+  alt?: string;
+  white?: boolean;
+  children?: ReactNode;
+}) {
+  if (src || white) {
+    return (
+      <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+        {src ? (
+          <img src={src} alt={alt ?? "Company logo"} loading="lazy" className="w-full h-full object-contain" />
+        ) : (
+          children
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+      {children}
+    </div>
+  );
+}
 
 
 const Experience = () => {
@@ -44,9 +76,7 @@ const Experience = () => {
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-primary-foreground" />
-                    </div>
+                    <LogoTile src="/images/Truck%20World.png" alt="Truck World logo" />
                   </div>
                   <div className="flex-1 space-y-5">
                     <div className="space-y-2">
@@ -88,9 +118,9 @@ const Experience = () => {
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-primary-foreground" />
-                    </div>
+                    <LogoTile white>
+                      <FlutterIcon className="h-9 w-9" />
+                    </LogoTile>
                   </div>
                   <div className="flex-1 space-y-5">
                     <div className="space-y-2">
@@ -130,9 +160,7 @@ const Experience = () => {
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                      <Briefcase className="h-8 w-8 text-primary-foreground" />
-                    </div>
+                    <LogoTile src="/images/ITI.png" alt="ITI logo" />
                   </div>
                   <div className="flex-1 space-y-5">
                     <div className="space-y-2">

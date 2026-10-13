@@ -242,7 +242,6 @@ const ProjectCard = memo(function ProjectCard({
   onSelect: (p: Project) => void;
 }) {
   const hasGallery = project.screenshots.length > 1;
-  const demo = DEMO_META[project.demoKind];
   const open = () => onSelect(project);
 
   return (
@@ -302,36 +301,28 @@ const ProjectCard = memo(function ProjectCard({
               )}
             </div>
 
-            <div className="mt-auto flex items-center gap-3 border-t border-border/30 pt-4">
+            <div className="mt-auto flex items-center gap-2 border-t border-border/30 pt-4">
               <Button
-                variant="link"
-                className="p-0 text-sm text-primary transition-colors hover:text-primary/80"
+                className="h-9 flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
+                onClick={open}
+              >
+                View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-9 w-9 shrink-0 rounded-full border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                 asChild
               >
-                <a href={project.github} target="_blank" rel="noopener noreferrer">
-                  <Github size={14} className="mr-1.5" /> Github
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Source code for ${project.title} on GitHub`}
+                >
+                  <Github size={14} />
                 </a>
               </Button>
-
-              <div className="ml-auto flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 rounded-full border-border/40 px-4 text-xs transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-                  onClick={open}
-                >
-                  Details
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-8 rounded-full bg-primary px-4 text-xs text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
-                  asChild
-                >
-                  <a href={project.demo} target="_blank" rel="noopener noreferrer" aria-label={`${demo.label} for ${project.title}`}>
-                    <demo.Icon size={12} className="mr-1" /> {demo.label}
-                  </a>
-                </Button>
-              </div>
             </div>
           </CardHeader>
         </Card>
@@ -674,16 +665,24 @@ const Projects = () => {
     <section id="projects" className="section-padding relative">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-12 space-y-4 text-center md:mb-16 md:space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
-              <Zap size={14} /> My Portfolio
+          {/* Editorial split header — deliberately breaks the centered pill + gradient formula shared with Skills. */}
+          <div className="mb-10 md:mb-14">
+            <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+              <Zap size={14} aria-hidden="true" />
+              <span>03 · Selected work</span>
+              <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
+              <span className="tabular-nums tracking-normal text-muted-foreground">
+                {flutterProjects.length + frontendProjects.length} projects
+              </span>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
-              Featured <span className="text-gradient">Projects</span>
-            </h2>
-            <p className="mx-auto max-w-2xl px-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-              A selection of my work, from mobile architectures to web applications.
-            </p>
+            <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+                Featured <span className="text-gradient">Projects</span>
+              </h2>
+              <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-right md:text-lg">
+                A selection of my work, from mobile architectures to web applications.
+              </p>
+            </div>
           </div>
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Mail, MapPin, Phone, Send } from "lucide-react";
+import { Check, Clock, Copy, Mail, MapPin, Phone, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -134,13 +134,17 @@ const Contact = () => {
           <RevealOnScroll>
             <div className="text-center space-y-4">
               <p className="text-xs font-bold tracking-[0.25em] uppercase text-accent">
-                03 · Get in touch
+                05 · Get in touch
               </p>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-                Let&apos;s work together.
+                Have a mobile or web role? Let&apos;s talk.
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Available for Flutter mobile apps, front-end web projects, and remote opportunities.
+              </p>
+              <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock size={14} className="text-success" aria-hidden="true" />
+                Usually replies within 24 hours · Cairo, Egypt (GMT+2)
               </p>
             </div>
           </RevealOnScroll>

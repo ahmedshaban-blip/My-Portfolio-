@@ -58,16 +58,20 @@ const Experience = () => {
         <div className="max-w-5xl mx-auto space-y-12">
 
           <RevealOnScroll>
-            <div className="space-y-4 max-w-3xl">
-              <p className="text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                02 · Resume & journey
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-                Experience & <span className="text-primary">Education</span>
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl">
-                A timeline of my professional growth, academic achievements, and continuous learning.
-              </p>
+            <div className="space-y-4 max-w-none">
+              <div className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                <span>04 · Resume & journey</span>
+                <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
+                <span className="tabular-nums tracking-normal text-muted-foreground">2020 — Present</span>
+              </div>
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+                  Experience & <span className="text-gradient">Education</span>
+                </h2>
+                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
+                  A timeline of my professional growth, academic achievements, and continuous learning.
+                </p>
+              </div>
             </div>
           </RevealOnScroll>
 

@@ -1,4 +1,4 @@
-import { ArrowRight, Github, Linkedin, Mail, Download, FolderGit2, Layers } from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail, Download, Play, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StaggerReveal } from "@/components/animations/StaggerReveal";
@@ -90,7 +90,7 @@ const Hero = () => {
               delay={0.1}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-foreground"
             >
-              Building Modern Mobile and Web Solutions
+              Flutter Developer Shipping 10+ Mobile and Web Apps
             </StaggerReveal>
 
             {/* Subtext */}
@@ -118,7 +118,7 @@ const Hero = () => {
                 </Magnetic>
 
                 <div className="flex flex-col gap-1.5">
-                  <div className="flex flex-col sm:flex-row gap-2" role="group" aria-label="Download CV">
+                  <div className="flex flex-col sm:flex-row items-center gap-3" role="group" aria-label="Download CV">
                     <Magnetic strength={0.2}>
                       <Button
                         size="lg"
@@ -133,17 +133,14 @@ const Hero = () => {
                         </span>
                       </Button>
                     </Magnetic>
-                    <Magnetic strength={0.2}>
-                      <Button
-                        size="lg"
-                        variant="ghost"
-                        className="rounded-full h-12 sm:h-14 px-6 sm:px-8 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200"
-                        onClick={() => handleDownloadCV("frontend")}
-                        title="For React and web roles"
-                      >
-                        <Download className="mr-2 w-4 h-4" /> Frontend CV
-                      </Button>
-                    </Magnetic>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadCV("frontend")}
+                      title="For React and web roles"
+                      className="inline-flex items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                    >
+                      <Download className="mr-1.5 w-3.5 h-3.5" aria-hidden="true" /> Frontend CV
+                    </button>
                   </div>
                   <p className="text-xs text-muted-foreground text-center lg:text-left">
                     Mobile roles? Start with <span className="font-semibold text-foreground">Flutter CV</span>
@@ -152,6 +149,33 @@ const Hero = () => {
                   </p>
                 </div>
               </div>
+            </motion.div>
+
+            {/* Live proof strip: real Play Store apps, not a stat repeat */}
+            <motion.div variants={heroElementFadeUp}>
+              <p className="flex flex-wrap items-center justify-center lg:justify-start gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+                <Play className="w-3.5 h-3.5 text-success" aria-hidden="true" />
+                <span>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
+                  >
+                    CV Builder
+                  </a>
+                  {" · "}
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.rssreader.pro"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
+                  >
+                    RSS Reader Pro
+                  </a>{" "}
+                  live on Google Play
+                </span>
+              </p>
             </motion.div>
 
             {/* Social icons with enhanced hover */}
@@ -204,17 +228,17 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: 10+ Projects (Desktop & Tablet only, static for 90Hz idle) */}
+                {/* Floating Badge 1: Live on Google Play (differentiated proof; the 10+ stat lives in About) */}
                 <motion.div
                   variants={heroElementFadeUp}
                   className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
-                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-                    <FolderGit2 className="w-4 h-4" />
+                  <div className="p-1.5 rounded-lg bg-success/10 text-success">
+                    <Play className="w-4 h-4" />
                   </div>
                   <div className="text-left">
-                    <p className="text-xs font-bold text-foreground leading-tight">10+ Projects</p>
-                    <p className="text-[10px] text-muted-foreground">Completed successfully</p>
+                    <p className="text-xs font-bold text-foreground leading-tight">2 Apps Live</p>
+                    <p className="text-[10px] text-muted-foreground">On Google Play</p>
                   </div>
                 </motion.div>
 
@@ -236,12 +260,12 @@ const Hero = () => {
               {/* Mobile-Only Stats Cards (Clean row directly below the photo) */}
               <motion.div variants={heroElementFadeUp} className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
                 <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
-                    <FolderGit2 className="w-3.5 h-3.5" />
+                  <div className="p-1.5 rounded-lg bg-success/10 text-success shrink-0">
+                    <Play className="w-3.5 h-3.5" />
                   </div>
                   <div className="text-left min-w-0">
-                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">10+ Projects</p>
-                    <p className="text-[9px] text-muted-foreground truncate">Completed</p>
+                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">2 Apps Live</p>
+                    <p className="text-[9px] text-muted-foreground truncate">Google Play</p>
                   </div>
                 </div>
 

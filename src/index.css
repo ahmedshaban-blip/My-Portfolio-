@@ -17,7 +17,7 @@
     --secondary: 150 14% 90%;
     --secondary-foreground: 160 15% 20%;
     --muted: 150 12% 86%;
-    --muted-foreground: 160 10% 38%;
+    --muted-foreground: 160 12% 32%;
     --accent: 32 85% 45%;
     --accent-foreground: 150 20% 98%;
     --accent-glow: 32 85% 55%;
@@ -143,7 +143,7 @@
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   @apply premium-mesh text-foreground antialiased transition-colors duration-500;
-  /* إضافة نعومة في عرض الألوان */
+  /* Smooth color transitions between themes */
   background-color: hsl(var(--background));
 }
 
@@ -178,7 +178,7 @@ html.reduced-motion {
   }
 }
 
-/* تحسين شكل السكرول بار ليكون متماشياً مع التصميم الجديد */
+/* Themed scrollbar to match the design system */
 ::-webkit-scrollbar {
   width: 10px;
 }

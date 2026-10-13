@@ -48,8 +48,9 @@ const About = () => {
             <div className="space-y-8">
               <RevealOnScroll>
                 <div className="space-y-6">
-                  <p className="text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                    01 · About me
+                  <p className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                    <span>01 · About me</span>
+                    <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
                   </p>
                   <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
                     Passionate developer solving problems through code.
@@ -60,7 +61,7 @@ const About = () => {
               <RevealOnScroll delay={0.1}>
                 <div className="space-y-5 text-base md:text-lg text-muted-foreground leading-relaxed">
                   <p>
-                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>, where I graduated with an <span className="text-success font-bold">A+</span> in my final project.
+                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>.
                   </p>
                   <p>
                     During my internship at the <span className="text-foreground font-semibold">Information Technology Institute (ITI)</span>, I worked as a Front-end and Cross-Platform Developer, gaining hands-on experience with <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>.

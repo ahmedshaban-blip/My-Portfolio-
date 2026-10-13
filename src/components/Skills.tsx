@@ -90,16 +90,23 @@ const Skills = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12">
           <RevealOnScroll>
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-bold tracking-widest uppercase border border-accent/20">
-                <Code2 size={14} /> My Expertise
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
+                <Code2 size={14} aria-hidden="true" />
+                <span>02 · My Expertise</span>
+                <span className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" aria-hidden="true" />
+                <span className="tabular-nums tracking-normal text-muted-foreground">
+                  {skillCategories.reduce((n, c) => n + c.skills.length, 0)} skills
+                </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-                Technical <span className="text-gradient">Skills</span>
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Focused stack for building production-ready mobile and web apps.
-              </p>
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                  Technical <span className="text-gradient">Skills</span>
+                </h2>
+                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
+                  Focused stack for building production-ready mobile and web apps.
+                </p>
+              </div>
             </div>
           </RevealOnScroll>
 

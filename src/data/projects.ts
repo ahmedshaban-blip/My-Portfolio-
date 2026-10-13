@@ -39,7 +39,6 @@ export const flutterProjects: Project[] = [
     demoKind: "play",
     coverImage: "/projects/cv-builder/shot-2.webp",
     screenshots: [
-      "/projects/cv-builder/shot-1.webp",
       "/projects/cv-builder/shot-2.webp",
       "/projects/cv-builder/shot-3.webp",
       "/projects/cv-builder/shot-4.webp",

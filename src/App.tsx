@@ -7,7 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatedBackground } from "@/components/animations/AnimatedBackground";
 import { AdminAuthGuard } from "@/components/admin/AdminAuthGuard";
 import { SECRET_ADMIN_PATH, useSecretHotkey } from "@/hooks/use-secret-hotkey";
-import CVDashboard from "./pages/CVDashboard";
+import { Suspense, lazy } from "react";
+const CVDashboard = lazy(() => import("./pages/CVDashboard"));
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -23,7 +24,9 @@ const AppRoutes = () => {
         path={SECRET_ADMIN_PATH}
         element={
           <AdminAuthGuard>
-            <CVDashboard />
+            <Suspense fallback={null}>
+              <CVDashboard />
+            </Suspense>
           </AdminAuthGuard>
         }
       />

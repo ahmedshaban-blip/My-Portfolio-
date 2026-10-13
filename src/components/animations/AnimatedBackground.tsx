@@ -77,6 +77,12 @@ export function AnimatedBackground() {
       }
       lastFrameTimeRef.current = timestamp;
 
+      // PERFORMANCE: Skip heavy gradient+text work while a dialog is open — dialog content is in focus.
+      if (document.querySelector('[role="dialog"][data-state="open"]')) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
+
       if (!isAnimatingRef.current) return;
 
       const w = canvas.width;

@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { useCallback, useEffect, useState, memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -126,6 +126,7 @@ const ProjectImage = memo(function ProjectImage({
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={eager ? "high" : "low"}
+          sizes="(max-width:768px) 100vw, 33vw"
           draggable={false}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
@@ -420,7 +421,7 @@ function InlineViewer({
             initial={false}
             animate={{ opacity: 1 }}
             transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
-            style={{ opacity: 0 }}
+            style={{ opacity: 0, willChange: "opacity", transform: "translateZ(0)" }}
             onLoad={(e) => {
               (e.target as HTMLImageElement).style.opacity = "1";
             }}
@@ -464,7 +465,7 @@ function InlineViewer({
   );
 }
 
-function GalleryStrip({
+const GalleryStrip = memo(function GalleryStrip({
   project,
   activeIndex,
   onSelect,
@@ -513,9 +514,9 @@ function GalleryStrip({
       })}
     </div>
   );
-}
+});
 
-function WebGalleryStrip({
+const WebGalleryStrip = memo(function WebGalleryStrip({
   project,
   activeIndex,
   onSelect,
@@ -570,7 +571,49 @@ function WebGalleryStrip({
       })}
     </div>
   );
-}
+});
+
+/** Static dialog sections — memoized so viewerIndex steps skip re-render. JSX identical. */
+const DialogTechStack = memo(function DialogTechStack({ project }: { project: Project }) {
+  return (
+    <div className="min-w-0">
+      <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
+        Tech Stack
+      </h4>
+      <div className="flex min-w-0 flex-wrap gap-2">
+        {project.techStack?.map((t) => (
+          <Badge
+            key={t}
+            variant="outline"
+            className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
+          >
+            {t}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+const DialogFeatures = memo(function DialogFeatures({ project }: { project: Project }) {
+  return (
+    <div className="min-w-0">
+      <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
+        Key Features
+      </h4>
+      <ul className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
+        {project.features.map((f) => (
+          <li
+            key={f}
+            className="flex min-w-0 items-start gap-2.5 text-sm leading-snug text-muted-foreground"
+          >
+            <Code2 size={14} className="mt-0.5 shrink-0 text-primary" /> {f}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+});
 
 const Projects = () => {
   const { reducedMotion } = useAnimationContext();
@@ -619,47 +662,61 @@ const Projects = () => {
     if (isTabValue(tabParam) && tabParam !== tab) setTab(tabParam);
   }, [searchParams, open, selected, tab, setSearchParams]);
 
-  const handleTabChange = (value: string) => {
-    if (!isTabValue(value)) return;
-    setTab(value);
-    const next = new URLSearchParams(searchParams);
-    next.set("tab", value);
-    setSearchParams(next, { replace: true });
-  };
-
-  const handleSelect = (p: Project) => {
-    const owner = tabOfProject(p);
-    setSelected(p);
-    setViewerIndex(0);
-    setOpen(true);
-    if (owner !== tab) setTab(owner);
-    const next = new URLSearchParams(searchParams);
-    next.set("tab", owner);
-    next.set("project", p.slug);
-    setSearchParams(next, { replace: true });
-  };
-
-  const handleOpenChange = (value: boolean) => {
-    setOpen(value);
-    if (!value) {
+  const handleTabChange = useCallback(
+    (value: string) => {
+      if (!isTabValue(value)) return;
+      setTab(value);
       const next = new URLSearchParams(searchParams);
-      next.delete("project");
+      next.set("tab", value);
       setSearchParams(next, { replace: true });
-    }
-  };
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const handleSelect = useCallback(
+    (p: Project) => {
+      const owner = tabOfProject(p);
+      setSelected(p);
+      setViewerIndex(0);
+      setOpen(true);
+      if (owner !== tab) setTab(owner);
+      const next = new URLSearchParams(searchParams);
+      next.set("tab", owner);
+      next.set("project", p.slug);
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams, tab],
+  );
+
+  const handleOpenChange = useCallback(
+    (value: boolean) => {
+      setOpen(value);
+      if (!value) {
+        const next = new URLSearchParams(searchParams);
+        next.delete("project");
+        setSearchParams(next, { replace: true });
+      }
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const selectedImageCount = selected
+    ? (selected.screenshots.length > 0 ? selected.screenshots.length : 1)
+    : 0;
 
   // Arrow-key browsing for the inline viewer; the listener is always cleaned up.
   useEffect(() => {
     if (!open || !selected) return;
     const images = selected.screenshots.length > 0 ? selected.screenshots : [selected.coverImage];
     if (images.length <= 1) return;
+    const count = images.length;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") setViewerIndex((i) => (i + 1) % images.length);
-      else if (e.key === "ArrowLeft") setViewerIndex((i) => (i - 1 + images.length) % images.length);
+      if (e.key === "ArrowRight") setViewerIndex((i) => (i + 1) % count);
+      else if (e.key === "ArrowLeft") setViewerIndex((i) => (i - 1 + count) % count);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, selected]);
+  }, [open, selected, selectedImageCount]);
 
   return (
     <section id="projects" className="section-padding relative">
@@ -801,38 +858,9 @@ const Projects = () => {
                         )}
                       </div>
 
-                      <div className="min-w-0">
-                        <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
-                          Tech Stack
-                        </h4>
-                        <div className="flex min-w-0 flex-wrap gap-2">
-                          {selected.techStack?.map((t) => (
-                            <Badge
-                              key={t}
-                              variant="outline"
-                              className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-                            >
-                              {t}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
+                      <DialogTechStack project={selected} />
 
-                      <div className="min-w-0">
-                        <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
-                          Key Features
-                        </h4>
-                        <ul className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
-                          {selected.features.map((f) => (
-                            <li
-                              key={f}
-                              className="flex min-w-0 items-start gap-2.5 text-sm leading-snug text-muted-foreground"
-                            >
-                              <Code2 size={14} className="mt-0.5 shrink-0 text-primary" /> {f}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <DialogFeatures project={selected} />
                     </div>
 
                     <div className="flex shrink-0 flex-row gap-3 border-t border-border/30 px-6 py-4 md:px-8">

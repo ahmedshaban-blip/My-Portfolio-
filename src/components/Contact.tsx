@@ -1,51 +1,130 @@
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Copy, Mail, MapPin, Phone, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+const CONTACT_EMAIL = "ahmed.shabaan.dev@gmail.com";
+const NAME_MAX = 100;
+const EMAIL_MAX = 254;
+const MESSAGE_MAX = 2000;
+// Conservative mailto URL budget: long URLs are truncated by some mail clients.
+const MAILTO_MAX_LENGTH = 1800;
+
 const contactSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(NAME_MAX, `Name must be at most ${NAME_MAX} characters`),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .max(EMAIL_MAX, `Email must be at most ${EMAIL_MAX} characters`),
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(MESSAGE_MAX, `Message must be at most ${MESSAGE_MAX} characters`),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
 
 const Contact = () => {
-  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+  const [mailtoBlocked, setMailtoBlocked] = useState(false);
+  const copyTimer = useRef<number | null>(null);
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
   });
 
+  const messageValue = watch("message") ?? "";
+
+  useEffect(() => {
+    return () => {
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+    };
+  }, []);
+
+  const handleCopyEmail = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(CONTACT_EMAIL);
+      } else {
+        const fallback = document.createElement("textarea");
+        fallback.value = CONTACT_EMAIL;
+        fallback.setAttribute("readonly", "");
+        fallback.style.position = "fixed";
+        fallback.style.opacity = "0";
+        document.body.appendChild(fallback);
+        fallback.select();
+        document.execCommand("copy");
+        fallback.remove();
+      }
+      setCopied(true);
+      toast.success("Email address copied.", { description: CONTACT_EMAIL });
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+      copyTimer.current = window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed.", {
+        description: `Please copy it manually: ${CONTACT_EMAIL}`,
+      });
+    }
+  };
+
+  // No backend send endpoint exists in this repo (no EmailJS/Formspree/contact
+  // API route), so the honest handoff is the visitor's own email app via
+  // mailto, with a copy-email fallback when mailto is unavailable or too long.
   const onSubmit = async (data: ContactForm) => {
     const subject = encodeURIComponent(`Portfolio Contact - ${data.name}`);
     const body = encodeURIComponent(
       `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}\n`
     );
+    const href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
 
-    // FIX #5: Use anchor element instead of window.location.href
-    const mailtoLink = document.createElement("a");
-    mailtoLink.href = `mailto:ahmed.shabaan.dev@gmail.com?subject=${subject}&body=${body}`;
-    mailtoLink.click();
+    if (href.length > MAILTO_MAX_LENGTH) {
+      setMailtoBlocked(true);
+      toast.error("Message is too long for an email link.", {
+        description:
+          "Shorten your message, or copy the email address below and send it from your email app instead.",
+      });
+      return;
+    }
 
-    toast({
-      title: "Opening email…",
-      description: "Your email client should open with the message pre-filled.",
-    });
+    try {
+      const mailtoLink = document.createElement("a");
+      mailtoLink.href = href;
+      mailtoLink.rel = "noopener";
+      document.body.appendChild(mailtoLink);
+      mailtoLink.click();
+      mailtoLink.remove();
 
-    reset();
+      toast.success("Opening your email app…", {
+        description:
+          "Your message is pre-filled there. Nothing is sent until you press Send.",
+      });
+      setMailtoBlocked(false);
+      reset();
+    } catch {
+      setMailtoBlocked(true);
+      toast.error("Could not open your email app.", {
+        description:
+          "Copy the email address below and send your message manually — your text is preserved.",
+      });
+    }
   };
 
   return (
@@ -54,11 +133,11 @@ const Contact = () => {
         <div className="max-w-5xl mx-auto space-y-12">
           <RevealOnScroll>
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-bold tracking-widest uppercase border border-accent/20">
-                <Mail size={14} /> Get In Touch
-              </div>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-                Let's Work <span className="text-gradient">Together</span>
+              <p className="text-xs font-bold tracking-[0.25em] uppercase text-accent">
+                03 · Get in touch
+              </p>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+                Let&apos;s work together.
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Available for Flutter mobile apps, front-end web projects, and remote opportunities.
@@ -133,6 +212,8 @@ const Contact = () => {
                       id="name"
                       {...register("name")}
                       placeholder="Your name"
+                      maxLength={NAME_MAX}
+                      dir="auto"
                       className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all"
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? "name-error" : undefined}
@@ -152,6 +233,8 @@ const Contact = () => {
                       {...register("email")}
                       type="email"
                       placeholder="your.email@example.com"
+                      maxLength={EMAIL_MAX}
+                      dir="ltr"
                       className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
@@ -163,14 +246,24 @@ const Contact = () => {
                     )}
                   </div>
                   <div>
-                    <label htmlFor="message" className="text-sm font-medium mb-2 block text-foreground">
-                      Message
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label htmlFor="message" className="text-sm font-medium block text-foreground">
+                        Message
+                      </label>
+                      <span
+                        className="text-xs text-muted-foreground tabular-nums"
+                        aria-live="polite"
+                      >
+                        {messageValue.length}/{MESSAGE_MAX}
+                      </span>
+                    </div>
                     <Textarea
                       id="message"
                       {...register("message")}
                       placeholder="Tell me about your project..."
                       rows={5}
+                      maxLength={MESSAGE_MAX}
+                      dir="auto"
                       className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all resize-none"
                       aria-invalid={!!errors.message}
                       aria-describedby={errors.message ? "message-error" : undefined}
@@ -181,6 +274,26 @@ const Contact = () => {
                       </p>
                     )}
                   </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    This opens your email app with the message pre-filled — nothing
+                    is sent until you press Send there.
+                  </p>
+
+                  {mailtoBlocked && (
+                    <div
+                      role="alert"
+                      className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+                    >
+                      <p className="font-medium text-foreground">
+                        Your email app could not be opened automatically.
+                      </p>
+                      <p className="mt-1 text-muted-foreground break-words">
+                        Copy {CONTACT_EMAIL} and paste your message into a new email —
+                        your text above is preserved.
+                      </p>
+                    </div>
+                  )}
 
                   <Magnetic strength={0.15}>
                     <Button
@@ -194,16 +307,35 @@ const Contact = () => {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Sending...
+                          Opening…
                         </span>
                       ) : (
                         <>
                           <Send className="mr-2 h-4 w-4" />
-                          Send Message
+                          Open Email App
                         </>
                       )}
                     </Button>
                   </Magnetic>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCopyEmail}
+                    className="w-full border-border/50"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy email address
+                      </>
+                    )}
+                  </Button>
                 </form>
               </Card>
             </RevealOnScroll>

@@ -1,4 +1,4 @@
-import { User, Code2, Globe2, Smartphone, Terminal } from "lucide-react";
+import { Code2, Globe2, Smartphone, Terminal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { HoverCard } from "@/components/animations/HoverCard";
@@ -48,12 +48,11 @@ const About = () => {
             <div className="space-y-8">
               <RevealOnScroll>
                 <div className="space-y-6">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
-                    <User size={14} /> About Me
-                  </div>
-                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
-                    Passionate Developer <br />
-                    <span className="text-gradient">Solving Problems</span> Through Code
+                  <p className="text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                    01 · About me
+                  </p>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
+                    Passionate developer solving problems through code.
                   </h2>
                 </div>
               </RevealOnScroll>

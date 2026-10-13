@@ -1,4 +1,5 @@
-import { useState, memo } from "react";
+import { useEffect, useState, memo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +16,6 @@ import {
   Play,
   Clapperboard,
   ImageOff,
-  Expand,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -299,154 +299,315 @@ const ProjectCard = memo(function ProjectCard({
   );
 });
 
-type LightboxState = { title: string; images: string[]; index: number } | null;
+const ALL_PROJECTS: Project[] = [...flutterProjects, ...frontendProjects];
+
+type TabValue = "flutter" | "frontend";
+
+function isTabValue(value: string | null): value is TabValue {
+  return value === "flutter" || value === "frontend";
+}
+
+function tabOfProject(project: Project): TabValue {
+  return flutterProjects.some((p) => p.slug === project.slug) ? "flutter" : "frontend";
+}
+
+function projectBySlug(slug: string | null): Project | null {
+  if (!slug) return null;
+  return ALL_PROJECTS.find((p) => p.slug === slug) ?? null;
+}
+
+/** Inline single-dialog viewer: full-size image with fade, arrows, and counter. */
+function InlineViewer({
+  project,
+  index,
+  onIndex,
+  reducedMotion,
+}: {
+  project: Project;
+  index: number;
+  onIndex: (index: number) => void;
+  reducedMotion: boolean;
+}) {
+  const images = project.screenshots.length > 0 ? project.screenshots : [project.coverImage];
+  const safeIndex = ((index % images.length) + images.length) % images.length;
+  const src = images[safeIndex];
+  const portrait = project.kind === "mobile";
+  const step = (dir: 1 | -1) => onIndex((safeIndex + dir + images.length) % images.length);
+
+  return (
+    <figure className="min-w-0">
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-secondary/30 shadow-sm">
+        {project.kind === "web" && (
+          <div
+            className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2"
+            aria-hidden="true"
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="ml-2 max-w-[16rem] truncate rounded-md bg-background px-2 py-0.5 text-xs text-muted-foreground">
+              {demoHost(project.demo)}
+            </span>
+          </div>
+        )}
+        <div className={cn("relative", portrait && "flex items-center justify-center gap-2 p-4")}>
+          {images.length > 1 && (
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={`Previous screenshot of ${project.title}`}
+              onClick={() => step(-1)}
+              className={cn(
+                "shrink-0 rounded-full",
+                !portrait && "absolute left-3 top-1/2 z-10 -translate-y-1/2 bg-background/90",
+              )}
+            >
+              <ChevronLeft size={18} />
+            </Button>
+          )}
+          <motion.img
+            key={src}
+            src={src}
+            alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
+            loading="eager"
+            decoding="async"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+            className={
+              portrait
+                ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
+                : "aspect-video w-full object-cover object-top"
+            }
+          />
+          {images.length > 1 && (
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={`Next screenshot of ${project.title}`}
+              onClick={() => step(1)}
+              className={cn(
+                "shrink-0 rounded-full",
+                !portrait && "absolute right-3 top-1/2 z-10 -translate-y-1/2 bg-background/90",
+              )}
+            >
+              <ChevronRight size={18} />
+            </Button>
+          )}
+        </div>
+      </div>
+      <figcaption className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span className="min-w-0 flex-1 truncate">
+          {portrait
+            ? "Full preview — browse with arrows or thumbnails."
+            : `Live preview · ${demoHost(project.demo)}`}
+        </span>
+        {images.length > 1 && (
+          <span aria-live="polite" className="shrink-0 tabular-nums">
+            {safeIndex + 1} of {images.length}
+          </span>
+        )}
+      </figcaption>
+    </figure>
+  );
+}
 
 function GalleryStrip({
   project,
-  onExpand,
+  activeIndex,
+  onSelect,
 }: {
   project: Project;
-  onExpand: (index: number) => void;
+  activeIndex: number;
+  onSelect: (index: number) => void;
 }) {
   if (project.screenshots.length <= 1) return null;
   return (
     <div
-      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-3"
+      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto px-0.5 pb-3 pt-4"
       role="list"
       aria-label={`${project.title} screenshots`}
     >
-      {project.screenshots.map((src, i) => (
-        <figure key={src} role="listitem" className="w-40 shrink-0 snap-start md:w-48">
-          <button
-            type="button"
-            onClick={() => onExpand(i)}
-            aria-label={`Expand screenshot ${i + 1} of ${project.title}`}
-            className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 shadow-sm transition-all duration-200 hover:border-primary/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
-              <span className="h-1 w-8 rounded-full bg-border" />
-            </span>
-            <ProjectImage
-              src={src}
-              alt={`${project.title} screenshot ${i + 1}`}
-              className="aspect-[9/16]"
-            />
-          </button>
-          <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
-            {project.features[i % project.features.length]}
-          </figcaption>
-        </figure>
-      ))}
+      {project.screenshots.map((src, i) => {
+        const active = i === activeIndex;
+        return (
+          <figure key={src} role="listitem" className="w-40 shrink-0 snap-start md:w-48">
+            <button
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-label={`Show screenshot ${i + 1} of ${project.title}`}
+              aria-current={active}
+              className={cn(
+                "block w-full overflow-hidden rounded-2xl border bg-secondary/30 shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                active ? "border-primary/60 ring-2 ring-primary/30" : "border-border/60 hover:border-primary/50",
+              )}
+            >
+              <span className="flex justify-center border-b border-border/40 py-1.5" aria-hidden="true">
+                <span className="h-1 w-8 rounded-full bg-border" />
+              </span>
+              <ProjectImage
+                src={src}
+                alt={`${project.title} screenshot ${i + 1}`}
+                className="aspect-[9/16]"
+              />
+            </button>
+            <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
+              {project.features.length > 0
+                ? project.features[i % project.features.length]
+                : `Screenshot ${i + 1}`}
+            </figcaption>
+          </figure>
+        );
+      })}
     </div>
   );
 }
 
 function WebGalleryStrip({
   project,
-  onExpand,
+  activeIndex,
+  onSelect,
 }: {
   project: Project;
-  onExpand: (index: number) => void;
+  activeIndex: number;
+  onSelect: (index: number) => void;
 }) {
   if (project.screenshots.length <= 1) return null;
 
   return (
     <div
-      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-3"
+      className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto px-0.5 pb-3 pt-4"
       role="list"
       aria-label={`${project.title} page screenshots`}
     >
-      {project.screenshots.map((src, i) => (
-        <figure key={src} role="listitem" className="w-72 shrink-0 snap-start md:w-80">
-          <button
-            type="button"
-            onClick={() => onExpand(i)}
-            aria-label={`Expand page screenshot ${i + 1} of ${project.title}`}
-            className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="ml-2 truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
-                Page {i + 1}
+      {project.screenshots.map((src, i) => {
+        const active = i === activeIndex;
+        return (
+          <figure key={src} role="listitem" className="w-72 shrink-0 snap-start md:w-80">
+            <button
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-label={`Show page screenshot ${i + 1} of ${project.title}`}
+              aria-current={active}
+              className={cn(
+                "block w-full overflow-hidden rounded-2xl border bg-background shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                active
+                  ? "border-primary/60 ring-2 ring-primary/30"
+                  : "border-border/60 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg",
+              )}
+            >
+              <span className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="ml-2 truncate rounded-md bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+                  Page {i + 1}
+                </span>
               </span>
-            </span>
-            <ProjectImage
-              src={src}
-              alt={`${project.title} page screenshot ${i + 1}`}
-              className="aspect-video"
-            />
-          </button>
-          <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
-            {i === 0 ? "Landing page" : `Captured page ${i + 1}`}
-          </figcaption>
-        </figure>
-      ))}
+              <ProjectImage
+                src={src}
+                alt={`${project.title} page screenshot ${i + 1}`}
+                className="aspect-video"
+              />
+            </button>
+            <figcaption className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">
+              {i === 0 ? "Landing page" : `Captured page ${i + 1}`}
+            </figcaption>
+          </figure>
+        );
+      })}
     </div>
-  );
-}
-
-function WebHero({
-  project,
-  onExpand,
-}: {
-  project: Project;
-  onExpand: () => void;
-}) {
-  return (
-    <figure>
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm">
-        <div className="flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2" aria-hidden="true">
-          <span className="h-2.5 w-2.5 rounded-full bg-border" />
-          <span className="h-2.5 w-2.5 rounded-full bg-border" />
-          <span className="h-2.5 w-2.5 rounded-full bg-border" />
-          <span className="ml-2 max-w-[16rem] truncate rounded-md bg-background px-2 py-0.5 text-xs text-muted-foreground">
-            {demoHost(project.demo)}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={onExpand}
-          aria-label={`Expand ${project.title} full preview`}
-          className="group relative block w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ProjectImage
-            src={project.coverImage}
-            alt={`${project.title} full page preview`}
-            className="aspect-video"
-            eager
-          />
-          <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full border border-border/50 bg-background/90 px-3 py-1.5 text-xs font-medium text-foreground opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
-            <Expand size={12} aria-hidden="true" /> Expand
-          </span>
-        </button>
-      </div>
-      <figcaption className="mt-2 text-xs text-muted-foreground">
-        Live preview · {demoHost(project.demo)} — select to inspect at full resolution.
-      </figcaption>
-    </figure>
   );
 }
 
 const Projects = () => {
   const { reducedMotion } = useAnimationContext();
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Project | null>(null);
-  const [lightbox, setLightbox] = useState<LightboxState>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState<TabValue>(() => {
+    const tabParam = searchParams.get("tab");
+    if (isTabValue(tabParam)) return tabParam;
+    const deepLinked = projectBySlug(searchParams.get("project"));
+    return deepLinked ? tabOfProject(deepLinked) : "flutter";
+  });
+  const [selected, setSelected] = useState<Project | null>(() =>
+    projectBySlug(searchParams.get("project")),
+  );
+  const [open, setOpen] = useState<boolean>(
+    () => projectBySlug(searchParams.get("project")) !== null,
+  );
+  const [viewerIndex, setViewerIndex] = useState(0);
 
-  const handleSelect = (p: Project) => {
-    setSelected(p);
-    setOpen(true);
+  // Shareable, refresh-safe state via search params only — the `#projects` anchor is never touched.
+  useEffect(() => {
+    const slugParam = searchParams.get("project");
+    if (slugParam) {
+      const found = projectBySlug(slugParam);
+      if (!found) {
+        const next = new URLSearchParams(searchParams);
+        next.delete("project");
+        setSearchParams(next, { replace: true });
+        return;
+      }
+      if (selected?.slug !== found.slug) {
+        setSelected(found);
+        setViewerIndex(0);
+      }
+      if (!open) setOpen(true);
+      const owner = tabOfProject(found);
+      if (tab !== owner) setTab(owner);
+      if (searchParams.get("tab") !== owner) {
+        const next = new URLSearchParams(searchParams);
+        next.set("tab", owner);
+        setSearchParams(next, { replace: true });
+      }
+      return;
+    }
+    if (open) setOpen(false);
+    const tabParam = searchParams.get("tab");
+    if (isTabValue(tabParam) && tabParam !== tab) setTab(tabParam);
+  }, [searchParams, open, selected, tab, setSearchParams]);
+
+  const handleTabChange = (value: string) => {
+    if (!isTabValue(value)) return;
+    setTab(value);
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", value);
+    setSearchParams(next, { replace: true });
   };
 
-  const expandFrom = (p: Project, index: number) =>
-    setLightbox({ title: p.title, images: p.screenshots, index });
+  const handleSelect = (p: Project) => {
+    const owner = tabOfProject(p);
+    setSelected(p);
+    setViewerIndex(0);
+    setOpen(true);
+    if (owner !== tab) setTab(owner);
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", owner);
+    next.set("project", p.slug);
+    setSearchParams(next, { replace: true });
+  };
 
-  const stepLightbox = (dir: 1 | -1) =>
-    setLightbox((lb) =>
-      lb ? { ...lb, index: (lb.index + dir + lb.images.length) % lb.images.length } : lb,
-    );
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value);
+    if (!value) {
+      const next = new URLSearchParams(searchParams);
+      next.delete("project");
+      setSearchParams(next, { replace: true });
+    }
+  };
+
+  // Arrow-key browsing for the inline viewer; the listener is always cleaned up.
+  useEffect(() => {
+    if (!open || !selected) return;
+    const images = selected.screenshots.length > 0 ? selected.screenshots : [selected.coverImage];
+    if (images.length <= 1) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") setViewerIndex((i) => (i + 1) % images.length);
+      else if (e.key === "ArrowLeft") setViewerIndex((i) => (i - 1 + images.length) % images.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, selected]);
 
   return (
     <section id="projects" className="section-padding relative">
@@ -464,7 +625,7 @@ const Projects = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="flutter" className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <div className="mb-10 flex justify-center overflow-x-auto pb-2 md:mb-12">
               <TabsList className="inline-flex h-11 rounded-full border border-border/50 bg-secondary/50 p-1">
                 <TabsTrigger
@@ -531,11 +692,12 @@ const Projects = () => {
             </AnimatePresence>
           </Tabs>
 
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={handleOpenChange}>
             <AnimatePresence>
               {open && selected && (
                 <DialogContent className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-card p-0 shadow-2xl md:max-w-4xl">
                   <motion.div
+                    key={selected.slug}
                     initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
@@ -543,10 +705,10 @@ const Projects = () => {
                     className="flex min-h-0 min-w-0 flex-1 flex-col"
                   >
                     <DialogHeader className="shrink-0 px-6 pt-6 text-left md:px-8 md:pt-7">
-                      <DialogTitle className="mb-3 pr-8 text-xl font-bold text-foreground md:text-3xl">
+                      <DialogTitle className="mb-3 break-words pr-8 text-xl font-bold text-foreground md:text-3xl">
                         {selected.title}
                       </DialogTitle>
-                      <DialogDescription className="text-sm leading-relaxed text-muted-foreground md:text-base">
+                      <DialogDescription className="break-words text-sm leading-relaxed text-muted-foreground md:text-base">
                         {selected.description}
                       </DialogDescription>
                     </DialogHeader>
@@ -560,15 +722,24 @@ const Projects = () => {
                               ? "Website Screens"
                             : "Preview"}
                         </h4>
-                        {selected.kind === "mobile" && selected.screenshots.length > 1 ? (
-                          <GalleryStrip project={selected} onExpand={(i) => expandFrom(selected, i)} />
-                        ) : selected.kind === "web" && selected.screenshots.length > 1 ? (
-                          <div className="space-y-5">
-                            <WebHero project={selected} onExpand={() => expandFrom(selected, 0)} />
-                            <WebGalleryStrip project={selected} onExpand={(i) => expandFrom(selected, i)} />
-                          </div>
+                        <InlineViewer
+                          project={selected}
+                          index={viewerIndex}
+                          onIndex={setViewerIndex}
+                          reducedMotion={reducedMotion}
+                        />
+                        {selected.kind === "mobile" ? (
+                          <GalleryStrip
+                            project={selected}
+                            activeIndex={viewerIndex}
+                            onSelect={setViewerIndex}
+                          />
                         ) : (
-                          <WebHero project={selected} onExpand={() => expandFrom(selected, 0)} />
+                          <WebGalleryStrip
+                            project={selected}
+                            activeIndex={viewerIndex}
+                            onSelect={setViewerIndex}
+                          />
                         )}
                       </div>
 
@@ -638,54 +809,6 @@ const Projects = () => {
             </AnimatePresence>
           </Dialog>
 
-          {/* Full-resolution lightbox */}
-          <Dialog open={lightbox !== null} onOpenChange={(v) => !v && setLightbox(null)}>
-            {lightbox && (
-              <DialogContent className="max-w-[95vw] border-border/50 bg-card p-4 shadow-2xl md:max-w-5xl md:p-6">
-                <DialogHeader>
-                  <DialogTitle className="text-base font-semibold md:text-lg">
-                    {lightbox.title}
-                  </DialogTitle>
-                  <DialogDescription className="text-xs text-muted-foreground md:text-sm">
-                    Screenshot {lightbox.index + 1} of {lightbox.images.length}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="relative flex items-center justify-center gap-2">
-                  {lightbox.images.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label="Previous screenshot"
-                      className="z-10 shrink-0 rounded-full"
-                      onClick={() => stepLightbox(-1)}
-                    >
-                      <ChevronLeft size={18} />
-                    </Button>
-                  )}
-                  <motion.img
-                    key={lightbox.images[lightbox.index]}
-                    src={lightbox.images[lightbox.index]}
-                    alt={`${lightbox.title} screenshot ${lightbox.index + 1} full resolution`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="max-h-[70vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
-                  />
-                  {lightbox.images.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label="Next screenshot"
-                      className="z-10 shrink-0 rounded-full"
-                      onClick={() => stepLightbox(1)}
-                    >
-                      <ChevronRight size={18} />
-                    </Button>
-                  )}
-                </div>
-              </DialogContent>
-            )}
-          </Dialog>
         </div>
       </div>
     </section>

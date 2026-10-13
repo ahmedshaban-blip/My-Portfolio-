@@ -1,7 +1,6 @@
 import { Briefcase, GraduationCap, Award, CheckCircle2, Calendar, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 
@@ -27,14 +26,14 @@ const Experience = () => {
         <div className="max-w-5xl mx-auto space-y-12">
 
           <RevealOnScroll>
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase border border-primary/20">
-                <Sparkles className="w-4 h-4" /> Resume & Journey
-              </div>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-                Experience & <span className="text-gradient">Education</span>
+            <div className="space-y-4 max-w-3xl">
+              <p className="text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                02 · Resume & journey
+              </p>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+                Experience & <span className="text-primary">Education</span>
               </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-lg max-w-2xl">
                 A timeline of my professional growth, academic achievements, and continuous learning.
               </p>
             </div>

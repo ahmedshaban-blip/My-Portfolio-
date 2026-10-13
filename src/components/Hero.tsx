@@ -104,40 +104,52 @@ const Hero = () => {
               </p>
             </motion.div>
 
-            {/* CTA Buttons with Magnetic pull */}
+            {/* CTA: one primary + guided CV group */}
             <motion.div variants={heroElementFadeUp}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
                 <Magnetic strength={0.25}>
                   <Button
                     size="lg"
-                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
                     onClick={() => scrollToSection("projects")}
                   >
                     View Projects <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Magnetic>
-                
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Magnetic strength={0.2}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-border/60 hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all duration-200"
-                      onClick={() => handleDownloadCV("flutter")}
-                    >
-                      <Download className="mr-2 w-4 h-4" /> Flutter CV
-                    </Button>
-                  </Magnetic>
-                  <Magnetic strength={0.2}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-border/60 hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all duration-200"
-                      onClick={() => handleDownloadCV("frontend")}
-                    >
-                      <Download className="mr-2 w-4 h-4" /> Frontend CV
-                    </Button>
-                  </Magnetic>
+
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col sm:flex-row gap-2" role="group" aria-label="Download CV">
+                    <Magnetic strength={0.2}>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="relative rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-primary/40 hover:border-primary/60 hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                        onClick={() => handleDownloadCV("flutter")}
+                        title="Recommended for mobile roles"
+                      >
+                        <Download className="mr-2 w-4 h-4" /> Flutter CV
+                        <span className="ml-2 rounded-full bg-primary/10 text-primary border border-primary/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                          Recommended
+                        </span>
+                      </Button>
+                    </Magnetic>
+                    <Magnetic strength={0.2}>
+                      <Button
+                        size="lg"
+                        variant="ghost"
+                        className="rounded-full h-12 sm:h-14 px-6 sm:px-8 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200"
+                        onClick={() => handleDownloadCV("frontend")}
+                        title="For React and web roles"
+                      >
+                        <Download className="mr-2 w-4 h-4" /> Frontend CV
+                      </Button>
+                    </Magnetic>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center lg:text-left">
+                    Mobile roles? Start with <span className="font-semibold text-foreground">Flutter CV</span>
+                    <span aria-hidden="true"> · </span>
+                    <span>React roles? Pick Frontend CV.</span>
+                  </p>
                 </div>
               </div>
             </motion.div>

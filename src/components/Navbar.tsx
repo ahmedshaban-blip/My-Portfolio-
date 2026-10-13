@@ -131,7 +131,7 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Desktop action buttons */}
+          {/* Desktop action buttons: fast access, single recommended default */}
           <div className="hidden md:flex items-center gap-3">
             <ReducedMotionToggle />
             <ModeToggle />
@@ -139,17 +139,18 @@ const Navbar = () => {
               size="sm"
               className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-all active:scale-95 shadow-md shadow-primary/20"
               onClick={() => handleDownloadCV("flutter")}
+              title="Recommended for mobile roles"
             >
               <Download className="w-4 h-4 mr-2" /> Flutter CV
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-full bg-background/50 backdrop-blur-sm px-5 border-border/60 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200 active:scale-95"
+            <button
+              type="button"
               onClick={() => handleDownloadCV("frontend")}
+              title="For React and web roles"
+              className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
             >
-              <Download className="w-4 h-4 mr-2" /> Frontend CV
-            </Button>
+              Frontend CV
+            </button>
           </div>
 
           {/* Mobile menu icon */}
@@ -194,19 +195,24 @@ const Navbar = () => {
                     );
                   })}
                   
-                  <div className="grid grid-cols-1 gap-4 pt-6">
+                  <div className="grid grid-cols-1 gap-3 pt-6" role="group" aria-label="Download CV">
                     <Button
                       className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-primary/20"
                       onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
+                      title="Recommended for mobile roles"
                     >
                       <Download className="w-5 h-5 mr-2" /> Flutter CV
                     </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Mobile roles? Start here. React roles? Use the Frontend CV below.
+                    </p>
                     <Button
-                      variant="outline"
-                      className="rounded-full bg-secondary border-border/60 text-foreground w-full h-14 text-lg font-bold hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-200 active:scale-95"
+                      variant="ghost"
+                      className="rounded-full text-muted-foreground w-full h-12 text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
                       onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
+                      title="For React and web roles"
                     >
-                      <Download className="w-5 h-5 mr-2" /> Frontend CV
+                      <Download className="w-4 h-4 mr-2" /> Frontend CV
                     </Button>
                   </div>
                </div>

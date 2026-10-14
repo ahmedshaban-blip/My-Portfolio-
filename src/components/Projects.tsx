@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState, memo } from "react";
+import { useCallback, useEffect, useRef, useState, memo, type PointerEvent as ReactPointerEvent } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,10 @@ import {
   ImageOff,
   ChevronLeft,
   ChevronRight,
+  X,
+  Expand,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { HoverCard } from "@/components/animations/HoverCard";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
@@ -197,11 +202,11 @@ const ProjectCard = memo(function ProjectCard({
               </Badge>
             </div>
 
-            <CardTitle className="mb-2 text-lg font-bold text-foreground transition-colors duration-200 group-hover:text-primary md:text-xl">
+            <CardTitle className="mb-2 line-clamp-2 text-lg font-bold leading-snug text-foreground transition-colors duration-200 group-hover:text-primary md:min-h-[2lh] md:text-xl">
               {project.title}
             </CardTitle>
 
-            <CardDescription className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            <CardDescription className="mb-4 line-clamp-3 text-sm leading-relaxed text-muted-foreground md:min-h-[3lh]">
               {project.description}
             </CardDescription>
 
@@ -268,16 +273,18 @@ function projectBySlug(slug: string | null): Project | null {
   return ALL_PROJECTS.find((p) => p.slug === slug) ?? null;
 }
 
-/** Inline single-dialog viewer: full-size image with fade, arrows, and counter. */
+/** Inline single-dialog viewer: preview image with fade, arrows, counter + fullscreen entry. */
 function InlineViewer({
   project,
   index,
   onIndex,
+  onExpand,
   reducedMotion,
 }: {
   project: Project;
   index: number;
   onIndex: (index: number) => void;
+  onExpand: () => void;
   reducedMotion: boolean;
 }) {
   const images = project.screenshots.length > 0 ? project.screenshots : [project.coverImage];
@@ -342,29 +349,46 @@ function InlineViewer({
               <ChevronLeft size={18} />
             </Button>
           )}
-          <motion.img
-            key={src}
-            src={src}
-            alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            draggable={false}
-            initial={false}
-            animate={{ opacity: 1 }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
-            style={{ opacity: 0, willChange: "opacity", transform: "translateZ(0)" }}
-            onLoad={(e) => {
-              (e.target as HTMLImageElement).style.opacity = "1";
-            }}
-            className={
-              src.endsWith(".svg")
-                ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
-                : portrait
-                  ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
-                  : "aspect-video w-full object-cover object-top"
-            }
-          />
+          <button
+            type="button"
+            onClick={onExpand}
+            aria-label={`Open ${project.title} screenshot ${safeIndex + 1} fullscreen`}
+            title="Open fullscreen"
+            className="group relative block min-w-0 cursor-zoom-in rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          >
+            <motion.img
+              key={src}
+              src={src}
+              alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              draggable={false}
+              initial={false}
+              animate={{ opacity: 1 }}
+              transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
+              style={{ opacity: 0, willChange: "opacity", transform: "translateZ(0)" }}
+              onLoad={(e) => {
+                (e.target as HTMLImageElement).style.opacity = "1";
+              }}
+              className={
+                src.endsWith(".svg")
+                  ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
+                  : portrait
+                    ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
+                    : "aspect-video w-full object-cover object-top"
+              }
+            />
+            {/* Hover / focus hint — subtle, calm */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100"
+            >
+              <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
+                <Expand size={14} /> Fullscreen
+              </span>
+            </span>
+          </button>
           {images.length > 1 && (
             <Button
               variant="outline"
@@ -384,8 +408,8 @@ function InlineViewer({
       <figcaption className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span className="min-w-0 flex-1 truncate">
           {portrait
-            ? "Full preview — swipe or use arrows / thumbnails."
-            : `Live preview · ${demoHost(project.demo)}`}
+            ? "Tap image for fullscreen · swipe or arrows to browse."
+            : "Click image for fullscreen · arrows to browse."}
         </span>
         {images.length > 1 && (
           <span aria-live="polite" className="shrink-0 tabular-nums">
@@ -394,6 +418,402 @@ function InlineViewer({
         )}
       </figcaption>
     </figure>
+  );
+}
+
+/**
+ * Calm fullscreen lightbox — one image at full size.
+ * Mobile: bottom control bar + swipe + dots, large 44px targets, safe-area aware.
+ * Desktop: side arrows + keyboard (Esc / ← / →) + zoom toggle.
+ */
+function Lightbox({
+  project,
+  index,
+  onIndex,
+  onClose,
+  reducedMotion,
+}: {
+  project: Project;
+  index: number;
+  onIndex: (index: number) => void;
+  onClose: () => void;
+  reducedMotion: boolean;
+}) {
+  const images = project.screenshots.length > 0 ? project.screenshots : [project.coverImage];
+  const safeIndex = ((index % images.length) + images.length) % images.length;
+  const src = images[safeIndex];
+  const [zoomed, setZoomed] = useState(false);
+
+  // Pan/zoom view as motion values — gestures stay at 60fps without re-renders;
+  // `zoomed` mirrors scale only for UI (icons, hints, cursor).
+  const tx = useMotionValue(0);
+  const ty = useMotionValue(0);
+  const sc = useMotionValue(1);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const gesture = useRef<{ startX: number; startY: number; pinchDist: number; moved: boolean } | null>(null);
+
+  const resetView = useCallback(() => {
+    tx.set(0);
+    ty.set(0);
+    sc.set(1);
+    setZoomed(false);
+  }, [sc, tx, ty]);
+
+  const step = useCallback(
+    (dir: 1 | -1) => {
+      resetView();
+      onIndex((safeIndex + dir + images.length) % images.length);
+    },
+    [onIndex, safeIndex, images.length, resetView],
+  );
+
+  // Clamp pan so the image edge never leaves the stage.
+  const clampPan = useCallback((x: number, y: number, s: number) => {
+    const stage = stageRef.current;
+    const img = imgRef.current;
+    if (!stage || !img || img.offsetWidth === 0) return { x, y };
+    const maxX = Math.max(0, (img.offsetWidth * s - stage.clientWidth) / 2);
+    const maxY = Math.max(0, (img.offsetHeight * s - stage.clientHeight) / 2);
+    return {
+      x: Math.min(maxX, Math.max(-maxX, x)),
+      y: Math.min(maxY, Math.max(-maxY, y)),
+    };
+  }, []);
+
+  // Zoom keeping the point under (clientX, clientY) fixed — cursor/pinch anchored.
+  const zoomAt = useCallback(
+    (clientX: number, clientY: number, next: number) => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      const s = Math.min(4, Math.max(1, next));
+      const prev = sc.get();
+      if (s === prev) return;
+      const r = stage.getBoundingClientRect();
+      const mx = clientX - r.left - r.width / 2;
+      const my = clientY - r.top - r.height / 2;
+      const k = s / prev;
+      const o = { x: tx.get(), y: ty.get() };
+      const { x, y } = clampPan(mx - (mx - o.x) * k, my - (my - o.y) * k, s);
+      tx.set(x);
+      ty.set(y);
+      sc.set(s);
+      setZoomed(s > 1.01);
+    },
+    [clampPan, sc, tx, ty],
+  );
+
+  const zoomToggleAt = useCallback(
+    (clientX: number, clientY: number) => {
+      zoomAt(clientX, clientY, sc.get() > 1.01 ? 1 : 2);
+    },
+    [sc, zoomAt],
+  );
+
+  const zoomToggleCenter = useCallback(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const r = stage.getBoundingClientRect();
+    zoomToggleAt(r.left + r.width / 2, r.top + r.height / 2);
+  }, [zoomToggleAt]);
+
+  // Unified mouse + touch gestures on the stage:
+  // tap on image = zoom toggle · drag = pan (zoomed) or swipe (fit) ·
+  // two pointers = pinch zoom. Buttons opt out via closest("button").
+  const onStagePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size === 1) {
+      gesture.current = { startX: e.clientX, startY: e.clientY, pinchDist: 0, moved: false };
+    } else if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      gesture.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        pinchDist: Math.hypot(a.x - b.x, a.y - b.y),
+        moved: true,
+      };
+    }
+  };
+
+  const onStagePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const p = pointers.current.get(e.pointerId);
+    const g = gesture.current;
+    if (!p || !g) return;
+    const dx = e.clientX - p.x;
+    const dy = e.clientY - p.y;
+    p.x = e.clientX;
+    p.y = e.clientY;
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (g.pinchDist > 0 && dist > 0) {
+        zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, sc.get() * (dist / g.pinchDist));
+        g.pinchDist = dist;
+      }
+      return;
+    }
+    if (Math.abs(e.clientX - g.startX) + Math.abs(e.clientY - g.startY) > 6) g.moved = true;
+    if (sc.get() > 1.01) {
+      const { x, y } = clampPan(tx.get() + dx, ty.get() + dy, sc.get());
+      tx.set(x);
+      ty.set(y);
+    }
+  };
+
+  const endStagePointer = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const wasSingle = pointers.current.size === 1;
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size === 1) {
+      // Pinch lifted with one finger still down — re-anchor to avoid a jump.
+      const [rest] = [...pointers.current.values()];
+      gesture.current = { startX: rest.x, startY: rest.y, pinchDist: 0, moved: true };
+      return;
+    }
+    if (!wasSingle) return;
+    const g = gesture.current;
+    gesture.current = null;
+    if (!g) return;
+    const totalDx = e.clientX - g.startX;
+    const totalDy = e.clientY - g.startY;
+    if (!g.moved) {
+      // Tap on the image toggles zoom at the tap point; elsewhere is a no-op
+      // (backdrop clicks still bubble up to close the lightbox).
+      if ((e.target as HTMLElement).closest("img")) zoomToggleAt(e.clientX, e.clientY);
+    } else if (
+      sc.get() <= 1.01 &&
+      images.length > 1 &&
+      Math.abs(totalDx) > 40 &&
+      Math.abs(totalDx) > Math.abs(totalDy) * 1.5
+    ) {
+      step(totalDx < 0 ? 1 : -1);
+    }
+  };
+
+  // Mouse-wheel zoom (desktop). Native non-passive listener — React's onWheel
+  // is passive at the root and can't preventDefault the page zoom/scroll.
+  // Exponential factor feels right for both wheel mice and trackpads.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const unit = e.deltaMode === 1 ? 16 : 1;
+      zoomAt(e.clientX, e.clientY, sc.get() * Math.exp(-e.deltaY * unit * 0.0018));
+    };
+    stage.addEventListener("wheel", onWheel, { passive: false });
+    return () => stage.removeEventListener("wheel", onWheel);
+  }, [sc, zoomAt]);
+
+  // Keep pan clamped across viewport resizes while zoomed.
+  useEffect(() => {
+    const onResize = () => {
+      if (sc.get() > 1.01) {
+        const { x, y } = clampPan(tx.get(), ty.get(), sc.get());
+        tx.set(x);
+        ty.set(y);
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [clampPan, sc, tx, ty]);
+
+  // Lock background scroll + keyboard controls.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") step(1);
+      else if (e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose, step]);
+
+  // Reset zoom when switching images; preload neighbours for instant arrows.
+  useEffect(() => {
+    resetView();
+    if (images.length <= 1) return;
+    const preload = (i: number) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = images[((i % images.length) + images.length) % images.length];
+    };
+    preload(safeIndex + 1);
+    preload(safeIndex - 1);
+  }, [safeIndex, images, resetView]);
+
+  return createPortal(
+    <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${project.title} fullscreen image ${safeIndex + 1} of ${images.length}`}
+      // Radix modal Dialog sets `pointer-events: none` on <body> while open —
+      // this portal lives outside the dialog, so re-enable events or every
+      // button/wheel gesture inside the lightbox silently passes through.
+      className="pointer-events-auto fixed inset-0 z-[300] flex flex-col bg-black/85 backdrop-blur-md"
+      initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+      onClick={onClose}
+    >
+      {/* Top bar */}
+      <div
+        className="flex shrink-0 items-center gap-3 px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="min-w-0 flex-1 truncate text-sm font-semibold text-white/90">
+          {project.title}
+          {images.length > 1 && (
+            <span className="ml-2 font-normal tabular-nums text-white/60">
+              {safeIndex + 1} / {images.length}
+            </span>
+          )}
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={zoomToggleCenter}
+          aria-label={zoomed ? "Zoom out" : "Zoom in"}
+          aria-pressed={zoomed}
+          className="h-11 w-11 shrink-0 rounded-full text-white hover:bg-white/15 hover:text-white"
+        >
+          {zoomed ? <ZoomOut size={19} /> : <ZoomIn size={19} />}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          aria-label="Close fullscreen"
+          autoFocus
+          className="h-11 w-11 shrink-0 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-white"
+        >
+          <X size={20} />
+        </Button>
+      </div>
+
+      {/* Stage — tap = zoom, drag = pan/swipe, pinch & wheel = zoom */}
+      <div
+        ref={stageRef}
+        className="relative flex min-h-0 flex-1 touch-none select-none items-center justify-center overflow-hidden px-3 sm:px-14"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={onStagePointerDown}
+        onPointerMove={onStagePointerMove}
+        onPointerUp={endStagePointer}
+        onPointerCancel={endStagePointer}
+      >
+        {images.length > 1 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Previous image"
+            onClick={() => step(-1)}
+            className="absolute left-2 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur hover:bg-white/20 hover:text-white sm:flex md:left-4"
+          >
+            <ChevronLeft size={22} />
+          </Button>
+        )}
+        <motion.img
+          key={src}
+          ref={imgRef}
+          src={src}
+          alt={`${project.title} fullscreen screenshot ${safeIndex + 1}`}
+          draggable={false}
+          decoding="async"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+          style={{ x: tx, y: ty, scale: sc, touchAction: "none", cursor: zoomed ? "zoom-out" : "zoom-in" }}
+          title="Tap to zoom · scroll or pinch to zoom · drag to pan"
+          className="h-auto max-h-[68vh] w-auto max-w-[92vw] select-none rounded-2xl border border-white/15 bg-black object-contain shadow-2xl sm:max-h-[74vh] md:max-h-[78vh] md:max-w-[78vw]"
+        />
+        {images.length > 1 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Next image"
+            onClick={() => step(1)}
+            className="absolute right-2 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur hover:bg-white/20 hover:text-white sm:flex md:right-4"
+          >
+            <ChevronRight size={22} />
+          </Button>
+        )}
+      </div>
+
+      {/* Bottom bar — mobile-first controls + dots */}
+      <div
+        className="flex shrink-0 flex-col items-center gap-3 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {images.length > 1 && (
+          <>
+            {/* Mobile arrows */}
+            <div className="flex items-center gap-3 sm:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Previous image"
+                onClick={() => step(-1)}
+                className="h-12 w-12 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              >
+                <ChevronLeft size={22} />
+              </Button>
+              <span className="min-w-16 text-center text-sm tabular-nums text-white/80" aria-live="polite">
+                {safeIndex + 1} of {images.length}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Next image"
+                onClick={() => step(1)}
+                className="h-12 w-12 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              >
+                <ChevronRight size={22} />
+              </Button>
+            </div>
+            {/* Dots */}
+            <div className="flex items-center justify-center gap-2" role="tablist" aria-label="Choose image">
+              {images.map((imgSrc, i) => (
+                <button
+                  key={imgSrc + i}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === safeIndex}
+                  aria-label={`Show image ${i + 1}`}
+                  onClick={() => {
+                    resetView();
+                    onIndex(i);
+                  }}
+                  className={cn(
+                    "h-2.5 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70",
+                    i === safeIndex ? "w-7 bg-white" : "w-2.5 bg-white/35 hover:bg-white/60",
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        )}
+        <p className="text-xs text-white/50">
+          {zoomed ? (
+            "Scroll / pinch to adjust · drag to pan · tap image to reset"
+          ) : (
+            <>
+              <span className="hidden sm:inline">Scroll to zoom · tap image to zoom · arrows to browse · Esc to close</span>
+              <span className="sm:hidden">Pinch or tap to zoom · swipe to browse</span>
+            </>
+          )}
+        </p>
+      </div>
+    </motion.div>,
+    document.body,
   );
 }
 
@@ -563,6 +983,7 @@ const Projects = () => {
     () => projectBySlug(searchParams.get("project")) !== null,
   );
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
 
   // Shareable, refresh-safe state via search params only — the `#projects` anchor is never touched.
   useEffect(() => {
@@ -578,6 +999,7 @@ const Projects = () => {
       if (selected?.slug !== found.slug) {
         setSelected(found);
         setViewerIndex(0);
+        setLightbox(false);
       }
       if (!open) setOpen(true);
       const owner = tabOfProject(found);
@@ -610,6 +1032,7 @@ const Projects = () => {
       const owner = tabOfProject(p);
       setSelected(p);
       setViewerIndex(0);
+      setLightbox(false);
       setOpen(true);
       if (owner !== tab) setTab(owner);
       const next = new URLSearchParams(searchParams);
@@ -624,6 +1047,7 @@ const Projects = () => {
     (value: boolean) => {
       setOpen(value);
       if (!value) {
+        setLightbox(false);
         const next = new URLSearchParams(searchParams);
         next.delete("project");
         setSearchParams(next, { replace: true });
@@ -637,8 +1061,9 @@ const Projects = () => {
     : 0;
 
   // Arrow-key browsing for the inline viewer; the listener is always cleaned up.
+  // When the lightbox is open it owns keyboard input (Esc / arrows) — skip here to avoid double-stepping.
   useEffect(() => {
-    if (!open || !selected) return;
+    if (!open || !selected || lightbox) return;
     const images = selected.screenshots.length > 0 ? selected.screenshots : [selected.coverImage];
     if (images.length <= 1) return;
     const count = images.length;
@@ -648,7 +1073,7 @@ const Projects = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, selected, selectedImageCount]);
+  }, [open, selected, selectedImageCount, lightbox]);
 
   return (
     <section id="projects" className="section-padding relative">
@@ -742,7 +1167,26 @@ const Projects = () => {
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <AnimatePresence>
               {open && selected && (
-                <DialogContent className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-card p-0 shadow-2xl md:max-w-4xl">
+                <DialogContent
+                  className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-card p-0 shadow-2xl md:max-w-4xl"
+                  onPointerDownOutside={(e) => {
+                    // The fullscreen lightbox lives in a body portal, outside this
+                    // content — don't let Radix dismiss the details while it's open.
+                    if (lightbox) e.preventDefault();
+                  }}
+                  onFocusOutside={(e) => {
+                    // The lightbox moves focus to its own controls (e.g. autofocus
+                    // on close) — keep the details mounted underneath it.
+                    if (lightbox) e.preventDefault();
+                  }}
+                  onEscapeKeyDown={(e) => {
+                    // Esc closes the lightbox first; the details only after it's gone.
+                    if (lightbox) {
+                      e.preventDefault();
+                      setLightbox(false);
+                    }
+                  }}
+                >
                   <motion.div
                     key={selected.slug}
                     initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
@@ -773,6 +1217,7 @@ const Projects = () => {
                           project={selected}
                           index={viewerIndex}
                           onIndex={setViewerIndex}
+                          onExpand={() => setLightbox(true)}
                           reducedMotion={reducedMotion}
                         />
                         {selected.kind === "mobile" ? (
@@ -826,6 +1271,19 @@ const Projects = () => {
               )}
             </AnimatePresence>
           </Dialog>
+
+          {/* Fullscreen lightbox portals to document.body (z-300) so it sits above the dialog (z-200). */}
+          <AnimatePresence>
+            {open && selected && lightbox && (
+              <Lightbox
+                project={selected}
+                index={viewerIndex}
+                onIndex={setViewerIndex}
+                onClose={() => setLightbox(false)}
+                reducedMotion={reducedMotion}
+              />
+            )}
+          </AnimatePresence>
 
         </div>
       </div>

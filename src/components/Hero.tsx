@@ -121,7 +121,7 @@ const Hero = () => {
                 <Magnetic strength={0.25}>
                   <Button
                     size="lg"
-                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+                    className="rounded-full h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 transition-interaction duration-300"
                     onClick={() => scrollToSection("projects")}
                   >
                     View Projects <ArrowRight className="ml-2 w-5 h-5" />
@@ -134,7 +134,7 @@ const Hero = () => {
                       <Button
                         size="lg"
                         variant="outline"
-                        className="relative rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-primary/40 hover:border-primary/60 hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                        className="relative rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-primary/40 hover:border-primary/60 hover:bg-primary/5 hover:text-primary transition-interaction duration-200"
                         onClick={() => handleDownloadCV("flutter")}
                         title="Recommended for mobile roles"
                       >
@@ -199,7 +199,7 @@ const Hero = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.label}
-                      className={`text-muted-foreground ${social.hoverClass} transition-all duration-200 hover:scale-110 transform`}
+                      className={`text-muted-foreground ${social.hoverClass} transition-interaction duration-200 hover:scale-110 transform`}
                     >
                       <social.icon className="w-6 h-6" />
                     </a>

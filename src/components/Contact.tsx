@@ -225,7 +225,7 @@ const Contact = () => {
                       placeholder="Your name"
                       maxLength={NAME_MAX}
                       dir="auto"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all"
+                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors"
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? "name-error" : undefined}
                     />
@@ -246,7 +246,7 @@ const Contact = () => {
                       placeholder="your.email@example.com"
                       maxLength={EMAIL_MAX}
                       dir="ltr"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all"
+                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
                     />
@@ -275,7 +275,7 @@ const Contact = () => {
                       rows={5}
                       maxLength={MESSAGE_MAX}
                       dir="auto"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-all resize-none"
+                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors resize-none"
                       aria-invalid={!!errors.message}
                       aria-describedby={errors.message ? "message-error" : undefined}
                     />
@@ -309,7 +309,7 @@ const Contact = () => {
                   <Magnetic strength={0.15}>
                     <Button
                       type="submit"
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-interaction duration-200"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (

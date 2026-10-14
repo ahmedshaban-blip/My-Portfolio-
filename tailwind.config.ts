@@ -68,6 +68,13 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+		// PERF: a theme switch flips ~20 CSS vars on <html> at once. `transition-all`
+		// also animates filter/backdrop-filter, which forces the browser to re-rasterize
+		// every blurred glass layer on each animation frame. Stick to paint-only props.
+		transitionProperty: {
+			colors: 'color, background-color, border-color, text-decoration-color, fill, stroke',
+			interaction: 'color, background-color, border-color, box-shadow, transform, opacity'
+		},
   		keyframes: {
   			'accordion-down': {
   				from: {

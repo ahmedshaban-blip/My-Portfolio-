@@ -38,7 +38,7 @@ const Footer = () => {
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      className="text-muted-foreground hover:text-primary transition-colors text-sm relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+                      className="text-muted-foreground hover:text-primary transition-colors text-sm relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-[width] hover:after:w-full"
                     >
                       {link.label}
                     </a>
@@ -53,7 +53,7 @@ const Footer = () => {
               <div className="flex gap-3">
                 <a
                   href="mailto:ahmed.shabaan.dev@gmail.com"
-                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-110"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-200 hover:scale-110"
                   aria-label="Email"
                 >
                   <Mail className="h-5 w-5" />
@@ -62,7 +62,7 @@ const Footer = () => {
                   href="https://github.com/ahmedshaban-blip"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-110"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-200 hover:scale-110"
                   aria-label="GitHub"
                 >
                   <Github className="h-5 w-5" />
@@ -71,7 +71,7 @@ const Footer = () => {
                   href="https://www.linkedin.com/in/ahmedshaban-dev"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-110"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-200 hover:scale-110"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="h-5 w-5" />
@@ -80,7 +80,7 @@ const Footer = () => {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-all duration-200 hover:scale-110"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-interaction duration-200 hover:scale-110"
                   aria-label="WhatsApp"
                 >
                   <WhatsAppIcon className="h-5 w-5" />

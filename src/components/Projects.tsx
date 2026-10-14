@@ -223,7 +223,7 @@ const ProjectCard = memo(function ProjectCard({
 
             <div className="mt-auto flex items-center gap-2 border-t border-border/30 pt-4">
               <Button
-                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
+                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-colors hover:bg-primary/90"
                 onClick={open}
               >
                 View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
@@ -231,7 +231,7 @@ const ProjectCard = memo(function ProjectCard({
               <Button
                 size="icon"
                 variant="outline"
-                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/40 transition-colors duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                 asChild
               >
                 <a
@@ -423,7 +423,7 @@ const GalleryStrip = memo(function GalleryStrip({
               aria-label={`Show screenshot ${i + 1} of ${project.title}`}
               aria-current={active}
               className={cn(
-                "block w-full overflow-hidden rounded-2xl border bg-secondary/30 shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "block w-full overflow-hidden rounded-2xl border bg-secondary/30 shadow-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active ? "border-primary/60 ring-2 ring-primary/30" : "border-border/60 hover:border-primary/50",
               )}
             >
@@ -475,7 +475,7 @@ const WebGalleryStrip = memo(function WebGalleryStrip({
               aria-label={`Show page screenshot ${i + 1} of ${project.title}`}
               aria-current={active}
               className={cn(
-                "block w-full overflow-hidden rounded-2xl border bg-background shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "block w-full overflow-hidden rounded-2xl border bg-background shadow-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
                   ? "border-primary/60 ring-2 ring-primary/30"
                   : "border-border/60 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg",
@@ -517,7 +517,7 @@ const DialogTechStack = memo(function DialogTechStack({ project }: { project: Pr
           <Badge
             key={t}
             variant="outline"
-            className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
+            className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-colors duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
           >
             {t}
           </Badge>
@@ -679,14 +679,14 @@ const Projects = () => {
               <TabsList className="inline-flex h-11 rounded-full border border-border/50 bg-secondary/50 p-1">
                 <TabsTrigger
                   value="flutter"
-                  className="rounded-full px-6 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   <Smartphone size={14} className="-ml-0.5 mr-1.5 inline" />
                   Mobile <span className="ml-1 hidden sm:inline">({flutterProjects.length})</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="frontend"
-                  className="rounded-full px-6 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   <Globe size={14} className="-ml-0.5 mr-1.5 inline" />
                   Web <span className="ml-1 hidden sm:inline">({frontendProjects.length})</span>
@@ -800,7 +800,7 @@ const Projects = () => {
                         const meta = DEMO_META[selected.demoKind];
                         return (
                           <Button
-                            className="h-11 min-w-0 flex-1 rounded-full bg-primary text-sm text-primary-foreground shadow-md shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
+                            className="h-11 min-w-0 flex-1 rounded-full bg-primary text-sm text-primary-foreground shadow-md shadow-primary/20 transition-interaction duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
                             asChild
                           >
                             <a href={selected.demo} target="_blank" rel="noopener noreferrer">
@@ -812,7 +812,7 @@ const Projects = () => {
                       })()}
                       <Button
                         variant="outline"
-                        className="h-11 min-w-0 flex-1 rounded-full border-border/50 text-sm transition-all duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                        className="h-11 min-w-0 flex-1 rounded-full border-border/50 text-sm transition-colors duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                         asChild
                       >
                         <a href={selected.github} target="_blank" rel="noopener noreferrer">

@@ -27,12 +27,59 @@ const MAX_DPR = 1;
 // PERFORMANCE: 20fps is enough for ambient background.
 const FRAME_INTERVAL = 50;
 
+const GRADIENTS_DARK = [
+  { x: 0.2, y: 0.3, r: 0.35, hue: 160, saturation: 60, lightness: 45 },  // Emerald
+  { x: 0.8, y: 0.6, r: 0.3, hue: 36, saturation: 85, lightness: 58 },   // Amber
+  { x: 0.5, y: 0.8, r: 0.25, hue: 48, saturation: 70, lightness: 55 },  // Champagne Glow
+];
+
+const GRADIENTS_LIGHT = [
+  { x: 0.2, y: 0.3, r: 0.35, hue: 162, saturation: 70, lightness: 32 },
+  { x: 0.8, y: 0.6, r: 0.3, hue: 32, saturation: 85, lightness: 45 },
+  { x: 0.5, y: 0.8, r: 0.25, hue: 150, saturation: 15, lightness: 70 },
+];
+
+/**
+ * PERFORMANCE: the mesh gradient is static — it never drifts between frames.
+ * Painting 3 full-screen radial gradients every frame was the single most
+ * expensive part of the background loop, so it is rasterized once per
+ * theme/size and blitted with a single drawImage() afterwards.
+ */
+function renderMesh(w: number, h: number, isDark: boolean, reducedMotion: boolean) {
+  const layer = document.createElement("canvas");
+  layer.width = Math.max(1, w);
+  layer.height = Math.max(1, h);
+  const lctx = layer.getContext("2d");
+  if (!lctx) return null;
+
+  for (const g of isDark ? GRADIENTS_DARK : GRADIENTS_LIGHT) {
+    const px = w * g.x;
+    const py = h * g.y;
+
+    const grad = lctx.createRadialGradient(px, py, 0, px, py, w * g.r);
+    const s = g.saturation;
+    const l = g.lightness;
+    grad.addColorStop(0, `hsla(${g.hue}, ${s}%, ${l}%, ${reducedMotion ? 0.04 : 0.08})`);
+    grad.addColorStop(0.5, `hsla(${g.hue}, ${s - 10}%, ${l - 15}%, 0.02)`);
+    grad.addColorStop(1, `hsla(${g.hue}, ${s - 20}%, ${l - 20}%, 0)`);
+
+    lctx.fillStyle = grad;
+    lctx.fillRect(0, 0, w, h);
+  }
+
+  return layer;
+}
+
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { reducedMotion } = useAnimationContext();
   const animRef = useRef<number>(0);
   const lastFrameTimeRef = useRef<number>(0);
   const isAnimatingRef = useRef<boolean>(true);
+
+  // Stale values read inside the animation loop without restarting it.
+  const reducedMotionRef = useRef(reducedMotion);
+  reducedMotionRef.current = reducedMotion;
 
   // Stable particles generated once
   const particles = useMemo(() => {
@@ -49,6 +96,30 @@ export function AnimatedBackground() {
   // PERFORMANCE: Pre-compute font string to avoid recreation every frame
   const fontRef = useRef<string>("");
 
+  // Cached mesh layer: rebuilt only when the theme or the canvas size changes.
+  const meshRef = useRef<{
+    layer: HTMLCanvasElement;
+    isDark: boolean;
+    w: number;
+    h: number;
+    reduced: boolean;
+  } | null>(null);
+
+  const invalidateMesh = () => {
+    meshRef.current = null;
+  };
+
+  // Rebuild the mesh right after the theme class flips instead of waiting for
+  // the next size-dependent check.
+  useEffect(() => {
+    const observer = new MutationObserver(invalidateMesh);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   // Main animation loop with frame throttling
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,7 +133,6 @@ export function AnimatedBackground() {
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    // Set font once
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     fontRef.current = `600 ${12 * dpr}px 'JetBrains Mono', 'Fira Code', monospace`;
 
@@ -88,44 +158,32 @@ export function AnimatedBackground() {
       const w = canvas.width;
       const h = canvas.height;
       const time = Date.now() * 0.001;
-      const speedScale = reducedMotion ? 0.2 : 1;
-
-      ctx.clearRect(0, 0, w, h);
+      const speedScale = reducedMotionRef.current ? 0.2 : 1;
 
       const isDark = document.documentElement.classList.contains("dark");
 
-      // 1. Draw Mesh Gradients (static — no per-frame drift for 90Hz idle)
-      const gradients = isDark
-        ? [
-            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 160, saturation: 60, lightness: 45, offset: 0 },  // Emerald
-            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 36, saturation: 85, lightness: 58, offset: 2 },   // Amber
-            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 48, saturation: 70, lightness: 55, offset: 4 },  // Champagne Glow
-          ]
-        : [
-            { x: w * 0.2, y: h * 0.3, r: w * 0.35, hue: 162, saturation: 70, lightness: 32, offset: 0 },
-            { x: w * 0.8, y: h * 0.6, r: w * 0.3, hue: 32, saturation: 85, lightness: 45, offset: 2 },
-            { x: w * 0.5, y: h * 0.8, r: w * 0.25, hue: 150, saturation: 15, lightness: 70, offset: 4 },
-          ];
-
-      for (const g of gradients) {
-        const px = g.x;
-        const py = g.y;
-
-        const grad = ctx.createRadialGradient(px, py, 0, px, py, g.r);
-        const s = g.saturation;
-        const l = g.lightness;
-        grad.addColorStop(0, `hsla(${g.hue}, ${s}%, ${l}%, ${reducedMotion ? 0.04 : 0.08})`);
-        grad.addColorStop(0.5, `hsla(${g.hue}, ${s - 10}%, ${l - 15}%, 0.02)`);
-        grad.addColorStop(1, `hsla(${g.hue}, ${s - 20}%, ${l - 20}%, 0)`);
-
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
+      // 1. Blit the cached mesh layer (rebuild only on theme/size change)
+      const cached = meshRef.current;
+      if (
+        !cached ||
+        cached.isDark !== isDark ||
+        cached.w !== w ||
+        cached.h !== h ||
+        cached.reduced !== reducedMotionRef.current
+      ) {
+        const layer = renderMesh(w, h, isDark, reducedMotionRef.current);
+        meshRef.current = layer
+          ? { layer, isDark, w, h, reduced: reducedMotionRef.current }
+          : null;
       }
 
-      // PERFORMANCE: Set font once per resize (outside particle loop)
-      ctx.font = fontRef.current;
+      ctx.clearRect(0, 0, w, h);
+      if (meshRef.current) {
+        ctx.drawImage(meshRef.current.layer, 0, 0);
+      }
 
       // 2. Draw Floating Code Snippets (reduced count, optimized)
+      ctx.font = fontRef.current;
       for (const p of particles) {
         const x = (p.x / 100) * w;
         const moveY = (time * p.speed * 50 * speedScale + (p.y / 100) * h) % h;
@@ -147,8 +205,9 @@ export function AnimatedBackground() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      meshRef.current = null;
     };
-  }, [reducedMotion, particles]);
+  }, [particles]);
 
   // Canvas setup and resize handler
   useEffect(() => {

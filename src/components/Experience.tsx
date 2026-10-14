@@ -268,7 +268,7 @@ const Experience = () => {
                     <Badge
                       key={index}
                       variant="outline"
-                      className="px-4 py-2 text-sm rounded-full border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all cursor-default"
+                      className="px-4 py-2 text-sm rounded-full border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors cursor-default"
                     >
                       {course}
                     </Badge>

@@ -52,7 +52,7 @@ const BackToTop = () => {
         const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
       }}
-      className="fixed bottom-6 right-6 z-[90] rounded-full border border-border/60 bg-background/90 p-3 text-foreground shadow-xl backdrop-blur-md transition-all hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      className="fixed bottom-6 right-6 z-[90] rounded-full border border-border/60 bg-background/90 p-3 text-foreground shadow-xl backdrop-blur-md transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
     >
       <ArrowUp size={18} aria-hidden="true" />
     </button>

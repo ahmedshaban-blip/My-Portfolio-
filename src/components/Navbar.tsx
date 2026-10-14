@@ -28,11 +28,11 @@ const ModeToggle = () => {
     <Button
       variant="outline"
       size="icon"
-      className="rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-all duration-300"
+      className="rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-300"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-primary" />
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0 text-amber-500" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100 text-primary" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
@@ -46,7 +46,7 @@ const ReducedMotionToggle = () => {
       variant="outline"
       size="icon"
       className={cn(
-        "rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-all duration-300",
+        "rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-300",
         reducedMotion && "bg-amber-500/10 border-amber-500/30"
       )}
       onClick={toggleReducedMotion}
@@ -95,9 +95,9 @@ const Navbar = () => {
   return (
     <header className="fixed top-6 left-0 right-0 z-[100] px-4">
       <nav className={cn(
-        "max-w-6xl mx-auto transition-all duration-500 rounded-full border relative",
+        "max-w-6xl mx-auto transition-[padding,background-color,border-color,box-shadow] duration-500 rounded-full border relative",
         isScrolled 
-          ? "bg-background/95 backdrop-blur-xl border-border shadow-lg py-3 px-8" 
+          ? "bg-background/95 backdrop-blur-md border-border shadow-lg py-3 px-8" 
           : "bg-transparent border-transparent py-5 px-6"
       )}>
         <div className="flex items-center justify-between">
@@ -143,7 +143,7 @@ const Navbar = () => {
             <ModeToggle />
             <Button
               size="sm"
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-all active:scale-95 shadow-md shadow-primary/20"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-interaction active:scale-95 shadow-md shadow-primary/20"
               onClick={() => handleDownloadCV("flutter")}
               title="Recommended for mobile roles"
             >
@@ -206,7 +206,7 @@ const Navbar = () => {
                   
                   <div className="grid grid-cols-1 gap-3 pt-6" role="group" aria-label="Download CV">
                     <Button
-                      className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-all active:scale-95 shadow-xl shadow-primary/20"
+                      className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-interaction active:scale-95 shadow-xl shadow-primary/20"
                       onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
                       title="Recommended for mobile roles"
                     >
@@ -217,7 +217,7 @@ const Navbar = () => {
                     </p>
                     <Button
                       variant="ghost"
-                      className="rounded-full text-muted-foreground w-full h-12 text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
+                      className="rounded-full text-muted-foreground w-full h-12 text-base font-medium hover:bg-primary/10 hover:text-primary transition-interaction duration-200 active:scale-95"
                       onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
                       title="For React and web roles"
                     >

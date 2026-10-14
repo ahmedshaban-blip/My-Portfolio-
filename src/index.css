@@ -87,24 +87,24 @@
   }
 
   .glass-effect {
-    @apply border shadow-2xl transition-all duration-300;
+    @apply border shadow-2xl transition-interaction duration-300;
     background-color: hsla(var(--background) / 0.65);
     border-color: hsla(var(--border) / 0.6);
   }
 
   @media (min-width: 768px) {
     .glass-effect {
-      @apply backdrop-blur-xl;
+      @apply backdrop-blur-md;
     }
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-br transition-all duration-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-br;
     background-image: linear-gradient(to bottom right, hsl(var(--primary)), hsl(var(--accent)));
   }
 
   .text-gradient-subtle {
-    @apply bg-clip-text text-transparent bg-gradient-to-br transition-all duration-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-br;
     background-image: linear-gradient(to bottom right, hsl(var(--foreground)), hsla(var(--foreground) / 0.7));
   }
 
@@ -117,7 +117,7 @@
   }
 
   .modern-card {
-    @apply rounded-2xl border border-border/50 bg-card/50 transition-all duration-300;
+    @apply rounded-2xl border border-border/50 bg-card/50 transition-interaction duration-300;
   }
 
   @media (min-width: 768px) {
@@ -142,8 +142,9 @@
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  @apply premium-mesh text-foreground antialiased transition-colors duration-500;
-  /* Smooth color transitions between themes */
+  @apply premium-mesh text-foreground antialiased;
+  /* Theme swaps are intentionally instant — a full-page color fade here repaints
+     the entire viewport for ~500ms on every toggle. See theme-provider.tsx. */
   background-color: hsl(var(--background));
 }
 

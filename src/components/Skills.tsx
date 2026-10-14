@@ -83,7 +83,7 @@ const Skills = () => {
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   const chip =
-    "px-3 py-1.5 text-xs font-medium rounded-full border border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-default";
+    "px-3 py-1.5 text-xs font-medium rounded-full border border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-200 cursor-default";
 
   return (
     <section id="skills" className="section-padding relative">

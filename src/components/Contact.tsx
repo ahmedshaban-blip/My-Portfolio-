@@ -10,6 +10,7 @@ import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { playStoreApps } from "@/data/projects";
 
 const CONTACT_EMAIL = "ahmed.shabaan.dev@gmail.com";
 const NAME_MAX = 100;
@@ -348,7 +349,7 @@ const Contact = () => {
                     )}
                   </Button>
                   <p className="pt-1 text-center text-xs text-muted-foreground">
-                    Currently full-time at Truck World · Open to remote Flutter / React roles — 2 apps live on Google Play.
+                    Currently full-time at Truck World · Open to remote Flutter / React roles — {playStoreApps.length} apps live on Google Play.
                   </p>
                 </form>
               </Card>

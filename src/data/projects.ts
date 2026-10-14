@@ -6,6 +6,8 @@ export type Project = {
   slug: string;
   kind: ProjectKind;
   title: string;
+  /** Short display label (hero proof strip, etc.). Defaults to title. */
+  shortTitle?: string;
   role: string;
   description: string;
   techStack: string[];
@@ -25,6 +27,7 @@ export const flutterProjects: Project[] = [
     slug: "cv-builder",
     kind: "mobile",
     title: "CV Builder App",
+    shortTitle: "CV Builder",
     role: "Flutter Developer",
     description: "Built a cross-platform Flutter application to create, edit, and export ATS-friendly resumes with secure, real-time sync across devices.",
     techStack: ["Flutter", "Dart", "Firebase", "Google Sign-In", "Firebase Auth", "Provider State Management"],
@@ -50,6 +53,7 @@ export const flutterProjects: Project[] = [
     slug: "nassy",
     kind: "mobile",
     title: "Nassy – AI Arabic Copywriting Studio",
+    shortTitle: "Nassy",
     role: "Flutter Developer",
     description: "AI-powered Arabic editorial studio built with Flutter and Supabase that turns raw ideas into eloquent, platform-optimized copy for X, LinkedIn, Instagram, and Facebook with enterprise-grade client-side encryption.",
     techStack: ["Flutter", "Dart", "Supabase", "Bloc/Cubit", "Clean Architecture", "Gemini API", "AES-256-GCM BYOK"],
@@ -81,6 +85,7 @@ export const flutterProjects: Project[] = [
     slug: "rss-reader-pro",
     kind: "mobile",
     title: "RSS Reader Pro",
+    shortTitle: "RSS Reader Pro",
     role: "Flutter Developer",
     description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
     techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
@@ -369,3 +374,12 @@ export const frontendProjects: Project[] = [
     ],
   },
 ];
+
+/**
+ * Apps published on Google Play — single source of truth for every
+ * "N apps live" badge, proof strip, and bio line across the site.
+ * Add/remove a Play listing here and all of them update automatically.
+ */
+export const playStoreApps: Project[] = [...flutterProjects, ...frontendProjects].filter(
+  (p) => p.demoKind === "play",
+);

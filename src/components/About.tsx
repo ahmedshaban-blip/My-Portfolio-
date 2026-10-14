@@ -2,6 +2,7 @@ import { Code2, Globe2, Smartphone, Terminal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { HoverCard } from "@/components/animations/HoverCard";
+import { playStoreApps } from "@/data/projects";
 
 const About = () => {
   const highlights = [
@@ -60,7 +61,7 @@ const About = () => {
                       Passionate developer solving problems through code.
                     </h2>
                     <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
-                      Full-time at Truck World · 10+ apps shipped · 2 live on Google Play.
+                      Full-time at Truck World · 10+ apps shipped · {playStoreApps.length} live on Google Play.
                     </p>
                   </div>
                 </div>
@@ -89,8 +90,8 @@ const About = () => {
                   </div>
                   <div className="w-px h-16 bg-border/50 hidden sm:block" />
                   <div className="text-center sm:text-left">
-                    <p className="text-3xl font-bold text-success">2</p>
-                    <p className="text-sm text-muted-foreground mt-1">Apps Live on Google Play</p>
+                    <p className="text-3xl font-bold text-success">{playStoreApps.length}</p>
+                    <p className="text-sm text-muted-foreground mt-1">App{playStoreApps.length === 1 ? "" : "s"} Live on Google Play</p>
                   </div>
                 </div>
               </RevealOnScroll>

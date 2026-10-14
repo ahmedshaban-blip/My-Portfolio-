@@ -6,6 +6,7 @@ import { Magnetic } from "@/components/animations/Magnetic";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { downloadCV } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { playStoreApps } from "@/data/projects";
 
 const heroEntranceEase = [0.22, 1, 0.36, 1] as const;
 
@@ -30,6 +31,10 @@ const heroElementFadeUp = {
 
 const Hero = () => {
   const { reducedMotion } = useAnimationContext();
+
+  // Derived from projects data — adding/removing a Play listing updates every badge automatically.
+  const playAppsCount = playStoreApps.length;
+  const playAppsLabel = `${playAppsCount} App${playAppsCount === 1 ? "" : "s"} Live`;
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -167,23 +172,19 @@ const Hero = () => {
               <p className="flex flex-wrap items-center justify-center lg:justify-start gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
                 <Play className="w-3.5 h-3.5 text-success" aria-hidden="true" />
                 <span>
-                  <a
-                    href="https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
-                  >
-                    CV Builder
-                  </a>
-                  {" · "}
-                  <a
-                    href="https://play.google.com/store/apps/details?id=com.rssreader.pro"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
-                  >
-                    RSS Reader Pro
-                  </a>{" "}
+                  {playStoreApps.map((app, i) => (
+                    <span key={app.slug}>
+                      {i > 0 && " · "}
+                      <a
+                        href={app.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
+                      >
+                        {app.shortTitle ?? app.title}
+                      </a>
+                    </span>
+                  ))}{" "}
                   live on Google Play
                 </span>
               </p>
@@ -248,7 +249,7 @@ const Hero = () => {
                     <Play className="w-4 h-4" />
                   </div>
                   <div className="text-left">
-                    <p className="text-xs font-bold text-foreground leading-tight">2 Apps Live</p>
+                    <p className="text-xs font-bold text-foreground leading-tight">{playAppsLabel}</p>
                     <p className="text-[10px] text-muted-foreground">On Google Play</p>
                   </div>
                 </motion.div>
@@ -275,7 +276,7 @@ const Hero = () => {
                     <Play className="w-3.5 h-3.5" />
                   </div>
                   <div className="text-left min-w-0">
-                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">2 Apps Live</p>
+                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">{playAppsLabel}</p>
                     <p className="text-[9px] text-muted-foreground truncate">Google Play</p>
                   </div>
                 </div>

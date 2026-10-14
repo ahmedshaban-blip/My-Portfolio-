@@ -171,16 +171,6 @@ const ProjectCard = memo(function ProjectCard({
             title="Open fullscreen gallery"
             className="group relative flex h-48 w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60 sm:h-56 md:h-64"
           >
-            {project.kind === "web" && (
-              <span className="absolute inset-x-0 top-0 z-10 flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2 backdrop-blur-sm" aria-hidden="true">
-                <span className="h-2 w-2 rounded-full bg-border" />
-                <span className="h-2 w-2 rounded-full bg-border" />
-                <span className="h-2 w-2 rounded-full bg-border" />
-                <span className="ml-2 max-w-[12rem] truncate rounded-md bg-background/80 px-2 py-0.5 text-[10px] text-muted-foreground">
-                  {demoHost(project.demo)}
-                </span>
-              </span>
-            )}
             <ProjectImage
               src={project.coverImage}
               alt={`${project.title} cover preview`}

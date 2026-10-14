@@ -150,11 +150,13 @@ const ProjectCard = memo(function ProjectCard({
   isFlutter,
   reducedMotion,
   onSelect,
+  onFullscreen,
 }: {
   project: Project;
   isFlutter: boolean;
   reducedMotion: boolean;
   onSelect: (p: Project) => void;
+  onFullscreen: (p: Project) => void;
 }) {
   const open = () => onSelect(project);
 
@@ -162,7 +164,13 @@ const ProjectCard = memo(function ProjectCard({
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
       <article className="flex w-full min-h-0 flex-1 flex-col">
         <Card className="modern-card group flex flex-1 flex-col overflow-hidden border-border/50">
-          <div className="relative flex h-48 shrink-0 items-center justify-center overflow-hidden bg-secondary/30 sm:h-56 md:h-64">
+          <button
+            type="button"
+            onClick={() => onFullscreen(project)}
+            aria-label={`Open ${project.title} screenshots in fullscreen`}
+            title="Open fullscreen gallery"
+            className="group relative flex h-48 w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60 sm:h-56 md:h-64"
+          >
             {project.kind === "web" && (
               <span className="absolute inset-x-0 top-0 z-10 flex items-center gap-1.5 border-b border-border/40 bg-secondary/40 px-3 py-2 backdrop-blur-sm" aria-hidden="true">
                 <span className="h-2 w-2 rounded-full bg-border" />
@@ -176,10 +184,19 @@ const ProjectCard = memo(function ProjectCard({
             <ProjectImage
               src={project.coverImage}
               alt={`${project.title} cover preview`}
-              className="h-full w-full [&_img]:object-contain"
+              className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
               eager
             />
-          </div>
+            {/* Hover / focus hint — mirrors the inline viewer */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100"
+            >
+              <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
+                <Expand size={14} /> Fullscreen
+              </span>
+            </span>
+          </button>
 
           <CardHeader className="relative z-10 flex flex-1 flex-col p-6">
             <div className="mb-4 flex items-center justify-between gap-2">
@@ -1043,6 +1060,14 @@ const Projects = () => {
     [searchParams, setSearchParams, tab],
   );
 
+  // Open the fullscreen gallery straight from a card cover — no details dialog,
+  // no URL change (ephemeral UI, same Lightbox component).
+  const handleFullscreen = useCallback((p: Project) => {
+    setSelected(p);
+    setViewerIndex(0);
+    setLightbox(true);
+  }, []);
+
   const handleOpenChange = useCallback(
     (value: boolean) => {
       setOpen(value);
@@ -1135,6 +1160,7 @@ const Projects = () => {
                         isFlutter={true}
                         reducedMotion={reducedMotion}
                         onSelect={handleSelect}
+                        onFullscreen={handleFullscreen}
                       />
                     </motion.div>
                   ))}
@@ -1156,6 +1182,7 @@ const Projects = () => {
                         isFlutter={false}
                         reducedMotion={reducedMotion}
                         onSelect={handleSelect}
+                        onFullscreen={handleFullscreen}
                       />
                     </motion.div>
                   ))}
@@ -1273,13 +1300,19 @@ const Projects = () => {
           </Dialog>
 
           {/* Fullscreen lightbox portals to document.body (z-300) so it sits above the dialog (z-200). */}
+          {/* It opens either from the details viewer or straight from a card cover (dialog stays closed). */}
           <AnimatePresence>
-            {open && selected && lightbox && (
+            {selected && lightbox && (
               <Lightbox
                 project={selected}
                 index={viewerIndex}
                 onIndex={setViewerIndex}
-                onClose={() => setLightbox(false)}
+                onClose={() => {
+                  setLightbox(false);
+                  // Direct-from-card mode leaves no dialog behind — drop the
+                  // selection so a later deep-link starts clean.
+                  if (!open) setSelected(null);
+                }}
                 reducedMotion={reducedMotion}
               />
             )}

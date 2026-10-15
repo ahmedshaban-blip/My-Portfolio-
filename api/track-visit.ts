@@ -35,6 +35,10 @@ const header = (headers: VercelRequest["headers"], name: string) => {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 };
 
+// Crawlers and headless tools execute page JS (firing the tracker) but aren't humans.
+const BOT_RE =
+  /bot|crawl|spider|slurp|mediapartners|baidu|yandex|ahrefs|semrush|dotbot|mj12|petal|bytespider|gptbot|ccbot|claudebot|anthropic|applebot|bingpreview|embedly|facebookexternalhit|twitterbot|linkedinbot|slackbot|telegrambot|headless|phantom|puppeteer|selenium|playwright|lighthouse|pagespeed|pingdom|uptimerobot|monitor|datadome|perimeterx/i;
+
 // ISO subdivision → governorate name (Vercel sends the code via x-vercel-ip-country-region).
 const EG_REGIONS: Record<string, string> = {
   C: "Cairo",
@@ -88,6 +92,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const browser = clean(request.body?.browser, 20, "Other");
   const session = clean(request.body?.session, 40, "anon");
   const owner = request.body?.owner === true;
+  const userAgent = header(request.headers, "user-agent");
+  const bot = BOT_RE.test(userAgent);
 
   const country = (header(request.headers, "x-vercel-ip-country") || "??").toUpperCase();
   const regionCode = (header(request.headers, "x-vercel-ip-country-region") || "").toUpperCase();
@@ -124,6 +130,17 @@ export default async function handler(request: VercelRequest, response: VercelRe
       await pipe.exec();
       await redis.zremrangebyscore(`v:own:live`, 0, ts - 5 * 60 * 1000).catch(() => 0);
       return response.status(200).json({ ok: true, stored: "owner" });
+    }
+
+    // Bots/crawlers run page JS but aren't humans — count apart, label in feed.
+    if (bot) {
+      const pipe = redis.pipeline();
+      pipe.incr(`v:bot:day:${day}`);
+      pipe.persist(`v:bot:day:${day}`);
+      pipe.lpush(`v:feed`, JSON.stringify({ place, path, ts, bot: true }));
+      pipe.ltrim(`v:feed`, 0, 19);
+      await pipe.exec();
+      return response.status(200).json({ ok: true, stored: "bot" });
     }
 
     const pipe = redis.pipeline();

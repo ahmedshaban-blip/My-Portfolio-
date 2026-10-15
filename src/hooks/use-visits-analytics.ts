@@ -42,6 +42,7 @@ type StatsResponse = {
   feed: FeedItem[];
   cv: CvTrack[];
   owner: { today: number; liveNow: number };
+  botsToday: number;
   peakDay: string;
 };
 
@@ -117,6 +118,7 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     cv: (json.cv ?? []) as CvTrack[],
     countries,
     owner: json.owner ?? { today: 0, liveNow: 0 },
+    botsToday: Number(json.botsToday) || 0,
     rangeLabel: formatRangeLabel(json.from, json.to, json.allTime),
     peakDay: json.peakDay || "—",
   };

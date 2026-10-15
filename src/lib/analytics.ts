@@ -12,7 +12,7 @@ export type VisitRow = {
 export type DayPoint = { label: string; date: string; visits: number; unique: number };
 export type SourceSlice = { label: string; value: number; color: string };
 export type TopPage = { path: string; visits: number; avgSeconds: number; bounce: number };
-export type FeedItem = { place: string; path: string; when: string; you?: boolean };
+export type FeedItem = { place: string; path: string; when: string; you?: boolean; bot?: boolean };
 export type HourlyPoint = { hour: string; value: number };
 export type CvTrack = { track: "flutter" | "frontend"; total: number; unique: number; daily: { date: string; value: number }[] };
 export type CountryStat = { code: string; flag: string; visits: number };
@@ -40,6 +40,7 @@ export type AnalyticsData = {
   cv: CvTrack[];
   countries: CountryStat[];
   owner: { today: number; liveNow: number };
+  botsToday: number;
   rangeLabel: string;
   peakDay: string;
 };
@@ -131,6 +132,7 @@ export function buildMockAnalytics(): AnalyticsData {
       { code: "DE", flag: countryFlag("DE"), visits: 620 },
     ],
     owner: { today: 0, liveNow: 0 },
+    botsToday: 0,
     rangeLabel: formatRangeLabel(daily[0].date, daily[daily.length - 1].date, false),
     cv: (["flutter", "frontend"] as const).map((track, t) => ({
       track,

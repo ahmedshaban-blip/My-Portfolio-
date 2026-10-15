@@ -94,6 +94,11 @@ export function AnalyticsSection() {
                   👤 you: {data?.owner.today} excluded
                 </span>
               )}
+              {(data?.botsToday ?? 0) > 0 && (
+                <span className="num ms-2 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
+                  🤖 {data?.botsToday} bot hits filtered
+                </span>
+              )}
             </>
           )}
         </p>
@@ -318,6 +323,7 @@ export function AnalyticsSection() {
                   <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-amber-500/40 bg-amber-500/10" : "bg-muted/50")}>
                     <span className="truncate font-semibold">
                       {f.you && <span className="me-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">YOU</span>}
+                      {f.bot && <span className="me-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-extrabold text-muted-foreground" title="Automated crawler / speed test — not counted as a visitor">🤖 BOT</span>}
                       {f.place} · <span className="num font-mono text-xs">{f.path}</span>
                     </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>

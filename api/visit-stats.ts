@@ -189,12 +189,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
     const total30 = allTime ? totalAll : daily.reduce((s, d) => s + d.visits, 0);
     const uniq30 = allTime ? uniqAll : daily.reduce((s, d) => s + d.unique, 0);
     const ts = Date.now();
-    const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
+    const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, botsToday, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
       redis.zcount(`v:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
       redis.lrange<string[]>(`v:feed`, 0, 7).catch(() => []),
       redis.get<number>(`v:own:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
       redis.zcount(`v:own:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
       redis.lrange<string[]>(`v:own:feed`, 0, 4).catch(() => []),
+      redis.get<number>(`v:bot:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:flutter:${d}`).catch(() => 0))),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:frontend:${d}`).catch(() => 0))),
     ]);
@@ -218,6 +219,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
           place?: unknown;
           path?: unknown;
           ts?: unknown;
+          bot?: unknown;
         };
         const tsValue = typeof item.ts === "number" ? item.ts : ts;
         const mins = Math.max(0, Math.round((ts - tsValue) / 60000));
@@ -225,6 +227,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
           place: String(item.place ?? "??"),
           path: String(item.path ?? "/"),
           when: mins < 1 ? "now" : `${mins}m ago`,
+          ...(item.bot === true ? { bot: true } : {}),
         }];
       } catch {
         return [];
@@ -278,6 +281,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       countries: countryTotals,
       browsers: browserTotals,
       feed: [...ownFeed, ...feed].slice(0, 8),
+      botsToday: Number(botsToday) || 0,
       owner: { today: Number(ownToday) || 0, liveNow: Number(ownLive) || 0 },
       cv,
       peakDay: peak ? `${peak.label} · ${peak.visits.toLocaleString()}` : "",

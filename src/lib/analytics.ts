@@ -18,7 +18,7 @@ export type CvTrack = { track: "flutter" | "frontend"; total: number; unique: nu
 export type CountryStat = { code: string; flag: string; visits: number };
 
 export type AnalyticsData = {
-  source: "mock" | "live";
+  source: "live" | "empty";
   hasData: boolean;
   today: number;
   yesterday: number;
@@ -45,106 +45,61 @@ export type AnalyticsData = {
   peakDay: string;
 };
 
-// Deterministic pseudo-random so mock looks stable between reloads.
-function seeded(n: number) {
-  const x = Math.sin(n * 999.7) * 10000;
-  return x - Math.floor(x);
-}
-
-const DAY_LABELS = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
-
-export function buildMockAnalytics(): AnalyticsData {
-  const now = new Date();
-  const daily: DayPoint[] = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    const weekendBoost = d.getDay() === 6 ? 1.6 : d.getDay() === 5 ? 1.3 : 1;
-    const growth = 1 + (29 - i) * 0.012;
-    const visits = Math.round((280 + seeded(i * 3 + 1) * 260) * weekendBoost * growth);
-    daily.push({
-      label: `${DAY_LABELS[d.getDay()]} ${d.getDate()}`,
-      date: d.toISOString().slice(0, 10),
-      visits,
-      unique: Math.round(visits * (0.6 + seeded(i * 7 + 2) * 0.12)),
-    });
-  }
-  const last30 = daily.reduce((s, d) => s + d.visits, 0);
-  const last7 = daily.slice(-7).reduce((s, d) => s + d.visits, 0);
-  const unique30 = daily.reduce((s, d) => s + d.unique, 0);
-  const today = daily[daily.length - 1].visits;
-  const yesterday = daily[daily.length - 2].visits;
-  const peak = daily.reduce((a, b) => (b.visits > a.visits ? b : a));
-
-  const hours = ["12a", "3a", "6a", "9a", "12p", "3p", "6p", "9p"];
-  const hourly: HourlyPoint[] = hours.map((hour, i) => {
-    const curve = [8, 5, 7, 22, 38, 52, 84, 100][i];
-    return { hour, value: Math.round(curve * (0.9 + seeded(i + 40) * 0.2)) };
-  });
+// Empty skeleton for a date list — zeros everywhere, no fake numbers.
+export function buildEmptyAnalytics(dates: string[]): AnalyticsData {
+  const daily: DayPoint[] = dates.map((date) => ({
+    date,
+    label: date.slice(5),
+    visits: 0,
+    unique: 0,
+  }));
 
   return {
-    source: "mock",
-    hasData: true,
-    today,
-    yesterday,
-    last7,
-    last30,
-    unique30,
-    liveNow: 24 + Math.floor(seeded(Date.now() % 97) * 16),
-    bounceRate: 38,
-    avgSeconds: 167,
-    deltaMonth: 18.2,
-    deltaWeek: 9.4,
+    source: "empty",
+    hasData: false,
+    today: 0,
+    yesterday: 0,
+    last7: 0,
+    last30: 0,
+    unique30: 0,
+    liveNow: 0,
+    bounceRate: 0,
+    avgSeconds: 0,
+    deltaMonth: 0,
+    deltaWeek: 0,
     daily,
-    hourly,
-    sources: [
-      { label: "Google", value: 52, color: "#059669" },
-      { label: "Social", value: 25, color: "#d97706" },
-      { label: "Direct", value: 15, color: "#1d2421" },
-      { label: "Other", value: 8, color: "#a8a29e" },
-    ],
-    devices: [
-      { label: "Mobile", value: 64, color: "#10b981" },
-      { label: "Desktop", value: 29, color: "#f59e0b" },
-      { label: "Tablet", value: 7, color: "#a8a29e" },
-    ],
-    browsers: [
-      { label: "Chrome", value: 71 },
-      { label: "Safari", value: 18 },
-      { label: "Edge", value: 8 },
-    ],
-    topPages: [
-      { path: "/", visits: 5210, avgSeconds: 192, bounce: 32 },
-      { path: "/projects/melano", visits: 2140, avgSeconds: 125, bounce: 41 },
-      { path: "/cv", visits: 1870, avgSeconds: 72, bounce: 58 },
-      { path: "/projects/nassy", visits: 1240, avgSeconds: 148, bounce: 36 },
-    ],
-    feed: [
-      { place: "Cairo, EG", path: "/projects/melano", when: "now" },
-      { place: "Riyadh, SA", path: "/cv", when: "1m ago" },
-      { place: "Berlin, DE", path: "/", when: "3m ago" },
-      { place: "Dubai, AE", path: "/projects/nassy", when: "5m ago" },
-    ],
-    countries: [
-      { code: "EG", flag: countryFlag("EG"), visits: 4210 },
-      { code: "SA", flag: countryFlag("SA"), visits: 1860 },
-      { code: "AE", flag: countryFlag("AE"), visits: 940 },
-      { code: "DE", flag: countryFlag("DE"), visits: 620 },
-    ],
+    hourly: [],
+    sources: [],
+    devices: [],
+    browsers: [],
+    topPages: [],
+    feed: [],
+    countries: [],
     owner: { today: 0, liveNow: 0 },
     botsToday: 0,
-    rangeLabel: formatRangeLabel(daily[0].date, daily[daily.length - 1].date, false),
-    cv: (["flutter", "frontend"] as const).map((track, t) => ({
-      track,
-      total: track === "flutter" ? 412 : 228,
-      unique: track === "flutter" ? 368 : 201,
-      daily: Array.from({ length: 14 }, (_, i) => ({
-        date: `day-${i}`,
-        value: Math.round((track === "flutter" ? 22 : 12) * (0.5 + seeded(i * 11 + t * 5 + 3))),
-      })),
-    })),
-    peakDay: `${peak.label} · ${peak.visits.toLocaleString()}`,
+    rangeLabel: dates.length > 0 ? formatRangeLabel(dates[0], dates[dates.length - 1], false) : "—",
+    cv: (["flutter", "frontend"] as const).map((track) => ({ track, total: 0, unique: 0, daily: [] })),
+    peakDay: "—",
   };
+}
+
+/** Local date list for the empty state (mirrors the requested filter). */
+export function emptyDatesForRange(range: "7" | "14" | "30" | "all" | "custom", from = "", to = ""): string[] {
+  const out: string[] = [];
+  const today = new Date();
+  if (range === "custom" && from && to && from <= to) {
+    for (let t = Date.parse(from); t <= Date.parse(to); t += 86400000) {
+      out.push(new Date(t).toISOString().slice(0, 10));
+    }
+    return out;
+  }
+  const n = range === "all" ? 30 : Number(range) || 14;
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
 }
 
 export function formatDuration(totalSeconds: number) {

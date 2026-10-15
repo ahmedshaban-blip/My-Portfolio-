@@ -151,7 +151,7 @@ export function AnalyticsSection() {
             {ownerMarked ? "👤 This device is you ✓" : "Mark this device as me"}
           </Button>
           <Badge variant="outline" className="rounded-full">
-            {data?.source === "live" ? "● Live data" : "○ Demo data"}
+            {data?.source === "live" ? "● Live data" : "○ No data yet"}
           </Badge>
           <div className="flex gap-1 rounded-full bg-muted/70 p-1">
             {RANGES.map((r) => (
@@ -227,10 +227,10 @@ export function AnalyticsSection() {
           {/* ── KPI cards (A) ──────────────────────────── */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Eye, label: "Total visits", value: data.last30.toLocaleString(), delta: data.source === "live" ? data.rangeLabel : `▲ +${data.deltaMonth}% vs last month`, up: true },
-              { icon: Users, label: "Unique visitors", value: data.unique30.toLocaleString(), delta: data.source === "live" ? "HyperLogLog estimate" : "▲ +12.4% vs last month", up: true },
-              { icon: Timer, label: "Avg. session", value: data.source === "live" ? "—" : formatDuration(data.avgSeconds), delta: data.source === "live" ? "Ships in v2" : "▼ -0:12s vs last month", up: false },
-              { icon: MousePointerClick, label: "Bounce rate", value: data.source === "live" ? "—" : `${data.bounceRate}%`, delta: data.source === "live" ? "Ships in v2" : `${data.peakDay} peak`, up: true },
+              { icon: Eye, label: "Total visits", value: data.last30.toLocaleString(), delta: data.source === "live" ? data.rangeLabel : "—", up: true },
+              { icon: Users, label: "Unique visitors", value: data.unique30.toLocaleString(), delta: data.source === "live" ? "HyperLogLog estimate" : "—", up: true },
+              { icon: Timer, label: "Avg. session", value: data.source === "live" ? "—" : "—", delta: data.source === "live" ? "Ships in v2" : "—", up: false },
+              { icon: MousePointerClick, label: "Bounce rate", value: "—", delta: data.source === "live" ? "Ships in v2" : "—", up: true },
             ].map((k) => (
               <Card key={k.label} className="modern-card glass-effect overflow-hidden">
                 <CardContent className="space-y-1 p-5">
@@ -295,11 +295,6 @@ export function AnalyticsSection() {
                 ) : (
                   <p className="py-6 text-center text-sm text-muted-foreground">No source data yet.</p>
                 )}
-                {data.source !== "live" && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs font-semibold">
-                  💡 LinkedIn drives ~3× visits after each post — repost on Saturday evening.
-                </p>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -312,6 +307,10 @@ export function AnalyticsSection() {
                 <CardDescription>Today · peak 8–10 PM</CardDescription>
               </CardHeader>
               <CardContent>
+                {data.hourly.length === 0 ? (
+                  <p className="py-10 text-center text-sm text-muted-foreground">No hourly data yet.</p>
+                ) : (
+                <>
                 <div className="flex h-36 items-end gap-1.5" dir="ltr">
                   {(() => {
                     const max = Math.max(...data.hourly.map((h) => h.value), 1);
@@ -328,6 +327,8 @@ export function AnalyticsSection() {
                 <div className="mt-1 flex justify-between text-[11px] font-bold text-muted-foreground" dir="ltr">
                   <span>12a</span><span>6a</span><span>12p</span><span>9p ●</span>
                 </div>
+                </>
+                )}
                 <div className="mt-4 space-y-2.5">
                   {data.devices.map((d) => (
                     <div key={d.label}>
@@ -368,9 +369,9 @@ export function AnalyticsSection() {
                 ) : (
                   <p className="py-4 text-center text-sm text-muted-foreground">No visits recorded yet.</p>
                 )}
-                {data.source !== "live" && (
+                {data.source === "empty" && (
                 <p className="rounded-xl border border-border/60 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
-                  Connect Upstash Redis to replace demo feed with realtime rows.
+                  Tracking isn't storing data — check Upstash Redis env vars and redeploy.
                 </p>
                 )}
               </CardContent>
@@ -470,7 +471,7 @@ export function AnalyticsSection() {
                 return data.countries.map((c) => (
                   <div key={c.code}>
                     <div className="mb-1 flex justify-between text-sm font-bold">
-                      <span>{c.flag} {c.code}</span>
+                      <span className="num">{c.code}</span>
                       <span className="num">{c.visits.toLocaleString()}</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-muted">

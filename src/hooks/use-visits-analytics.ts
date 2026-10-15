@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import {
-  buildMockAnalytics,
+  buildEmptyAnalytics,
   countryFlag,
+  emptyDatesForRange,
   formatDuration,
   formatRangeLabel,
   type AnalyticsData,
@@ -69,7 +70,6 @@ function toPercentMap(record: Record<string, number>, colors: Record<string, str
 }
 
 function mapStatsResponse(json: StatsResponse): AnalyticsData {
-  const mock = buildMockAnalytics();
   const topPages: TopPage[] = Object.entries(json.pages)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
@@ -105,7 +105,7 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     deltaMonth: 0,
     deltaWeek: 0,
     daily: json.daily,
-    hourly: json.hourly.length > 0 ? json.hourly : mock.hourly,
+    hourly: json.hourly,
     sources: toPercentMap(json.sources, SOURCE_COLORS, "#a8a29e"),
     devices: toPercentMap(json.devices, DEVICE_COLORS, "#a8a29e").map((d) => ({
       label: (d.label[0] ?? "").toUpperCase() + d.label.slice(1),
@@ -141,19 +141,10 @@ export function useVisitsAnalytics(range: RangeKey, custom?: CustomRange) {
         if (!json.configured) throw new Error("not configured");
         return mapStatsResponse(json);
       } catch {
-        // Redis not configured / unreachable → demo data so the dashboard still previews.
-        const mock = buildMockAnalytics();
-        if (range !== "14") {
-          const daily = range === "all" ? mock.daily : mock.daily.slice(-Number(range));
-          const peak = daily.reduce((a, b) => (b.visits > a.visits ? b : a));
-          return {
-            ...mock,
-            daily,
-            rangeLabel: formatRangeLabel(daily[0].date, daily[daily.length - 1].date, range === "all"),
-            peakDay: `${peak.label} · ${peak.visits.toLocaleString()}`,
-          };
-        }
-        return mock;
+        // Storage not configured / unreachable → honest empty state (zeros, no fake numbers).
+        return buildEmptyAnalytics(
+          emptyDatesForRange(range === "custom" ? "custom" : range, custom?.from ?? "", custom?.to ?? ""),
+        );
       }
     },
     staleTime: 60_000,

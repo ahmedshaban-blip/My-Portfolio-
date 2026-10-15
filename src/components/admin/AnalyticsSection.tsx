@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Activity, Eye, FileDown, MousePointerClick, Timer, Trash2, Users } from "lucide-react";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
+import { DateRangePicker } from "@/components/admin/DateRangePicker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,8 +25,6 @@ const rangeTitle = (range: RangeKey) => {
   if (range === "custom") return "custom range";
   return `last ${range} days`;
 };
-
-const todayKey = () => new Date().toISOString().slice(0, 10);
 
 function Donut({ slices }: { slices: { label: string; value: number; color: string }[] }) {
   const total = slices.reduce((s, x) => s + x.value, 0) || 1;
@@ -73,9 +72,10 @@ function Donut({ slices }: { slices: { label: string; value: number; color: stri
 export function AnalyticsSection() {
   const [range, setRange] = useState<RangeKey>("14");
   const [custom, setCustom] = useState<CustomRange>({ from: "", to: "" });
-  const [customOpen, setCustomOpen] = useState(false);
   const customValid = Boolean(custom.from && custom.to && custom.from <= custom.to);
   const { data, isPending, isError } = useVisitsAnalytics(range, customValid ? custom : undefined);
+  // Bots are tracked apart (see the "bot hits filtered" chip) — the feed is humans only.
+  const feed = (data?.feed ?? []).filter((item) => !item.bot);
   const [ownerMarked, setOwnerMarked] = useState(isOwnerDevice);
   const queryClient = useQueryClient();
   const [resetScope, setResetScope] = useState<"visits" | "cv" | null>(null);
@@ -162,7 +162,7 @@ export function AnalyticsSection() {
               <button
                 key={r.key}
                 type="button"
-                onClick={() => { setRange(r.key); setCustomOpen(false); }}
+                onClick={() => setRange(r.key)}
                 className={cn(
                   "shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors",
                   range === r.key ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
@@ -171,48 +171,21 @@ export function AnalyticsSection() {
                 {r.label}
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => { setCustomOpen((v) => !v); if (!customOpen) setRange("custom"); }}
-              className={cn(
-                "shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors",
-                range === "custom" ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
-              )}
-              title="Pick a custom date range"
-            >
-              📅 Custom
-            </button>
+            <DateRangePicker
+              value={custom}
+              active={range === "custom" && customValid}
+              onApply={(next) => {
+                setCustom(next);
+                setRange("custom");
+              }}
+              onClear={() => {
+                setCustom({ from: "", to: "" });
+                if (range === "custom") setRange("14");
+              }}
+            />
           </div>
         </div>
       </div>
-      {customOpen && (
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-3 text-sm">
-          <label className="flex items-center gap-2 font-semibold">
-            From
-            <input
-              type="date"
-              value={custom.from}
-              max={custom.to || todayKey()}
-              onChange={(e) => { setCustom((c) => ({ ...c, from: e.target.value })); setRange("custom"); }}
-              className="h-9 rounded-xl border border-border bg-background px-2 text-sm"
-            />
-          </label>
-          <label className="flex items-center gap-2 font-semibold">
-            To
-            <input
-              type="date"
-              value={custom.to}
-              min={custom.from || undefined}
-              max={todayKey()}
-              onChange={(e) => { setCustom((c) => ({ ...c, to: e.target.value })); setRange("custom"); }}
-              className="h-9 rounded-xl border border-border bg-background px-2 text-sm"
-            />
-          </label>
-          {!customValid && (
-            <span className="text-xs text-muted-foreground">Pick both dates — any span up to 10 years (long spans aggregate monthly).</span>
-          )}
-        </div>
-      )}
 
       {isPending ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -357,13 +330,12 @@ export function AnalyticsSection() {
                 <CardDescription>Latest visits as they happen</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {data.feed.length > 0 ? (
+                {feed.length > 0 ? (
                 <div className="space-y-2 overflow-y-auto pe-1" style={{ maxHeight: ANALYTICS_CONFIG.feedMaxHeightPx }}>
-                {data.feed.map((f, i) => (
+                {feed.map((f, i) => (
                   <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-amber-500/40 bg-amber-500/10" : "bg-muted/50")}>
                     <span className="truncate font-semibold">
                       {f.you && <span className="me-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">YOU</span>}
-                      {f.bot && <span className="me-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-extrabold text-muted-foreground" title="Automated crawler / speed test — not counted as a visitor">🤖 BOT</span>}
                       {f.place} · <span className="num font-mono text-xs">{f.path}</span>
                     </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>

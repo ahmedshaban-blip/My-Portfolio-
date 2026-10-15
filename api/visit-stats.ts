@@ -4,7 +4,7 @@ import { Redis } from "@upstash/redis";
 // Loaded dynamically so a bundling hiccup can never take stats down.
 const FALLBACK_CONFIG = {
   feedVisibleCount: 15,
-  feedFetchCount: 20,
+  feedFetchCount: 30,
   feedStoredCount: 50,
   ownerFeedFetchCount: 6,
   feedMaxHeightPx: 420,
@@ -120,7 +120,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       return `${months[Number(m[2]) - 1]} ${m[1].slice(2)}`;
     };
     let rangeDays: string[];
-    let monthKeys: string[] = [];
+    const monthKeys: string[] = [];
     if (isCustom && useMonthly) {
       const startYm = customFrom.slice(0, 7);
       const endYm = customTo.slice(0, 7);
@@ -288,13 +288,15 @@ export default async function handler(request: VercelRequest, response: VercelRe
           ts?: unknown;
           bot?: unknown;
         };
+        // Bots are counted apart (`botsToday`) and never listed in the human feed —
+        // this also drops legacy bot rows written before that rule.
+        if (item.bot === true) return [];
         const tsValue = typeof item.ts === "number" ? item.ts : ts;
         const mins = Math.max(0, Math.round((ts - tsValue) / 60000));
         return [{
           place: String(item.place ?? "??"),
           path: String(item.path ?? "/"),
           when: mins < 1 ? "now" : `${mins}m ago`,
-          ...(item.bot === true ? { bot: true } : {}),
         }];
       } catch {
         return [];

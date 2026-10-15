@@ -3,8 +3,8 @@
 export const ANALYTICS_CONFIG = {
   /** Rows shown in the dashboard "Live feed" card (scrollable past this height). */
   feedVisibleCount: 15,
-  /** Rows fetched from Redis per stats request (buffer above visible). */
-  feedFetchCount: 20,
+  /** Rows fetched from Redis per stats request (buffer above visible, bot rows dropped). */
+  feedFetchCount: 30,
   /** Rows kept in Redis (older ones are trimmed away). */
   feedStoredCount: 50,
   /** Owner rows fetched per stats request. */

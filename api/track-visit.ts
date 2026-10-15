@@ -4,7 +4,7 @@ import { Redis } from "@upstash/redis";
 // Loaded dynamically so a bundling hiccup can never take the tracker down.
 const FALLBACK_CONFIG = {
   feedVisibleCount: 15,
-  feedFetchCount: 20,
+  feedFetchCount: 30,
   feedStoredCount: 50,
   ownerFeedFetchCount: 6,
   feedMaxHeightPx: 420,
@@ -155,13 +155,11 @@ export default async function handler(request: VercelRequest, response: VercelRe
       return response.status(200).json({ ok: true, stored: "owner" });
     }
 
-    // Bots/crawlers run page JS but aren't humans — count apart, label in feed.
+    // Bots/crawlers run page JS but aren't humans — counted apart, never listed in the feed.
     if (bot) {
       const pipe = redis.pipeline();
       pipe.incr(`v:bot:day:${day}`);
       pipe.persist(`v:bot:day:${day}`);
-      pipe.lpush(`v:feed`, JSON.stringify({ place, path, ts, bot: true }));
-      pipe.ltrim(`v:feed`, 0, ANALYTICS_CONFIG.feedStoredCount - 1);
       await pipe.exec();
       return response.status(200).json({ ok: true, stored: "bot" });
     }

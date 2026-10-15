@@ -1,17 +1,28 @@
 import { useState } from "react";
 import { Activity, Eye, FileDown, MousePointerClick, Timer, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { areaPaths, formatDuration } from "@/lib/analytics";
-import { useVisitsAnalytics, type RangeKey } from "@/hooks/use-visits-analytics";
+import { isOwnerDevice, setOwnerDevice } from "@/hooks/use-visit-tracker";
+import { useVisitsAnalytics, type CustomRange, type RangeKey } from "@/hooks/use-visits-analytics";
 import { cn } from "@/lib/utils";
 
 const RANGES: { key: RangeKey; label: string }[] = [
   { key: "7", label: "7 days" },
   { key: "14", label: "14 days" },
   { key: "30", label: "30 days" },
+  { key: "all", label: "All" },
 ];
+
+const rangeTitle = (range: RangeKey) => {
+  if (range === "all") return "all time";
+  if (range === "custom") return "custom range";
+  return `last ${range} days`;
+};
+
+const todayKey = () => new Date().toISOString().slice(0, 10);
 
 function Donut({ slices }: { slices: { label: string; value: number; color: string }[] }) {
   const total = slices.reduce((s, x) => s + x.value, 0) || 1;
@@ -58,7 +69,11 @@ function Donut({ slices }: { slices: { label: string; value: number; color: stri
 
 export function AnalyticsSection() {
   const [range, setRange] = useState<RangeKey>("14");
-  const { data, isPending, isError } = useVisitsAnalytics(range);
+  const [custom, setCustom] = useState<CustomRange>({ from: "", to: "" });
+  const [customOpen, setCustomOpen] = useState(false);
+  const customValid = Boolean(custom.from && custom.to && custom.from <= custom.to);
+  const { data, isPending, isError } = useVisitsAnalytics(range, customValid ? custom : undefined);
+  const [ownerMarked, setOwnerMarked] = useState(isOwnerDevice);
 
   return (
     <div className="space-y-6">
@@ -74,10 +89,29 @@ export function AnalyticsSection() {
               <span className="num font-extrabold text-emerald-600 dark:text-emerald-300">{data?.liveNow}</span>{" "}
               visitors online now ·{" "}
               <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
+              {(data?.owner.today ?? 0) > 0 && (
+                <span className="num ms-2 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                  👤 you: {data?.owner.today} excluded
+                </span>
+              )}
             </>
           )}
         </p>
         <div className="ms-auto flex items-center gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 rounded-full px-3 text-xs"
+            title={ownerMarked ? "This browser's visits are counted as yours, apart from visitors." : "Mark this browser as yours so your visits don't pollute visitor stats."}
+            onClick={() => {
+              const next = !ownerMarked;
+              setOwnerDevice(next);
+              setOwnerMarked(next);
+            }}
+          >
+            {ownerMarked ? "👤 This device is you ✓" : "Mark this device as me"}
+          </Button>
           <Badge variant="outline" className="rounded-full">
             {data?.source === "live" ? "● Live data" : "○ Demo data"}
           </Badge>
@@ -86,7 +120,7 @@ export function AnalyticsSection() {
               <button
                 key={r.key}
                 type="button"
-                onClick={() => setRange(r.key)}
+                onClick={() => { setRange(r.key); setCustomOpen(false); }}
                 className={cn(
                   "rounded-full px-3 py-1 text-xs font-bold transition-colors",
                   range === r.key ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
@@ -95,9 +129,48 @@ export function AnalyticsSection() {
                 {r.label}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => { setCustomOpen((v) => !v); if (!customOpen) setRange("custom"); }}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-bold transition-colors",
+                range === "custom" ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
+              )}
+              title="Pick a custom date range"
+            >
+              📅 Custom
+            </button>
           </div>
         </div>
       </div>
+      {customOpen && (
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-3 text-sm">
+          <label className="flex items-center gap-2 font-semibold">
+            From
+            <input
+              type="date"
+              value={custom.from}
+              max={custom.to || todayKey()}
+              onChange={(e) => { setCustom((c) => ({ ...c, from: e.target.value })); setRange("custom"); }}
+              className="h-9 rounded-xl border border-border bg-background px-2 text-sm"
+            />
+          </label>
+          <label className="flex items-center gap-2 font-semibold">
+            To
+            <input
+              type="date"
+              value={custom.to}
+              min={custom.from || undefined}
+              max={todayKey()}
+              onChange={(e) => { setCustom((c) => ({ ...c, to: e.target.value })); setRange("custom"); }}
+              className="h-9 rounded-xl border border-border bg-background px-2 text-sm"
+            />
+          </label>
+          {!customValid && (
+            <span className="text-xs text-muted-foreground">Pick both dates (max 180 days apart).</span>
+          )}
+        </div>
+      )}
 
       {isPending ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -116,7 +189,7 @@ export function AnalyticsSection() {
           {/* ── KPI cards (A) ──────────────────────────── */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Eye, label: "Total visits", value: data.last30.toLocaleString(), delta: data.source === "live" ? `${data.daily.length}-day window` : `▲ +${data.deltaMonth}% vs last month`, up: true },
+              { icon: Eye, label: "Total visits", value: data.last30.toLocaleString(), delta: data.source === "live" ? data.rangeLabel : `▲ +${data.deltaMonth}% vs last month`, up: true },
               { icon: Users, label: "Unique visitors", value: data.unique30.toLocaleString(), delta: data.source === "live" ? "HyperLogLog estimate" : "▲ +12.4% vs last month", up: true },
               { icon: Timer, label: "Avg. session", value: data.source === "live" ? "—" : formatDuration(data.avgSeconds), delta: data.source === "live" ? "Ships in v2" : "▼ -0:12s vs last month", up: false },
               { icon: MousePointerClick, label: "Bounce rate", value: data.source === "live" ? "—" : `${data.bounceRate}%`, delta: data.source === "live" ? "Ships in v2" : `${data.peakDay} peak`, up: true },
@@ -139,8 +212,8 @@ export function AnalyticsSection() {
               <CardHeader className="pb-2">
                 <div className="flex items-baseline justify-between gap-2">
                   <div>
-                    <CardTitle className="text-lg">Visits — last {range} days</CardTitle>
-                    <CardDescription>Peak: {data.peakDay}</CardDescription>
+                    <CardTitle className="text-lg">Visits — {rangeTitle(range)}</CardTitle>
+                    <CardDescription className="num">{data.rangeLabel} · Peak: {data.peakDay}</CardDescription>
                   </div>
                   <Badge variant="outline" className="num rounded-full">{data.daily.reduce((s, d) => s + d.visits, 0).toLocaleString()} total</Badge>
                 </div>
@@ -184,9 +257,11 @@ export function AnalyticsSection() {
                 ) : (
                   <p className="py-6 text-center text-sm text-muted-foreground">No source data yet.</p>
                 )}
+                {data.source !== "live" && (
                 <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs font-semibold">
                   💡 LinkedIn drives ~3× visits after each post — repost on Saturday evening.
                 </p>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -225,7 +300,9 @@ export function AnalyticsSection() {
                     </div>
                   ))}
                   <p className="pt-1 text-[11px] font-semibold text-muted-foreground">
-                    {data.browsers.map((b) => `${b.label} ${b.value}%`).join(" · ")}
+                    {data.browsers.length > 0
+                      ? data.browsers.map((b) => `${b.label} ${b.value}%`).join(" · ")
+                      : "No browser data yet."}
                   </p>
                 </div>
               </CardContent>
@@ -238,8 +315,11 @@ export function AnalyticsSection() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {data.feed.length > 0 ? data.feed.map((f, i) => (
-                  <div key={`${f.place}-${i}`} className="flex items-center justify-between gap-2 rounded-xl bg-muted/50 px-3 py-2 text-sm">
-                    <span className="truncate font-semibold">{f.place} · <span className="num font-mono text-xs">{f.path}</span></span>
+                  <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-amber-500/40 bg-amber-500/10" : "bg-muted/50")}>
+                    <span className="truncate font-semibold">
+                      {f.you && <span className="me-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">YOU</span>}
+                      {f.place} · <span className="num font-mono text-xs">{f.path}</span>
+                    </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>
                   </div>
                 )) : (
@@ -287,7 +367,8 @@ export function AnalyticsSection() {
               </CardContent>
             </Card>
           </div>
-          {/* ── CV downloads ─────────────────────────── */}
+          {/* ── CV downloads + Top countries ────────── */}
+          <div className="grid gap-4 lg:grid-cols-2">
           <Card className="modern-card glass-effect">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg"><FileDown className="h-4 w-4 text-primary" /> CV downloads</CardTitle>
@@ -331,6 +412,33 @@ export function AnalyticsSection() {
               )}
             </CardContent>
           </Card>
+
+          <Card className="modern-card glass-effect">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">🌍 Top countries</CardTitle>
+              <CardDescription>Where visitors come from</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {data.countries.length === 0 && (
+                <p className="py-4 text-center text-sm text-muted-foreground">No country data yet.</p>
+              )}
+              {(() => {
+                const max = Math.max(...data.countries.map((c) => c.visits), 1);
+                return data.countries.map((c) => (
+                  <div key={c.code}>
+                    <div className="mb-1 flex justify-between text-sm font-bold">
+                      <span>{c.flag} {c.code}</span>
+                      <span className="num">{c.visits.toLocaleString()}</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div className="h-2 rounded-full bg-primary/80" style={{ width: `${Math.max((c.visits / max) * 100, 4)}%` }} />
+                    </div>
+                  </div>
+                ));
+              })()}
+            </CardContent>
+          </Card>
+          </div>
         </>
       )}
     </div>

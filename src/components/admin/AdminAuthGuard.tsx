@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 
 const ADMIN_SESSION_KEY = "cv-vault-authenticated";
 export const ADMIN_PIN_SESSION_KEY = "cv-vault-pin";
+export const OWNER_DEVICE_KEY = "pf_owner";
 
 type AdminAuthGuardProps = {
   children: ReactNode;
@@ -57,6 +58,12 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     if (pin === adminPin) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
       sessionStorage.setItem(ADMIN_PIN_SESSION_KEY, pin);
+      // Mark this browser as the owner's — its visits are tracked separately.
+      try {
+        localStorage.setItem(OWNER_DEVICE_KEY, "1");
+      } catch {
+        // Non-fatal: owner flag simply won't persist.
+      }
       setIsAuthenticated(true);
       setError("");
       return;

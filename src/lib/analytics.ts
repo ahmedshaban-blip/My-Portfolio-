@@ -12,9 +12,10 @@ export type VisitRow = {
 export type DayPoint = { label: string; date: string; visits: number; unique: number };
 export type SourceSlice = { label: string; value: number; color: string };
 export type TopPage = { path: string; visits: number; avgSeconds: number; bounce: number };
-export type FeedItem = { place: string; path: string; when: string };
+export type FeedItem = { place: string; path: string; when: string; you?: boolean };
 export type HourlyPoint = { hour: string; value: number };
 export type CvTrack = { track: "flutter" | "frontend"; total: number; unique: number; daily: { date: string; value: number }[] };
+export type CountryStat = { code: string; flag: string; visits: number };
 
 export type AnalyticsData = {
   source: "mock" | "live";
@@ -37,6 +38,9 @@ export type AnalyticsData = {
   topPages: TopPage[];
   feed: FeedItem[];
   cv: CvTrack[];
+  countries: CountryStat[];
+  owner: { today: number; liveNow: number };
+  rangeLabel: string;
   peakDay: string;
 };
 
@@ -120,6 +124,14 @@ export function buildMockAnalytics(): AnalyticsData {
       { place: "Berlin, DE", path: "/", when: "3m ago" },
       { place: "Dubai, AE", path: "/projects/nassy", when: "5m ago" },
     ],
+    countries: [
+      { code: "EG", flag: countryFlag("EG"), visits: 4210 },
+      { code: "SA", flag: countryFlag("SA"), visits: 1860 },
+      { code: "AE", flag: countryFlag("AE"), visits: 940 },
+      { code: "DE", flag: countryFlag("DE"), visits: 620 },
+    ],
+    owner: { today: 0, liveNow: 0 },
+    rangeLabel: formatRangeLabel(daily[0].date, daily[daily.length - 1].date, false),
     cv: (["flutter", "frontend"] as const).map((track, t) => ({
       track,
       total: track === "flutter" ? 412 : 228,
@@ -137,6 +149,25 @@ export function formatDuration(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
   const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+/** "2026-10-15" → "Oct 15". */
+export function formatShortDate(iso: string) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return iso;
+  return `${months[Number(m[2]) - 1] ?? m[2]} ${Number(m[3])}`;
+}
+
+/** "2026-10-09 → Oct 15" style range label. */
+export function formatRangeLabel(from: string, to: string, allTime: boolean) {
+  const span = `${formatShortDate(from)} → ${formatShortDate(to)}`;
+  return allTime ? `All time · ${span}` : span;
+}
+export function countryFlag(code: string) {
+  const upper = code.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(upper)) return "🌍";
+  return String.fromCodePoint(...[...upper].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }
 
 /** Build an SVG area+line path from values. */

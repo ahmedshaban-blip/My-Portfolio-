@@ -2,9 +2,27 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { classifySource, detectBrowser, detectDevice } from "@/lib/analytics";
 import { SECRET_ADMIN_PATH } from "@/hooks/use-secret-hotkey";
+import { OWNER_DEVICE_KEY } from "@/components/admin/AdminAuthGuard";
 
 const SESSION_KEY = "pf_session_id";
 const adminPath = SECRET_ADMIN_PATH.replace(/\//g, "");
+
+export const isOwnerDevice = () => {
+  try {
+    return localStorage.getItem(OWNER_DEVICE_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+export const setOwnerDevice = (owner: boolean) => {
+  try {
+    if (owner) localStorage.setItem(OWNER_DEVICE_KEY, "1");
+    else localStorage.removeItem(OWNER_DEVICE_KEY);
+  } catch {
+    // Non-fatal.
+  }
+};
 
 function getSessionId() {
   try {
@@ -41,6 +59,7 @@ export function useVisitTracker() {
         device: detectDevice(),
         browser: detectBrowser(),
         session: getSessionId(),
+        owner: isOwnerDevice(),
       };
 
       void fetch("/api/track-visit", {

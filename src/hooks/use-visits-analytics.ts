@@ -2,7 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import {
   buildMockAnalytics,
+  countryFlag,
   formatDuration,
+  formatRangeLabel,
   type AnalyticsData,
   type CvTrack,
   type DayPoint,
@@ -11,13 +13,19 @@ import {
   type TopPage,
 } from "@/lib/analytics";
 
-export type RangeKey = "7" | "14" | "30";
+export type RangeKey = "7" | "14" | "30" | "all" | "custom";
+
+export type CustomRange = { from: string; to: string };
 
 export { formatDuration };
 
 type StatsResponse = {
   configured: boolean;
   hasData: boolean;
+  range: string;
+  allTime: boolean;
+  from: string;
+  to: string;
   today: number;
   yesterday: number;
   last7: number;
@@ -29,8 +37,11 @@ type StatsResponse = {
   sources: Record<string, number>;
   devices: Record<string, number>;
   pages: Record<string, number>;
+  countries: Record<string, number>;
+  browsers: Record<string, number>;
   feed: FeedItem[];
   cv: CvTrack[];
+  owner: { today: number; liveNow: number };
   peakDay: string;
 };
 
@@ -61,10 +72,22 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
   const topPages: TopPage[] = Object.entries(json.pages)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
-    .map(([path, visits]) => {
-      const fallback = mock.topPages.find((p) => p.path === path);
-      return { path, visits, avgSeconds: fallback?.avgSeconds ?? 0, bounce: fallback?.bounce ?? 0 };
-    });
+    // Engagement timing ships in v2 — never show mock bounce/avg on live data.
+    .map(([path, visits]) => ({ path, visits, avgSeconds: 0, bounce: 0 }));
+
+  const countries = Object.entries(json.countries ?? {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([code, visits]) => ({ code: code.toUpperCase(), flag: countryFlag(code), visits }));
+
+  const browserTotals = json.browsers ?? {};
+  const browserSum = Object.values(browserTotals).reduce((s, v) => s + v, 0);
+  const browsers = browserSum > 0
+    ? Object.entries(browserTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([label, value]) => ({ label, value: Math.round((value / browserSum) * 100) }))
+    : [];
 
   return {
     source: "live",
@@ -88,21 +111,27 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
       value: d.value,
       color: d.color,
     })),
-    browsers: mock.browsers,
+    browsers,
     topPages,
     feed: json.feed,
     cv: (json.cv ?? []) as CvTrack[],
+    countries,
+    owner: json.owner ?? { today: 0, liveNow: 0 },
+    rangeLabel: formatRangeLabel(json.from, json.to, json.allTime),
     peakDay: json.peakDay || "—",
   };
 }
 
-export function useVisitsAnalytics(range: RangeKey) {
+export function useVisitsAnalytics(range: RangeKey, custom?: CustomRange) {
+  const query = range === "custom" && custom?.from && custom?.to
+    ? `from=${custom.from}&to=${custom.to}`
+    : `days=${range}`;
   return useQuery({
-    queryKey: ["visits-analytics", range],
+    queryKey: ["visits-analytics", range, custom?.from ?? "", custom?.to ?? ""],
     queryFn: async (): Promise<AnalyticsData> => {
       try {
         const pin = sessionStorage.getItem(ADMIN_PIN_SESSION_KEY) ?? "";
-        const res = await fetch(`/api/visit-stats?days=${range}`, {
+        const res = await fetch(`/api/visit-stats?${query}`, {
           headers: { Authorization: `Bearer ${pin}` },
         });
         if (!res.ok) throw new Error(`stats ${res.status}`);
@@ -113,10 +142,14 @@ export function useVisitsAnalytics(range: RangeKey) {
         // Redis not configured / unreachable → demo data so the dashboard still previews.
         const mock = buildMockAnalytics();
         if (range !== "14") {
-          const days = Number(range);
-          const daily = mock.daily.slice(-days);
+          const daily = range === "all" ? mock.daily : mock.daily.slice(-Number(range));
           const peak = daily.reduce((a, b) => (b.visits > a.visits ? b : a));
-          return { ...mock, daily, peakDay: `${peak.label} · ${peak.visits.toLocaleString()}` };
+          return {
+            ...mock,
+            daily,
+            rangeLabel: formatRangeLabel(daily[0].date, daily[daily.length - 1].date, range === "all"),
+            peakDay: `${peak.label} · ${peak.visits.toLocaleString()}`,
+          };
         }
         return mock;
       }

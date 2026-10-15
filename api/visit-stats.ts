@@ -52,91 +52,199 @@ export default async function handler(request: VercelRequest, response: VercelRe
     return response.status(501).json({ error: "Analytics storage is not configured.", configured: false });
   }
 
-  const daysParam = Number(queryParam(request.query, "days") ?? 14);
-  const days = [7, 14, 30].includes(daysParam) ? daysParam : 14;
+  const daysRaw = queryParam(request.query, "days") ?? "14";
+  const fromRaw = queryParam(request.query, "from") ?? "";
+  const toRaw = queryParam(request.query, "to") ?? "";
+  const days = daysRaw === "all" ? "all" : [7, 14, 30].includes(Number(daysRaw)) ? Number(daysRaw) : 14;
+
+  const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+  const toDayKey = (d: Date) => d.toISOString().slice(0, 10);
+  const todayKey = toDayKey(new Date());
+
+  // Custom range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (max 180 days).
+  let customFrom = "";
+  let customTo = "";
+  if (ISO_DAY.test(fromRaw) && ISO_DAY.test(toRaw) && fromRaw <= toRaw && toRaw <= todayKey) {
+    const spanDays = Math.round((Date.parse(toRaw) - Date.parse(fromRaw)) / 86400000) + 1;
+    if (spanDays >= 1 && spanDays <= 180) {
+      customFrom = fromRaw;
+      customTo = toRaw;
+    }
+  }
+  const isCustom = customFrom !== "";
+
+  const HISTORY_DAYS = 730; // discovery window for "All" (trimmed to first active day below).
 
   try {
     const redis = new Redis({ url, token });
     const now = new Date();
     const dayKeys: string[] = [];
-    for (let i = 29; i >= 0; i--) {
+    for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
       dayKeys.push(d.toISOString().slice(0, 10));
     }
 
-    const [counts, uniques] = await Promise.all([
-      redis.mget<number[]>(...dayKeys.map((d) => `v:day:${d}`)),
-      Promise.all(dayKeys.map((d) => redis.pfcount(`v:uniq:${d}`).catch(() => 0))),
-    ]);
-
-    const rangeDays = dayKeys.slice(-days);
-    const [pages, devices, sources, hours] = await Promise.all([
-      Promise.all(rangeDays.map((d) => redis.hgetall(`v:page:${d}`).catch(() => null))),
-      Promise.all(rangeDays.map((d) => redis.hgetall(`v:device:${d}`).catch(() => null))),
-      Promise.all(rangeDays.map((d) => redis.hgetall(`v:source:${d}`).catch(() => null))),
-      redis.hgetall(`v:hour:${dayKeys[dayKeys.length - 1]}`).catch(() => null),
-    ]);
-
-    const sumRecords = (list: unknown[]) => {
-      const out: Record<string, number> = {};
-      for (const item of list) {
-        for (const [k, v] of Object.entries(toRecord(item))) {
-          out[k] = (out[k] ?? 0) + v;
-        }
+    // Resolve the requested window: custom from/to, "all", or a preset.
+    let rangeDays: string[];
+    if (isCustom) {
+      rangeDays = [];
+      for (let t = Date.parse(customFrom); t <= Date.parse(customTo); t += 86400000) {
+        rangeDays.push(toDayKey(new Date(t)));
       }
-      return out;
+    } else {
+      rangeDays = days === "all" ? [...dayKeys] : dayKeys.slice(-days);
+    }
+    const cvDays = dayKeys.slice(-14);
+    const useAllTimeTotals = days === "all" && !isCustom;
+
+    // One batched round-trip for every counter/hash in the selected range.
+    const pipe = redis.pipeline();
+    for (const d of rangeDays) {
+      pipe.get(`v:day:${d}`);
+      pipe.pfcount(`v:uniq:${d}`);
+      if (!useAllTimeTotals) {
+        pipe.hgetall(`v:page:${d}`);
+        pipe.hgetall(`v:device:${d}`);
+        pipe.hgetall(`v:source:${d}`);
+        pipe.hgetall(`v:country:${d}`);
+        pipe.hgetall(`v:browser:${d}`);
+      }
+    }
+    if (useAllTimeTotals) {
+      pipe.hgetall(`v:tot:page`);
+      pipe.hgetall(`v:tot:device`);
+      pipe.hgetall(`v:tot:source`);
+      pipe.hgetall(`v:tot:country`);
+      pipe.hgetall(`v:tot:browser`);
+      pipe.get(`v:total`);
+      pipe.pfcount(`v:uniq:all`);
+    }
+    pipe.hgetall(`v:hour:${dayKeys[dayKeys.length - 1]}`);
+    pipe.get(`v:cv:flutter`);
+    pipe.get(`v:cv:frontend`);
+    for (const d of cvDays) {
+      pipe.get(`v:cvday:flutter:${d}`);
+      pipe.get(`v:cvday:frontend:${d}`);
+    }
+    const results = ((await pipe.exec()) ?? []) as unknown[];
+
+    let cursor = 0;
+    const next = () => results[cursor++] as unknown;
+    const perDay: { date: string; visits: number; unique: number }[] = [];
+    const pageTotals: Record<string, number> = {};
+    const deviceTotals: Record<string, number> = {};
+    const sourceTotals: Record<string, number> = {};
+    const countryTotals: Record<string, number> = {};
+    const browserTotals: Record<string, number> = {};
+    const merge = (target: Record<string, number>, flat: unknown) => {
+      for (const [k, v] of Object.entries(toRecord(flat))) {
+        target[k] = (target[k] ?? 0) + v;
+      }
     };
-    const pageTotals = sumRecords(pages);
-    const deviceTotals = sumRecords(devices);
-    const sourceTotals = sumRecords(sources);
-    const hourTotals = toRecord(hours);
+    for (const date of rangeDays) {
+      const visits = Number(next() ?? 0) || 0;
+      const unique = Number(next() ?? 0) || 0;
+      perDay.push({ date, visits, unique });
+      if (!useAllTimeTotals) {
+        merge(pageTotals, next());
+        merge(deviceTotals, next());
+        merge(sourceTotals, next());
+        merge(countryTotals, next());
+        merge(browserTotals, next());
+      }
+    }
+    if (useAllTimeTotals) {
+      merge(pageTotals, next());
+      merge(deviceTotals, next());
+      merge(sourceTotals, next());
+      merge(countryTotals, next());
+      merge(browserTotals, next());
+    }
+    // "All" starts at the first day with real traffic — no dead leading zeros.
+    let trimmed = perDay;
+    if (useAllTimeTotals) {
+      const firstActive = perDay.findIndex((d) => d.visits > 0 || d.unique > 0);
+      trimmed = firstActive > 0 ? perDay.slice(firstActive) : perDay;
+    }
+    let totalAll = 0;
+    let uniqAll = 0;
+    if (useAllTimeTotals) {
+      totalAll = Number(next() ?? 0) || 0;
+      uniqAll = Number(next() ?? 0) || 0;
+    }
+    const hourTotals = toRecord(next());
+    const cvTotalFlutter = Number(next() ?? 0) || 0;
+    const cvTotalFrontend = Number(next() ?? 0) || 0;
+    const cvDailyFlutter: number[] = [];
+    const cvDailyFrontend: number[] = [];
+    for (const _ of cvDays) {
+      cvDailyFlutter.push(Number(next() ?? 0) || 0);
+      cvDailyFrontend.push(Number(next() ?? 0) || 0);
+    }
 
-    const daily = dayKeys.slice(-days).map((date, i) => {
-      const idx = dayKeys.length - days + i;
-      return {
-        date,
-        label: date.slice(5),
-        visits: Number(counts?.[idx] ?? 0) || 0,
-        unique: Number(uniques[idx] ?? 0) || 0,
-      };
-    });
+    const daily = trimmed.map((d) => ({ ...d, label: d.date.slice(5) }));
+    const allTime = useAllTimeTotals;
 
-    const total30 = dayKeys.reduce((s, _, i) => s + (Number(counts?.[i] ?? 0) || 0), 0);
-    const uniq30 = dayKeys.reduce((s, _, i) => s + (Number(uniques[i] ?? 0) || 0), 0);
+    const total30 = allTime ? totalAll : daily.reduce((s, d) => s + d.visits, 0);
+    const uniq30 = allTime ? uniqAll : daily.reduce((s, d) => s + d.unique, 0);
     const ts = Date.now();
-    const [liveNow, feedRaw] = await Promise.all([
+    const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
       redis.zcount(`v:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
       redis.lrange<string[]>(`v:feed`, 0, 7).catch(() => []),
+      redis.get<number>(`v:own:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
+      redis.zcount(`v:own:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
+      redis.lrange<string[]>(`v:own:feed`, 0, 4).catch(() => []),
+      Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:flutter:${d}`).catch(() => 0))),
+      Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:frontend:${d}`).catch(() => 0))),
     ]);
 
-    // CV downloads per track: all-time total + unique (30d) + daily series (14d).
-    const tracks = ["flutter", "frontend"] as const;
-    const cvDays = dayKeys.slice(-14);
-    const cv = await Promise.all(
-      tracks.map(async (track) => {
-        const [total, dailyCounts, dailyUniques] = await Promise.all([
-          redis.get<number>(`v:cv:${track}`).catch(() => 0),
-          redis.mget<number[]>(...cvDays.map((d) => `v:cvday:${track}:${d}`)).catch(() => []),
-          Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:${track}:${d}`).catch(() => 0))),
-        ]);
-        return {
-          track,
-          total: Number(total) || 0,
-          unique: dailyUniques.reduce((s, v) => s + (Number(v) || 0), 0),
-          daily: cvDays.map((date, i) => ({ date, value: Number(dailyCounts?.[i] ?? 0) || 0 })),
-        };
-      }),
-    );
+    // CV downloads per track: all-time total + unique (14d) + daily series (14d).
+    const cv = (
+      [
+        { track: "flutter", total: cvTotalFlutter, uniq: cvUniqFlutter, series: cvDailyFlutter },
+        { track: "frontend", total: cvTotalFrontend, uniq: cvUniqFrontend, series: cvDailyFrontend },
+      ] as const
+    ).map((t) => ({
+      track: t.track,
+      total: t.total,
+      unique: t.uniq.reduce((s, v) => s + (Number(v) || 0), 0),
+      daily: cvDays.map((date, i) => ({ date, value: t.series[i] ?? 0 })),
+    }));
 
-    const feed = (feedRaw ?? []).flatMap((raw) => {
+    const feed = (feedRaw ?? []).flatMap((raw: unknown) => {
       try {
-        const item = JSON.parse(raw) as { place?: string; path?: string; ts?: number };
-        const mins = Math.max(0, Math.round((ts - (item.ts ?? ts)) / 60000));
+        const item = (typeof raw === "string" ? JSON.parse(raw) : raw) as {
+          place?: unknown;
+          path?: unknown;
+          ts?: unknown;
+        };
+        const tsValue = typeof item.ts === "number" ? item.ts : ts;
+        const mins = Math.max(0, Math.round((ts - tsValue) / 60000));
         return [{
           place: String(item.place ?? "??"),
           path: String(item.path ?? "/"),
           when: mins < 1 ? "now" : `${mins}m ago`,
+        }];
+      } catch {
+        return [];
+      }
+    });
+
+    const ownFeed = (ownFeedRaw ?? []).flatMap((raw: unknown) => {
+      try {
+        const item = (typeof raw === "string" ? JSON.parse(raw) : raw) as {
+          place?: unknown;
+          path?: unknown;
+          ts?: unknown;
+        };
+        const tsValue = typeof item.ts === "number" ? item.ts : ts;
+        const mins = Math.max(0, Math.round((ts - tsValue) / 60000));
+        return [{
+          place: String(item.place ?? "??"),
+          path: String(item.path ?? "/"),
+          when: mins < 1 ? "now" : `${mins}m ago`,
+          you: true,
         }];
       } catch {
         return [];
@@ -150,6 +258,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     return response.status(200).json({
       configured: true,
+      range: isCustom ? "custom" : days === "all" ? "all" : String(days),
+      allTime,
+      from: daily[0]?.date ?? rangeDays[0] ?? "",
+      to: daily[daily.length - 1]?.date ?? rangeDays[rangeDays.length - 1] ?? "",
       today,
       yesterday,
       last7,
@@ -163,7 +275,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
       sources: sourceTotals,
       devices: deviceTotals,
       pages: pageTotals,
-      feed,
+      countries: countryTotals,
+      browsers: browserTotals,
+      feed: [...ownFeed, ...feed].slice(0, 8),
+      owner: { today: Number(ownToday) || 0, liveNow: Number(ownLive) || 0 },
       cv,
       peakDay: peak ? `${peak.label} · ${peak.visits.toLocaleString()}` : "",
       hasData: total30 > 0,

@@ -9,6 +9,7 @@ type VercelRequest = {
     device?: unknown;
     browser?: unknown;
     session?: unknown;
+    owner?: unknown;
   };
 };
 
@@ -20,7 +21,8 @@ type VercelResponse = {
 };
 
 const DEVICES = new Set(["mobile", "desktop", "tablet"]);
-const DAY_TTL_SECONDS = 90 * 24 * 60 * 60; // keep 90 days of history
+const DAY_TTL_SECONDS = 90 * 24 * 60 * 60; // granular breakdowns keep a 90-day rolling window
+// Daily totals, all-time aggregates and unique sets persist forever (tiny keys).
 
 const clean = (value: unknown, max: number, fallback: string) => {
   if (typeof value !== "string") return fallback;
@@ -31,6 +33,36 @@ const clean = (value: unknown, max: number, fallback: string) => {
 const header = (headers: VercelRequest["headers"], name: string) => {
   const value = headers[name];
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+};
+
+// ISO subdivision → governorate name (Vercel sends the code via x-vercel-ip-country-region).
+const EG_REGIONS: Record<string, string> = {
+  C: "Cairo",
+  ALX: "Alexandria",
+  GZ: "Giza",
+  DK: "Dakahlia",
+  RD: "Red Sea",
+  BH: "Beheira",
+  FYM: "Faiyum",
+  GH: "Gharbia",
+  IS: "Ismailia",
+  MNF: "Menofia",
+  MN: "Minya",
+  QIN: "Qena",
+  SHR: "Sharqia",
+  SUZ: "Suez",
+  ASN: "Aswan",
+  AST: "Asyut",
+  BNS: "Beni Suef",
+  PTS: "Port Said",
+  DT: "Damietta",
+  SHG: "Sohag",
+  LX: "Luxor",
+  KFS: "Kafr El Sheikh",
+  MT: "Matrouh",
+  SIN: "North Sinai",
+  JS: "South Sinai",
+  WAD: "New Valley",
 };
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
@@ -55,16 +87,21 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const device = DEVICES.has(deviceRaw) ? deviceRaw : "desktop";
   const browser = clean(request.body?.browser, 20, "Other");
   const session = clean(request.body?.session, 40, "anon");
+  const owner = request.body?.owner === true;
 
   const country = (header(request.headers, "x-vercel-ip-country") || "??").toUpperCase();
+  const regionCode = (header(request.headers, "x-vercel-ip-country-region") || "").toUpperCase();
   const cityRaw = header(request.headers, "x-vercel-ip-city") || "";
   let city = "";
   try {
-    city = decodeURIComponent(cityRaw);
+    city = decodeURIComponent(cityRaw.replace(/\+/g, " "));
   } catch {
     city = cityRaw;
   }
-  const place = city ? `${city}, ${country}` : country;
+  // Most specific available: City, Region (governorate), Country.
+  const regionName = country === "EG" ? EG_REGIONS[regionCode] ?? regionCode : regionCode;
+  const parts = [city, regionName, country].filter((p) => p && p !== "??");
+  const place = [...new Set(parts)].join(", ") || "Unknown";
 
   const now = new Date();
   const day = now.toISOString().slice(0, 10);
@@ -73,22 +110,50 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   try {
     const redis = new Redis({ url, token });
+
+    // Owner's own visits are counted apart — never pollute visitor stats.
+    if (owner) {
+      const pipe = redis.pipeline();
+      pipe.incr(`v:own:day:${day}`);
+      pipe.zadd(`v:own:live`, { score: ts, member: `${ts}:${session}:${place}:${path}` });
+      pipe.lpush(`v:own:feed`, JSON.stringify({ place, path, ts }));
+      pipe.ltrim(`v:own:feed`, 0, 19);
+      pipe.expire(`v:own:day:${day}`, DAY_TTL_SECONDS);
+      pipe.expire(`v:own:feed`, 7 * 24 * 60 * 60);
+      pipe.expire(`v:own:live`, 24 * 60 * 60);
+      await pipe.exec();
+      await redis.zremrangebyscore(`v:own:live`, 0, ts - 5 * 60 * 1000).catch(() => 0);
+      return response.status(200).json({ ok: true, stored: "owner" });
+    }
+
     const pipe = redis.pipeline();
     pipe.incr(`v:day:${day}`);
     pipe.pfadd(`v:uniq:${day}`, session);
+    pipe.persist(`v:day:${day}`);
+    pipe.persist(`v:uniq:${day}`);
+    // All-time aggregates (no TTL) — power the "All" filter forever.
+    pipe.incr(`v:total`);
+    pipe.pfadd(`v:uniq:all`, session);
+    pipe.hincrby(`v:tot:page`, path, 1);
+    pipe.hincrby(`v:tot:device`, device, 1);
+    pipe.hincrby(`v:tot:source`, source, 1);
+    pipe.hincrby(`v:tot:country`, country, 1);
+    pipe.hincrby(`v:tot:browser`, browser, 1);
     pipe.hincrby(`v:page:${day}`, path, 1);
     pipe.hincrby(`v:device:${day}`, device, 1);
     pipe.hincrby(`v:source:${day}`, source, 1);
     pipe.hincrby(`v:hour:${day}`, hour, 1);
+    pipe.hincrby(`v:country:${day}`, country, 1);
+    pipe.hincrby(`v:browser:${day}`, browser, 1);
     pipe.zadd(`v:live`, { score: ts, member: `${ts}:${session}:${place}:${path}` });
     pipe.lpush(`v:feed`, JSON.stringify({ place, path, ts }));
     pipe.ltrim(`v:feed`, 0, 19);
-    pipe.expire(`v:day:${day}`, DAY_TTL_SECONDS);
-    pipe.expire(`v:uniq:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:page:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:device:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:source:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:hour:${day}`, DAY_TTL_SECONDS);
+    pipe.expire(`v:country:${day}`, DAY_TTL_SECONDS);
+    pipe.expire(`v:browser:${day}`, DAY_TTL_SECONDS);
     await pipe.exec();
 
     // Best-effort pruning of stale presence/feed entries (not on the hot path if it fails).

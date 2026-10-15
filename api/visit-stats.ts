@@ -82,17 +82,21 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const toDayKey = (d: Date) => d.toISOString().slice(0, 10);
   const todayKey = toDayKey(new Date());
 
-  // Custom range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (max 180 days).
+  // Custom range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (any span up to 10 years;
+  // spans over 180 days are aggregated monthly).
+  const MAX_CUSTOM_DAYS = 3650;
   let customFrom = "";
   let customTo = "";
+  let customSpan = 0;
   if (ISO_DAY.test(fromRaw) && ISO_DAY.test(toRaw) && fromRaw <= toRaw && toRaw <= todayKey) {
-    const spanDays = Math.round((Date.parse(toRaw) - Date.parse(fromRaw)) / 86400000) + 1;
-    if (spanDays >= 1 && spanDays <= 180) {
+    customSpan = Math.round((Date.parse(toRaw) - Date.parse(fromRaw)) / 86400000) + 1;
+    if (customSpan >= 1 && customSpan <= MAX_CUSTOM_DAYS) {
       customFrom = fromRaw;
       customTo = toRaw;
     }
   }
   const isCustom = customFrom !== "";
+  const useMonthly = isCustom && customSpan > 180;
 
   const HISTORY_DAYS = 730; // discovery window for "All" (trimmed to first active day below).
 
@@ -108,8 +112,27 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
 
     // Resolve the requested window: custom from/to, "all", or a preset.
+    // Long custom spans switch to monthly buckets (bounded, fast, chart-friendly).
+    const monthLabel = (ym: string) => {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const m = /^(\d{4})-(\d{2})$/.exec(ym);
+      if (!m) return ym;
+      return `${months[Number(m[2]) - 1]} ${m[1].slice(2)}`;
+    };
     let rangeDays: string[];
-    if (isCustom) {
+    let monthKeys: string[] = [];
+    if (isCustom && useMonthly) {
+      const startYm = customFrom.slice(0, 7);
+      const endYm = customTo.slice(0, 7);
+      for (let ym = startYm; ym <= endYm;) {
+        monthKeys.push(ym);
+        if (monthKeys.length > 240 || ym === endYm) break;
+        const [y, m] = ym.split("-").map(Number);
+        ym = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, "0")}`;
+        if (monthKeys.length > 240) break;
+      }
+      rangeDays = [];
+    } else if (isCustom) {
       rangeDays = [];
       for (let t = Date.parse(customFrom); t <= Date.parse(customTo); t += 86400000) {
         rangeDays.push(toDayKey(new Date(t)));
@@ -132,6 +155,15 @@ export default async function handler(request: VercelRequest, response: VercelRe
         pipe.hgetall(`v:country:${d}`);
         pipe.hgetall(`v:browser:${d}`);
       }
+    }
+    for (const ym of monthKeys) {
+      pipe.get(`v:m:${ym}`);
+      pipe.pfcount(`v:muniq:${ym}`);
+      pipe.hgetall(`v:mpage:${ym}`);
+      pipe.hgetall(`v:mdevice:${ym}`);
+      pipe.hgetall(`v:msource:${ym}`);
+      pipe.hgetall(`v:mcountry:${ym}`);
+      pipe.hgetall(`v:mbrowser:${ym}`);
     }
     if (useAllTimeTotals) {
       pipe.hgetall(`v:tot:page`);
@@ -176,6 +208,16 @@ export default async function handler(request: VercelRequest, response: VercelRe
         merge(browserTotals, next());
       }
     }
+    for (const ym of monthKeys) {
+      const visits = Number(next() ?? 0) || 0;
+      const unique = Number(next() ?? 0) || 0;
+      perDay.push({ date: `${ym}-01`, visits, unique, monthLabel: monthLabel(ym) } as (typeof perDay)[number] & { monthLabel?: string });
+      merge(pageTotals, next());
+      merge(deviceTotals, next());
+      merge(sourceTotals, next());
+      merge(countryTotals, next());
+      merge(browserTotals, next());
+    }
     if (useAllTimeTotals) {
       merge(pageTotals, next());
       merge(deviceTotals, next());
@@ -205,7 +247,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
       cvDailyFrontend.push(Number(next() ?? 0) || 0);
     }
 
-    const daily = trimmed.map((d) => ({ ...d, label: d.date.slice(5) }));
+    const daily = trimmed.map((d) => ({
+      ...d,
+      label: (d as { monthLabel?: string }).monthLabel ?? d.date.slice(5),
+    }));
     const allTime = useAllTimeTotals;
 
     const total30 = allTime ? totalAll : daily.reduce((s, d) => s + d.visits, 0);
@@ -285,8 +330,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
       configured: true,
       range: isCustom ? "custom" : days === "all" ? "all" : String(days),
       allTime,
-      from: daily[0]?.date ?? rangeDays[0] ?? "",
-      to: daily[daily.length - 1]?.date ?? rangeDays[rangeDays.length - 1] ?? "",
+      from: isCustom ? customFrom : daily[0]?.date ?? rangeDays[0] ?? "",
+      to: isCustom ? customTo : daily[daily.length - 1]?.date ?? rangeDays[rangeDays.length - 1] ?? "",
       today,
       yesterday,
       last7,

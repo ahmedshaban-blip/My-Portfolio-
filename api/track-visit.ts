@@ -132,6 +132,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   const now = new Date();
   const day = now.toISOString().slice(0, 10);
+  const month = day.slice(0, 7);
   const hour = `${String(now.getUTCHours()).padStart(2, "0")}:00`;
   const ts = Date.now();
 
@@ -178,6 +179,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
     pipe.hincrby(`v:tot:source`, source, 1);
     pipe.hincrby(`v:tot:country`, country, 1);
     pipe.hincrby(`v:tot:browser`, browser, 1);
+    // Monthly rollups (no TTL) — power custom ranges longer than 180 days.
+    pipe.incr(`v:m:${month}`);
+    pipe.pfadd(`v:muniq:${month}`, session);
+    pipe.hincrby(`v:mpage:${month}`, path, 1);
+    pipe.hincrby(`v:mdevice:${month}`, device, 1);
+    pipe.hincrby(`v:msource:${month}`, source, 1);
+    pipe.hincrby(`v:mcountry:${month}`, country, 1);
+    pipe.hincrby(`v:mbrowser:${month}`, browser, 1);
     pipe.hincrby(`v:page:${day}`, path, 1);
     pipe.hincrby(`v:device:${day}`, device, 1);
     pipe.hincrby(`v:source:${day}`, source, 1);

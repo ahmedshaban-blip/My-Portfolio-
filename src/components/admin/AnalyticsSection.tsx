@@ -111,36 +111,40 @@ export function AnalyticsSection() {
   return (
     <div className="space-y-6">
       {/* ── Live strip (B) ─────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.07] px-4 py-3">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-        </span>
-        <p className="text-sm font-semibold">
-          {isPending ? "Connecting to analytics…" : (
-            <>
-              <span className="num font-extrabold text-emerald-600 dark:text-emerald-300">{data?.liveNow}</span>{" "}
-              visitors online now ·{" "}
-              <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
-              {(data?.owner.today ?? 0) > 0 && (
-                <span className="num ms-2 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
-                  👤 you: {data?.owner.today} excluded
+      <div className="flex flex-col gap-2 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.07] px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          </span>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
+            {isPending ? "Connecting to analytics…" : (
+              <>
+                <span>
+                  <span className="num font-extrabold text-emerald-600 dark:text-emerald-300">{data?.liveNow}</span>{" "}
+                  visitors online now ·{" "}
+                  <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
                 </span>
-              )}
-              {(data?.botsToday ?? 0) > 0 && (
-                <span className="num ms-2 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
-                  🤖 {data?.botsToday} bot hits filtered
-                </span>
-              )}
-            </>
-          )}
-        </p>
-        <div className="ms-auto flex items-center gap-2">
+                {(data?.owner.today ?? 0) > 0 && (
+                  <span className="num rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                    👤 you: {data?.owner.today} excluded
+                  </span>
+                )}
+                {(data?.botsToday ?? 0) > 0 && (
+                  <span className="num rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
+                    🤖 {data?.botsToday} bot hits filtered
+                  </span>
+                )}
+              </>
+            )}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:ms-auto">
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 rounded-full px-3 text-xs"
+            className="h-7 shrink-0 rounded-full px-3 text-xs"
             title={ownerMarked ? "This browser's visits are counted as yours, apart from visitors." : "Mark this browser as yours so your visits don't pollute visitor stats."}
             onClick={() => {
               const next = !ownerMarked;
@@ -150,17 +154,17 @@ export function AnalyticsSection() {
           >
             {ownerMarked ? "👤 This device is you ✓" : "Mark this device as me"}
           </Button>
-          <Badge variant="outline" className="rounded-full">
+          <Badge variant="outline" className="shrink-0 rounded-full">
             {data?.source === "live" ? "● Live data" : "○ No data yet"}
           </Badge>
-          <div className="flex gap-1 rounded-full bg-muted/70 p-1">
+          <div className="flex max-w-full gap-1 overflow-x-auto rounded-full bg-muted/70 p-1">
             {RANGES.map((r) => (
               <button
                 key={r.key}
                 type="button"
                 onClick={() => { setRange(r.key); setCustomOpen(false); }}
                 className={cn(
-                  "rounded-full px-3 py-1 text-xs font-bold transition-colors",
+                  "shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors",
                   range === r.key ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -171,7 +175,7 @@ export function AnalyticsSection() {
               type="button"
               onClick={() => { setCustomOpen((v) => !v); if (!customOpen) setRange("custom"); }}
               className={cn(
-                "rounded-full px-3 py-1 text-xs font-bold transition-colors",
+                "shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors",
                 range === "custom" ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground",
               )}
               title="Pick a custom date range"
@@ -205,7 +209,7 @@ export function AnalyticsSection() {
             />
           </label>
           {!customValid && (
-            <span className="text-xs text-muted-foreground">Pick both dates (max 180 days apart).</span>
+            <span className="text-xs text-muted-foreground">Pick both dates — any span up to 10 years (long spans aggregate monthly).</span>
           )}
         </div>
       )}

@@ -88,6 +88,17 @@ export function emptyDatesForRange(range: "7" | "14" | "30" | "all" | "custom", 
   const out: string[] = [];
   const today = new Date();
   if (range === "custom" && from && to && from <= to) {
+    const span = Math.round((Date.parse(to) - Date.parse(from)) / 86400000) + 1;
+    if (span > 366) {
+      // Monthly skeleton for very long spans.
+      for (let ym = from.slice(0, 7); ym <= to.slice(0, 7);) {
+        out.push(`${ym}-01`);
+        if (out.length > 240 || ym === to.slice(0, 7)) break;
+        const [y, m] = ym.split("-").map(Number);
+        ym = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, "0")}`;
+      }
+      return out;
+    }
     for (let t = Date.parse(from); t <= Date.parse(to); t += 86400000) {
       out.push(new Date(t).toISOString().slice(0, 10));
     }

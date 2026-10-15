@@ -206,8 +206,20 @@ export function AnalyticsSection() {
             {[
               { icon: Eye, label: "Total visits", value: data.last30.toLocaleString(), delta: data.source === "live" ? data.rangeLabel : "—", up: true },
               { icon: Users, label: "Unique visitors", value: data.unique30.toLocaleString(), delta: data.source === "live" ? "HyperLogLog estimate" : "—", up: true },
-              { icon: Timer, label: "Avg. session", value: data.source === "live" ? "—" : "—", delta: data.source === "live" ? "Ships in v2" : "—", up: false },
-              { icon: MousePointerClick, label: "Bounce rate", value: "—", delta: data.source === "live" ? "Ships in v2" : "—", up: true },
+              {
+                icon: Timer,
+                label: "Avg. session",
+                value: data.engagementSessions > 0 ? formatDuration(data.avgSeconds) : "—",
+                delta: data.engagementSessions > 0 ? `${data.engagementSessions.toLocaleString()} sessions` : "Awaiting sessions",
+                up: true,
+              },
+              {
+                icon: MousePointerClick,
+                label: "Bounce rate",
+                value: data.engagementSessions > 0 ? `${data.bounceRate}%` : "—",
+                delta: data.engagementSessions > 0 ? `${100 - data.bounceRate}% engaged` : "Awaiting sessions",
+                up: data.bounceRate <= 50,
+              },
             ].map((k) => (
               <Card key={k.label} className="modern-card glass-effect overflow-hidden">
                 <CardContent className="space-y-1 p-5">

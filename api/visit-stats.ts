@@ -55,6 +55,22 @@ const toRecord = (flat: unknown): Record<string, number> => {
   return out;
 };
 
+// Session records hold non-numeric values ("seconds|views|engaged|landing").
+const toFlatEntries = (flat: unknown): [string, string][] => {
+  if (Array.isArray(flat)) {
+    const out: [string, string][] = [];
+    for (let i = 0; i + 1 < flat.length; i += 2) out.push([String(flat[i]), String(flat[i + 1])]);
+    return out;
+  }
+  if (flat && typeof flat === "object") {
+    return Object.entries(flat as Record<string, unknown>).map(([k, v]) => [k, String(v)]);
+  }
+  return [];
+};
+
+// Mirrors the tracker: a session is "engaged" after 10s or 2+ pages (GA4 rule).
+const ENGAGED_SECONDS = 10;
+
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== "GET") {
     response.setHeader("Allow", "GET");
@@ -154,6 +170,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
         pipe.hgetall(`v:source:${d}`);
         pipe.hgetall(`v:country:${d}`);
         pipe.hgetall(`v:browser:${d}`);
+        pipe.hgetall(`v:sess:${d}`);
+        pipe.hgetall(`v:eng:secs:${d}`);
+        pipe.hgetall(`v:eng:cnt:${d}`);
       }
     }
     for (const ym of monthKeys) {
@@ -164,6 +183,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pipe.hgetall(`v:msource:${ym}`);
       pipe.hgetall(`v:mcountry:${ym}`);
       pipe.hgetall(`v:mbrowser:${ym}`);
+      pipe.hgetall(`v:msess:${ym}`);
     }
     if (useAllTimeTotals) {
       pipe.hgetall(`v:tot:page`);
@@ -171,6 +191,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pipe.hgetall(`v:tot:source`);
       pipe.hgetall(`v:tot:country`);
       pipe.hgetall(`v:tot:browser`);
+      pipe.hgetall(`v:sess:all`);
+      pipe.hgetall(`v:eng:secs:all`);
+      pipe.hgetall(`v:eng:cnt:all`);
       pipe.get(`v:total`);
       pipe.pfcount(`v:uniq:all`);
     }
@@ -196,6 +219,20 @@ export default async function handler(request: VercelRequest, response: VercelRe
         target[k] = (target[k] ?? 0) + v;
       }
     };
+    // Engagement: latest cumulative snapshot per session id.
+    const sessionRecords: Record<string, { seconds: number; views: number; landing: string }> = {};
+    const mergeSessions = (flat: unknown) => {
+      for (const [id, raw] of toFlatEntries(flat)) {
+        const [secs, vws, land] = raw.split("|");
+        sessionRecords[id] = {
+          seconds: Number(secs) || 0,
+          views: Number(vws) || 1,
+          landing: land || "/",
+        };
+      }
+    };
+    const pageEngSecs: Record<string, number> = {};
+    const pageEngCnt: Record<string, number> = {};
     for (const date of rangeDays) {
       const visits = Number(next() ?? 0) || 0;
       const unique = Number(next() ?? 0) || 0;
@@ -206,6 +243,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
         merge(sourceTotals, next());
         merge(countryTotals, next());
         merge(browserTotals, next());
+        mergeSessions(next());
+        merge(pageEngSecs, next());
+        merge(pageEngCnt, next());
       }
     }
     for (const ym of monthKeys) {
@@ -217,6 +257,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       merge(sourceTotals, next());
       merge(countryTotals, next());
       merge(browserTotals, next());
+      mergeSessions(next());
     }
     if (useAllTimeTotals) {
       merge(pageTotals, next());
@@ -224,6 +265,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
       merge(sourceTotals, next());
       merge(countryTotals, next());
       merge(browserTotals, next());
+      mergeSessions(next());
+      merge(pageEngSecs, next());
+      merge(pageEngCnt, next());
     }
     // "All" starts at the first day with real traffic — no dead leading zeros.
     let trimmed = perDay;
@@ -255,6 +299,38 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     const total30 = allTime ? totalAll : daily.reduce((s, d) => s + d.visits, 0);
     const uniq30 = allTime ? uniqAll : daily.reduce((s, d) => s + d.unique, 0);
+
+    // ── Engagement: avg session duration + bounce rate ──────────────────
+    // One record per session in range; "engaged" = 2+ pages or 10s+ (GA4 rule).
+    const sessionIds = Object.keys(sessionRecords);
+    const engagementSessions = sessionIds.length;
+    let sessionSeconds = 0;
+    let bouncedSessions = 0;
+    const landingStats: Record<string, { total: number; bounced: number }> = {};
+    for (const id of sessionIds) {
+      const s = sessionRecords[id];
+      sessionSeconds += s.seconds;
+      const isEngaged = s.views >= 2 || s.seconds >= ENGAGED_SECONDS;
+      if (!isEngaged) bouncedSessions += 1;
+      const landing = (landingStats[s.landing] ??= { total: 0, bounced: 0 });
+      landing.total += 1;
+      if (!isEngaged) landing.bounced += 1;
+    }
+    const avgSeconds = engagementSessions > 0 ? Math.round(sessionSeconds / engagementSessions) : 0;
+    const bounceRate = engagementSessions > 0 ? Math.round((bouncedSessions / engagementSessions) * 100) : 0;
+
+    // Per-page: avg time on page (measured) + entry-page bounce rate.
+    const pageEngagement: Record<string, { avgSeconds: number; bounce: number }> = {};
+    for (const path of Object.keys(pageTotals)) {
+      const secs = pageEngSecs[path] ?? 0;
+      const cnt = pageEngCnt[path] ?? 0;
+      const landing = landingStats[path];
+      pageEngagement[path] = {
+        avgSeconds: cnt > 0 ? Math.round(secs / cnt) : 0,
+        bounce: landing && landing.total > 0 ? Math.round((landing.bounced / landing.total) * 100) : 0,
+      };
+    }
+
     const ts = Date.now();
     const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, botsToday, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
       redis.zcount(`v:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
@@ -340,6 +416,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
       last30: total30,
       unique30: uniq30,
       liveNow,
+      engagementSessions,
+      avgSeconds,
+      bounceRate,
+      pageEngagement,
       daily,
       hourly: Object.entries(hourTotals)
         .sort(([a], [b]) => (a < b ? -1 : 1))

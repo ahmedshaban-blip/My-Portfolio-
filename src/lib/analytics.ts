@@ -28,6 +28,8 @@ export type AnalyticsData = {
   liveNow: number;
   bounceRate: number;
   avgSeconds: number;
+  /** Sessions with engagement data in range — 0 means "not measured yet". */
+  engagementSessions: number;
   deltaMonth: number;
   deltaWeek: number;
   daily: DayPoint[];
@@ -65,6 +67,7 @@ export function buildEmptyAnalytics(dates: string[]): AnalyticsData {
     liveNow: 0,
     bounceRate: 0,
     avgSeconds: 0,
+    engagementSessions: 0,
     deltaMonth: 0,
     deltaWeek: 0,
     daily,
@@ -114,8 +117,11 @@ export function emptyDatesForRange(range: "7" | "14" | "30" | "all" | "custom", 
 }
 
 export function formatDuration(totalSeconds: number) {
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
+  const total = Math.max(0, Math.round(totalSeconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 

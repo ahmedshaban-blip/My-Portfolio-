@@ -33,6 +33,10 @@ type StatsResponse = {
   last30: number;
   unique30: number;
   liveNow: number;
+  engagementSessions: number;
+  avgSeconds: number;
+  bounceRate: number;
+  pageEngagement: Record<string, { avgSeconds: number; bounce: number }>;
   daily: DayPoint[];
   hourly: HourlyPoint[];
   sources: Record<string, number>;
@@ -70,11 +74,16 @@ function toPercentMap(record: Record<string, number>, colors: Record<string, str
 }
 
 function mapStatsResponse(json: StatsResponse): AnalyticsData {
+  const pageEngagement = json.pageEngagement ?? {};
   const topPages: TopPage[] = Object.entries(json.pages)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
-    // Engagement timing ships in v2 — never show mock bounce/avg on live data.
-    .map(([path, visits]) => ({ path, visits, avgSeconds: 0, bounce: 0 }));
+    .map(([path, visits]) => ({
+      path,
+      visits,
+      avgSeconds: pageEngagement[path]?.avgSeconds ?? 0,
+      bounce: pageEngagement[path]?.bounce ?? 0,
+    }));
 
   const countries = Object.entries(json.countries ?? {})
     .sort((a, b) => b[1] - a[1])
@@ -99,9 +108,9 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     last30: json.last30,
     unique30: json.unique30,
     liveNow: json.liveNow,
-    // Engagement timing ships in v2 — show placeholders until then.
-    bounceRate: 0,
-    avgSeconds: 0,
+    bounceRate: json.bounceRate ?? 0,
+    avgSeconds: json.avgSeconds ?? 0,
+    engagementSessions: json.engagementSessions ?? 0,
     deltaMonth: 0,
     deltaWeek: 0,
     daily: json.daily,

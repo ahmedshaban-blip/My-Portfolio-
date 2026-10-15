@@ -25,12 +25,20 @@ type VercelRequest = {
   method?: string;
   headers: Record<string, string | string[] | undefined>;
   body?: {
+    type?: unknown;
     path?: unknown;
     source?: unknown;
     device?: unknown;
     browser?: unknown;
     session?: unknown;
     owner?: unknown;
+    // Engagement beacon (type: "engagement").
+    seconds?: unknown;
+    viewCount?: unknown;
+    views?: unknown;
+    landing?: unknown;
+    pagePath?: unknown;
+    pageSeconds?: unknown;
   };
 };
 
@@ -113,6 +121,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const browser = clean(request.body?.browser, 20, "Other");
   const session = clean(request.body?.session, 40, "anon");
   const owner = request.body?.owner === true;
+  const views = Math.max(1, Math.round(Number(request.body?.views) || 1));
+  const landing = clean(request.body?.landing, 120, path);
   const userAgent = header(request.headers, "user-agent");
   const bot = BOT_RE.test(userAgent);
 
@@ -164,11 +174,53 @@ export default async function handler(request: VercelRequest, response: VercelRe
       return response.status(200).json({ ok: true, stored: "bot" });
     }
 
+    // Engagement beacon: cumulative time-on-site for the session + per-page timing.
+    // Owner and bot devices never reach here, so their dwell time stays out of the numbers.
+    if (request.body?.type === "engagement") {
+      const sessionId = clean(request.body?.session, 40, "");
+      if (!sessionId || sessionId === "anon") {
+        return response.status(200).json({ ok: true, stored: false });
+      }
+      const toNum = (value: unknown, max: number, min = 0) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+      };
+      const seconds = Math.round(toNum(request.body?.seconds, DAY_TTL_SECONDS));
+      const beaconViews = Math.round(toNum(request.body?.viewCount ?? request.body?.views, 500, 1));
+      const beaconLanding = clean(request.body?.landing, 120, "/");
+      const pagePath = clean(request.body?.pagePath, 120, "/");
+      const pageSeconds = Math.round(toNum(request.body?.pageSeconds, 3600));
+      // Latest cumulative snapshot per session, one hash field per session.
+      const record = `${seconds}|${beaconViews}|${beaconLanding}`;
+
+      const pipe = redis.pipeline();
+      pipe.hset(`v:sess:${day}`, { [sessionId]: record });
+      pipe.hset(`v:sess:all`, { [sessionId]: record });
+      pipe.hset(`v:msess:${month}`, { [sessionId]: record });
+      pipe.expire(`v:sess:${day}`, DAY_TTL_SECONDS);
+      if (pageSeconds > 0 && pagePath.startsWith("/")) {
+        pipe.hincrbyfloat(`v:eng:secs:${day}`, pagePath, pageSeconds);
+        pipe.hincrby(`v:eng:cnt:${day}`, pagePath, 1);
+        pipe.hincrbyfloat(`v:eng:secs:all`, pagePath, pageSeconds);
+        pipe.hincrby(`v:eng:cnt:all`, pagePath, 1);
+        pipe.expire(`v:eng:secs:${day}`, DAY_TTL_SECONDS);
+        pipe.expire(`v:eng:cnt:${day}`, DAY_TTL_SECONDS);
+      }
+      await pipe.exec();
+      return response.status(200).json({ ok: true, stored: "engagement" });
+    }
+
     const pipe = redis.pipeline();
     pipe.incr(`v:day:${day}`);
     pipe.pfadd(`v:uniq:${day}`, session);
     pipe.persist(`v:day:${day}`);
     pipe.persist(`v:uniq:${day}`);
+    // Seed the session record (never overwrite a richer beacon) so a pure
+    // bounce that never flushes still counts in avg-session / bounce-rate.
+    pipe.hsetnx(`v:sess:${day}`, session, `0|${views}|${landing}`);
+    pipe.hsetnx(`v:sess:all`, session, `0|${views}|${landing}`);
+    pipe.hsetnx(`v:msess:${month}`, session, `0|${views}|${landing}`);
+    pipe.expire(`v:sess:${day}`, DAY_TTL_SECONDS);
     // All-time aggregates (no TTL) — power the "All" filter forever.
     pipe.incr(`v:total`);
     pipe.pfadd(`v:uniq:all`, session);

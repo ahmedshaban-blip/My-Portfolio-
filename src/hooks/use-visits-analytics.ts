@@ -4,6 +4,7 @@ import {
   buildMockAnalytics,
   formatDuration,
   type AnalyticsData,
+  type CvTrack,
   type DayPoint,
   type FeedItem,
   type HourlyPoint,
@@ -29,6 +30,7 @@ type StatsResponse = {
   devices: Record<string, number>;
   pages: Record<string, number>;
   feed: FeedItem[];
+  cv: CvTrack[];
   peakDay: string;
 };
 
@@ -89,6 +91,7 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     browsers: mock.browsers,
     topPages,
     feed: json.feed,
+    cv: (json.cv ?? []) as CvTrack[],
     peakDay: json.peakDay || "—",
   };
 }

@@ -1,3 +1,5 @@
+import { createHash } from "crypto";
+
 const CV_FILES = {
   flutter: {
     publicId: "flutter_cv.pdf",
@@ -12,6 +14,7 @@ const CV_FILES = {
 type CVTrack = keyof typeof CV_FILES;
 
 type VercelRequest = {
+  headers?: Record<string, string | string[] | undefined>;
   query?: {
     track?: string | string[];
   };
@@ -48,6 +51,29 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   const fileBuffer = Buffer.from(await cloudinaryResponse.arrayBuffer());
+
+  // Count the successful download (never blocks/fails the file itself).
+  try {
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+    if (redisUrl && redisToken) {
+      const { Redis } = await import("@upstash/redis");
+      const redis = new Redis({ url: redisUrl, token: redisToken });
+      const day = new Date().toISOString().slice(0, 10);
+      const rawIp = request.headers?.["x-forwarded-for"];
+      const ip = (Array.isArray(rawIp) ? rawIp[0] : rawIp ?? "").split(",")[0].trim() || "unknown";
+      const visitor = createHash("sha1").update(ip).digest("hex");
+      await redis.pipeline()
+        .incr(`v:cv:${track}`)
+        .incr(`v:cvday:${track}:${day}`)
+        .pfadd(`v:cvuniq:${track}:${day}`, visitor)
+        .expire(`v:cvday:${track}:${day}`, 90 * 24 * 60 * 60)
+        .expire(`v:cvuniq:${track}:${day}`, 90 * 24 * 60 * 60)
+        .exec();
+    }
+  } catch {
+    // Analytics must never break downloads.
+  }
 
   response.setHeader("Content-Type", "application/pdf");
   response.setHeader("Content-Disposition", `attachment; filename="${cvFile.fileName}"`);

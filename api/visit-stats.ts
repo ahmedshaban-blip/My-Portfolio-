@@ -110,6 +110,25 @@ export default async function handler(request: VercelRequest, response: VercelRe
       redis.lrange<string[]>(`v:feed`, 0, 7).catch(() => []),
     ]);
 
+    // CV downloads per track: all-time total + unique (30d) + daily series (14d).
+    const tracks = ["flutter", "frontend"] as const;
+    const cvDays = dayKeys.slice(-14);
+    const cv = await Promise.all(
+      tracks.map(async (track) => {
+        const [total, dailyCounts, dailyUniques] = await Promise.all([
+          redis.get<number>(`v:cv:${track}`).catch(() => 0),
+          redis.mget<number[]>(...cvDays.map((d) => `v:cvday:${track}:${d}`)).catch(() => []),
+          Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:${track}:${d}`).catch(() => 0))),
+        ]);
+        return {
+          track,
+          total: Number(total) || 0,
+          unique: dailyUniques.reduce((s, v) => s + (Number(v) || 0), 0),
+          daily: cvDays.map((date, i) => ({ date, value: Number(dailyCounts?.[i] ?? 0) || 0 })),
+        };
+      }),
+    );
+
     const feed = (feedRaw ?? []).flatMap((raw) => {
       try {
         const item = JSON.parse(raw) as { place?: string; path?: string; ts?: number };
@@ -145,6 +164,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       devices: deviceTotals,
       pages: pageTotals,
       feed,
+      cv,
       peakDay: peak ? `${peak.label} · ${peak.visits.toLocaleString()}` : "",
       hasData: total30 > 0,
     });

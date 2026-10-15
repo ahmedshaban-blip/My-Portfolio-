@@ -14,6 +14,7 @@ export type SourceSlice = { label: string; value: number; color: string };
 export type TopPage = { path: string; visits: number; avgSeconds: number; bounce: number };
 export type FeedItem = { place: string; path: string; when: string };
 export type HourlyPoint = { hour: string; value: number };
+export type CvTrack = { track: "flutter" | "frontend"; total: number; unique: number; daily: { date: string; value: number }[] };
 
 export type AnalyticsData = {
   source: "mock" | "live";
@@ -35,6 +36,7 @@ export type AnalyticsData = {
   browsers: { label: string; value: number }[];
   topPages: TopPage[];
   feed: FeedItem[];
+  cv: CvTrack[];
   peakDay: string;
 };
 
@@ -118,6 +120,15 @@ export function buildMockAnalytics(): AnalyticsData {
       { place: "Berlin, DE", path: "/", when: "3m ago" },
       { place: "Dubai, AE", path: "/projects/nassy", when: "5m ago" },
     ],
+    cv: (["flutter", "frontend"] as const).map((track, t) => ({
+      track,
+      total: track === "flutter" ? 412 : 228,
+      unique: track === "flutter" ? 368 : 201,
+      daily: Array.from({ length: 14 }, (_, i) => ({
+        date: `day-${i}`,
+        value: Math.round((track === "flutter" ? 22 : 12) * (0.5 + seeded(i * 11 + t * 5 + 3))),
+      })),
+    })),
     peakDay: `${peak.label} · ${peak.visits.toLocaleString()}`,
   };
 }

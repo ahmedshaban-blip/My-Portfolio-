@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Activity, Eye, MousePointerClick, Timer, Users } from "lucide-react";
+import { Activity, Eye, FileDown, MousePointerClick, Timer, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -287,6 +287,50 @@ export function AnalyticsSection() {
               </CardContent>
             </Card>
           </div>
+          {/* ── CV downloads ─────────────────────────── */}
+          <Card className="modern-card glass-effect">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg"><FileDown className="h-4 w-4 text-primary" /> CV downloads</CardTitle>
+              <CardDescription>Who downloaded which CV · last 14 days</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data.cv.length === 0 && (
+                <p className="py-4 text-center text-sm text-muted-foreground">No downloads recorded yet.</p>
+              )}
+              {data.cv.map((c) => {
+                const max = Math.max(...c.daily.map((d) => d.value), 1);
+                return (
+                  <div key={c.track} className="rounded-2xl border border-border/60 p-4">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-extrabold capitalize">{c.track} CV</span>
+                      <span className="num text-2xl font-extrabold">{c.total.toLocaleString()}</span>
+                    </div>
+                    <div className="num text-xs text-muted-foreground">{c.unique.toLocaleString()} unique downloaders</div>
+                    <div className="mt-2 flex h-10 items-end gap-1" dir="ltr">
+                      {c.daily.map((d, i) => (
+                        <div
+                          key={`${d.date}-${i}`}
+                          title={`${d.date}: ${d.value}`}
+                          className={cn("flex-1 rounded-sm", c.track === "flutter" ? "bg-primary/80" : "bg-amber-500/80")}
+                          style={{ height: `${Math.max((d.value / max) * 100, 5)}%`, minHeight: 3 }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {data.cv.length === 2 && data.cv[0].total + data.cv[1].total > 0 && (
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {(() => {
+                    const [a, b] = data.cv;
+                    const lead = a.total >= b.total ? a : b;
+                    const share = Math.round((lead.total / (a.total + b.total)) * 100);
+                    return `💡 ${lead.track} CV takes ${share}% of downloads — order it first on the site.`;
+                  })()}
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </>
       )}
     </div>

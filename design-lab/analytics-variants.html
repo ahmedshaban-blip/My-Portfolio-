@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Analytics Variants — اختار تصميم تحليلات الزيارات</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Cairo','IBM Plex Sans Arabic',sans-serif;background:#0f1412}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:embed}
+section[id]{scroll-margin-top:90px}
+/* spark bars */
+.bar{border-radius:6px 6px 2px 2px}
+.area{fill-opacity:.18}
+.tick{font-size:10px;fill:#8a938e}
+.topnav{position:sticky;top:0;z-index:50}
+.pick{transition:.15s}
+.pick:hover{transform:translateY(-2px)}
+.dot-live{animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hmap{aspect-ratio:1;border-radius:8px}
+</style>
+</head>
+<body class="text-white">
+
+<!-- TOP NAV -->
+<div class="topnav bg-[#0f1412]/95 backdrop-blur border-b border-white/10 px-5 py-3 flex items-center gap-4 flex-wrap">
+  <div>
+    <div class="font-black text-lg leading-none">📊 تحليلات الزيارات <span class="text-emerald-400">— 5 تصاميم</span></div>
+    <div class="text-xs text-white/50">أرقام تجريبية (Mock) — انزل تحت واختار: A / B / C / D / E وقولي الرقم</div>
+  </div>
+  <nav class="flex gap-2 mr-auto flex-wrap text-sm font-bold">
+    <a href="#A" class="pick px-4 py-2 rounded-full bg-emerald-500 text-black">A · تنفيذي</a>
+    <a href="#B" class="pick px-4 py-2 rounded-full bg-white/10 border border-white/15">B · مباشر داكن</a>
+    <a href="#C" class="pick px-4 py-2 rounded-full bg-white/10 border border-white/15">C · نظيف SaaS</a>
+    <a href="#D" class="pick px-4 py-2 rounded-full bg-white/10 border border-white/15">D · مدمج</a>
+    <a href="#E" class="pick px-4 py-2 rounded-full bg-white/10 border border-white/15">E · جغرافي</a>
+  </nav>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 py-8 space-y-16">
+
+<!-- ================= A ================= -->
+<div class="flex items-center gap-3">
+  <span class="w-10 h-10 grid place-items-center rounded-2xl bg-emerald-500 text-black font-black">A</span>
+  <div><h2 class="font-black text-2xl">التصميم A — تنفيذي (KPI + منحنى + مصادر)</h2>
+  <p class="text-white/50 text-sm">أنسب لو عايز نظرة شاملة سريعة: 4 كروت + رسم 14 يوم + دونات + أعلى الصفحات. نفس روح الداشبورد الحالية.</p></div>
+</div>
+<section id="A" class="rounded-3xl bg-[#f3f1ea] text-[#1d2421] p-5 sm:p-8 shadow-2xl" dir="rtl">
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-5">
+    <div><h3 class="font-black text-xl">نظرة عامة على الزيارات</h3><p class="text-sm text-black/50">آخر 30 يوم · محدث منذ 5 دقايق</p></div>
+    <div class="flex gap-2 text-sm font-bold">
+      <span class="px-3 py-1.5 rounded-full bg-black text-white">30 يوم</span>
+      <span class="px-3 py-1.5 rounded-full bg-black/5">7 أيام</span>
+      <span class="px-3 py-1.5 rounded-full bg-black/5">اليوم</span>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+    <div class="bg-white rounded-2xl p-4 border border-black/10"><div class="text-xs font-bold text-black/50">👁 إجمالي الزيارات</div><div class="num font-black text-3xl">12,847</div><div class="text-xs font-bold text-emerald-700">▲ +18.2% عن الشهر اللي فات</div></div>
+    <div class="bg-white rounded-2xl p-4 border border-black/10"><div class="text-xs font-bold text-black/50">🧍 زوار متفردون</div><div class="num font-black text-3xl">8,392</div><div class="text-xs font-bold text-emerald-700">▲ +12.4%</div></div>
+    <div class="bg-white rounded-2xl p-4 border border-black/10"><div class="text-xs font-bold text-black/50">⏱ متوسط الجلسة</div><div class="num font-black text-3xl">2:47</div><div class="text-xs font-bold text-red-600">▼ -0:12 ثانية</div></div>
+    <div class="bg-[#1d2421] text-white rounded-2xl p-4"><div class="text-xs font-bold text-white/60">🔥 زوار اليوم</div><div class="num font-black text-3xl text-emerald-300">486</div><div class="text-xs font-bold text-white/60">32 متواجد الآن <span class="dot-live inline-block w-2 h-2 rounded-full bg-emerald-400"></span></div></div>
+  </div>
+  <div class="grid lg:grid-cols-3 gap-3">
+    <div class="lg:col-span-2 bg-white rounded-2xl p-4 border border-black/10">
+      <div class="flex justify-between text-sm font-bold mb-2"><span>الزيارات — آخر 14 يوم</span><span class="text-black/40">أعلى يوم: السبت 1,240</span></div>
+      <svg viewBox="0 0 560 180" class="w-full h-44">
+        <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0,150 L40,140 L80,142 L120,120 L160,125 L200,100 L240,110 L280,85 L320,90 L360,70 L400,78 L440,55 L480,62 L520,35 L560,42 L560,180 L0,180Z" fill="url(#ga)" opacity=".35"/>
+        <path d="M0,150 L40,140 L80,142 L120,120 L160,125 L200,100 L240,110 L280,85 L320,90 L360,70 L400,78 L440,55 L480,62 L520,35 L560,42" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="520" cy="35" r="5" fill="#059669" stroke="#fff" stroke-width="2"/>
+      </svg>
+      <div class="flex justify-between tick text-black/40 font-bold px-1"><span>قبل 14 يوم</span><span>قبل 7 أيام</span><span>اليوم</span></div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 border border-black/10">
+      <div class="font-bold text-sm mb-3">مصادر الزيارات</div>
+      <div class="flex items-center gap-4">
+        <svg viewBox="0 0 120 120" class="w-28 h-28"><circle cx="60" cy="60" r="48" fill="none" stroke="#e5e0d3" stroke-width="16"/><circle cx="60" cy="60" r="48" fill="none" stroke="#059669" stroke-width="16" stroke-dasharray="150 301" stroke-linecap="round" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="48" fill="none" stroke="#d97706" stroke-width="16" stroke-dasharray="75 301" stroke-dashoffset="-150" stroke-linecap="round" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="48" fill="none" stroke="#1d2421" stroke-width="16" stroke-dasharray="45 301" stroke-dashoffset="-225" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+        <div class="space-y-2 text-sm font-bold">
+          <div><span class="inline-block w-3 h-3 rounded bg-emerald-600 ml-1"></span>Google ‏<span class="num">52%</span></div>
+          <div><span class="inline-block w-3 h-3 rounded bg-amber-600 ml-1"></span>سوشيال ‏<span class="num">25%</span></div>
+          <div><span class="inline-block w-3 h-3 rounded bg-neutral-800 ml-1"></span>مباشر ‏<span class="num">15%</span></div>
+          <div class="text-black/40">أخرى 8%</div>
+        </div>
+      </div>
+      <div class="mt-4 text-xs bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-bold">💡 LinkedIn جاب 3x زيارات بعد آخر بوست — كرر النشر يوم السبت.</div>
+    </div>
+  </div>
+  <div class="mt-3 bg-white rounded-2xl border border-black/10 overflow-hidden">
+    <div class="font-bold text-sm p-4 pb-0">📄 أعلى الصفحات زيارة</div>
+    <table class="w-full text-sm mt-2"><tr class="text-black/40 text-xs"><td class="p-3">الصفحة</td><td>الزيارات</td><td>المدة</td><td>ارتداد</td></tr>
+    <tr class="border-t border-black/10 font-bold"><td class="p-3">/ — الرئيسية</td><td class="num">5,210</td><td class="num">3:12</td><td class="num">32%</td></tr>
+    <tr class="border-t border-black/10 font-bold"><td class="p-3">/projects/melano</td><td class="num">2,140</td><td class="num">2:05</td><td class="num">41%</td></tr>
+    <tr class="border-t border-black/10 font-bold"><td class="p-3">/cv — تحميل CV</td><td class="num">1,870</td><td class="num">1:12</td><td class="num">58%</td></tr></table>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<div class="flex items-center gap-3">
+  <span class="w-10 h-10 grid place-items-center rounded-2xl bg-amber-400 text-black font-black">B</span>
+  <div><h2 class="font-black text-2xl">التصميم B — نبض مباشر (داكن + Live)</h2>
+  <p class="text-white/50 text-sm">إحساس realtime: رقم كبير بينبض + أعمدة الساعات + فيد لحظي + أجهزة. مبهر لو بتفتح الداشبورد كتير.</p></div>
+</div>
+<section id="B" class="rounded-3xl bg-[#101513] border border-white/10 p-5 sm:p-8" dir="rtl">
+  <div class="flex items-center gap-2 text-xs font-bold text-emerald-300 mb-4"><span class="dot-live w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> مباشر — 32 زائر يتصفحون الآن</div>
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="rounded-2xl bg-gradient-to-b from-emerald-500/20 to-transparent border border-emerald-400/20 p-6 text-center">
+      <div class="text-sm text-white/50 font-bold">زوار اليوم</div>
+      <div class="num font-black text-6xl text-emerald-300">486</div>
+      <div class="text-xs font-bold text-white/50 mt-1">أمس في نفس التوقيت: 402 (▲ +21%)</div>
+      <div class="grid grid-cols-3 gap-2 mt-4 text-center">
+        <div class="bg-white/5 rounded-xl p-2"><div class="num font-black">12.8k</div><div class="text-[11px] text-white/40">الشهر</div></div>
+        <div class="bg-white/5 rounded-xl p-2"><div class="num font-black">8.3k</div><div class="text-[11px] text-white/40">متفرد</div></div>
+        <div class="bg-white/5 rounded-xl p-2"><div class="num font-black">38%</div><div class="text-[11px] text-white/40">ارتداد</div></div>
+      </div>
+    </div>
+    <div class="lg:col-span-2 rounded-2xl bg-white/5 border border-white/10 p-5">
+      <div class="font-bold text-sm mb-3">النشاط بالساعة — اليوم <span class="text-white/40">· الذروة 8–10 مساءً</span></div>
+      <div class="flex items-end gap-1.5 h-40" dir="ltr">
+        <div class="bar flex-1 bg-white/10" style="height:18%"></div><div class="bar flex-1 bg-white/10" style="height:12%"></div><div class="bar flex-1 bg-white/10" style="height:10%"></div><div class="bar flex-1 bg-white/10" style="height:15%"></div><div class="bar flex-1 bg-white/10" style="height:25%"></div><div class="bar flex-1 bg-white/10" style="height:35%"></div><div class="bar flex-1 bg-emerald-500/40" style="height:48%"></div><div class="bar flex-1 bg-emerald-500/60" style="height:62%"></div><div class="bar flex-1 bg-emerald-400" style="height:88%"></div><div class="bar flex-1 bg-amber-400" style="height:100%"></div><div class="bar flex-1 bg-emerald-400" style="height:76%"></div><div class="bar flex-1 bg-white/15" style="height:40%"></div>
+      </div>
+      <div class="flex justify-between text-[11px] text-white/40 mt-2 font-bold" dir="ltr"><span>12am</span><span>6am</span><span>12pm</span><span>9pm ●</span></div>
+    </div>
+  </div>
+  <div class="grid lg:grid-cols-2 gap-4 mt-4">
+    <div class="rounded-2xl bg-white/5 border border-white/10 p-5">
+      <div class="font-bold text-sm mb-3">⚡ فيد لحظي</div>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between bg-white/5 rounded-xl px-3 py-2"><span>🇪🇬 القاهرة · /projects/melano</span><span class="num text-white/40">الآن</span></div>
+        <div class="flex justify-between bg-white/5 rounded-xl px-3 py-2"><span>🇸🇦 الرياض · /cv</span><span class="num text-white/40">من دقيقة</span></div>
+        <div class="flex justify-between bg-white/5 rounded-xl px-3 py-2"><span>🇩🇪 برلين · / — الرئيسية</span><span class="num text-white/40">من 3 دقايق</span></div>
+        <div class="flex justify-between bg-white/5 rounded-xl px-3 py-2"><span>🇦🇪 دبي · /projects/nassy</span><span class="num text-white/40">من 5 دقايق</span></div>
+      </div>
+    </div>
+    <div class="rounded-2xl bg-white/5 border border-white/10 p-5">
+      <div class="font-bold text-sm mb-3">📱 الأجهزة والمتصفحات</div>
+      <div class="space-y-3 text-sm font-bold">
+        <div><div class="flex justify-between mb-1"><span>📱 موبايل</span><span class="num">64%</span></div><div class="h-2 rounded-full bg-white/10"><div class="h-2 rounded-full bg-emerald-400" style="width:64%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>💻 ديسكتوب</span><span class="num">29%</span></div><div class="h-2 rounded-full bg-white/10"><div class="h-2 rounded-full bg-amber-400" style="width:29%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>📟 تابلت</span><span class="num">7%</span></div><div class="h-2 rounded-full bg-white/10"><div class="h-2 rounded-full bg-white/40" style="width:7%"></div></div></div>
+      </div>
+      <div class="mt-3 text-xs text-white/40 font-bold">Chrome ‏<span class="num">71%</span> · Safari ‏<span class="num">18%</span> · Edge ‏<span class="num">8%</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<div class="flex items-center gap-3">
+  <span class="w-10 h-10 grid place-items-center rounded-2xl bg-sky-500 text-black font-black">C</span>
+  <div><h2 class="font-black text-2xl">التصميم C — نظيف SaaS (أبيض هادي)</h2>
+  <p class="text-white/50 text-sm">ستايل Vercel/Plausible: هادي ونضيف، تبويبات فترة + كيرف + دول + referrers. أسهل واحد للقراءة اليومية.</p></div>
+</div>
+<section id="C" class="rounded-3xl bg-white text-slate-900 p-5 sm:p-8" dir="rtl">
+  <div class="flex items-center justify-between flex-wrap gap-3 pb-4 border-b border-slate-100">
+    <div class="font-black">Analytics <span class="text-slate-400 font-medium text-sm">my-portfolio · آخر 30 يوم</span></div>
+    <div class="flex gap-1 text-sm font-bold bg-slate-100 rounded-full p-1"><span class="px-3 py-1 rounded-full bg-white shadow">30d</span><span class="px-3 py-1 text-slate-400">7d</span><span class="px-3 py-1 text-slate-400">24h</span></div>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-5 border-b border-slate-100">
+    <div><div class="text-xs text-slate-400 font-bold">Unique visitors</div><div class="num font-black text-2xl">8,392 <span class="text-xs text-emerald-600 font-bold">+12%</span></div></div>
+    <div><div class="text-xs text-slate-400 font-bold">Total visits</div><div class="num font-black text-2xl">12,847 <span class="text-xs text-emerald-600 font-bold">+18%</span></div></div>
+    <div><div class="text-xs text-slate-400 font-bold">Bounce rate</div><div class="num font-black text-2xl">38% <span class="text-xs text-red-500 font-bold">+2%</span></div></div>
+    <div><div class="text-xs text-slate-400 font-bold">Visit duration</div><div class="num font-black text-2xl">2m 47s</div></div>
+  </div>
+  <svg viewBox="0 0 600 160" class="w-full h-40 mt-4"><path d="M0,130 L50,120 L100,122 L150,105 L200,108 L250,88 L300,92 L350,70 L400,75 L450,55 L500,60 L550,35 L600,42" fill="none" stroke="#0ea5e9" stroke-width="2.5"/><circle cx="550" cy="35" r="4" fill="#0ea5e9"/></svg>
+  <div class="grid md:grid-cols-3 gap-6 mt-4 text-sm">
+    <div><div class="font-black mb-2 text-xs uppercase tracking-wide text-slate-400">Top countries</div>
+      <div class="space-y-2 font-bold"><div class="flex justify-between">🇪🇬 Egypt <span class="num">4,210</span></div><div class="flex justify-between">🇸🇦 Saudi <span class="num">1,860</span></div><div class="flex justify-between">🇦🇪 UAE <span class="num">940</span></div><div class="flex justify-between">🇩🇪 Germany <span class="num">620</span></div></div></div>
+    <div><div class="font-black mb-2 text-xs uppercase tracking-wide text-slate-400">Top referrers</div>
+      <div class="space-y-2 font-bold"><div class="flex justify-between">google.com <span class="num">5,100</span></div><div class="flex justify-between">linkedin.com <span class="num">2,300</span></div><div class="flex justify-between">github.com <span class="num">980</span></div><div class="flex justify-between">direct <span class="num">1,900</span></div></div></div>
+    <div class="bg-slate-50 rounded-2xl p-4"><div class="font-black mb-1">🎯 هدف: تحميل CV</div><div class="num font-black text-3xl">1,240 <span class="text-sm font-bold text-slate-400">تحويل 9.6%</span></div><div class="h-2 bg-slate-200 rounded-full mt-2"><div class="h-2 bg-sky-500 rounded-full" style="width:38%"></div></div><div class="text-xs text-slate-500 mt-2 font-bold">38% وصلوا لصفحة CV · ‏9.6% حملوا فعلاً</div></div>
+  </div>
+</section>
+
+<!-- ================= D ================= -->
+<div class="flex items-center gap-3">
+  <span class="w-10 h-10 grid place-items-center rounded-2xl bg-violet-500 text-black font-black">D</span>
+  <div><h2 class="font-black text-2xl">التصميم D — مدمج (شريط + Funnel + Heatmap)</h2>
+  <p class="text-white/50 text-sm">مصمم يتركب فوق الداشبورد الحالية بدون ما ياخد مساحة: شريط 5 أرقام + قمع التحويل + خريطة حرارية للأسبوع.</p></div>
+</div>
+<section id="D" class="rounded-3xl bg-[#171a26] border border-violet-400/20 p-5 sm:p-8" dir="rtl">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-[11px] text-white/40 font-bold">اليوم</div><div class="num font-black text-2xl">486</div><div class="text-[11px] text-emerald-400 font-bold">▲ +21%</div></div>
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-[11px] text-white/40 font-bold">أمس</div><div class="num font-black text-2xl">402</div><div class="text-[11px] text-white/40 font-bold">عادي</div></div>
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-[11px] text-white/40 font-bold">7 أيام</div><div class="num font-black text-2xl">3.1k</div><div class="text-[11px] text-emerald-400 font-bold">▲ +9%</div></div>
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-[11px] text-white/40 font-bold">30 يوم</div><div class="num font-black text-2xl">12.8k</div><div class="text-[11px] text-emerald-400 font-bold">▲ +18%</div></div>
+    <div class="bg-violet-500 rounded-2xl p-4 text-black"><div class="text-[11px] font-bold">متواجد الآن</div><div class="num font-black text-2xl">32</div><div class="text-[11px] font-bold">● live</div></div>
+  </div>
+  <div class="grid md:grid-cols-2 gap-3 mt-3">
+    <div class="bg-white/5 rounded-2xl p-5 border border-white/10">
+      <div class="font-bold text-sm mb-3">🔻 قمع التحويل (من زائر لتواصل)</div>
+      <div class="space-y-2 text-sm font-bold">
+        <div><div class="flex justify-between text-xs mb-1"><span>زار الموقع</span><span class="num">12,847 (100%)</span></div><div class="h-3 rounded-full bg-white/10"><div class="h-3 rounded-full bg-violet-400" style="width:100%"></div></div></div>
+        <div><div class="flex justify-between text-xs mb-1"><span>فتح مشروع</span><span class="num">5,420 (42%)</span></div><div class="h-3 rounded-full bg-white/10"><div class="h-3 rounded-full bg-violet-400/80" style="width:42%"></div></div></div>
+        <div><div class="flex justify-between text-xs mb-1"><span>فتح صفحة CV</span><span class="num">1,870 (14%)</span></div><div class="h-3 rounded-full bg-white/10"><div class="h-3 rounded-full bg-amber-400" style="width:24%"></div></div></div>
+        <div><div class="flex justify-between text-xs mb-1"><span>ضغط تواصل/تحميل</span><span class="num">640 (5%)</span></div><div class="h-3 rounded-full bg-white/10"><div class="h-3 rounded-full bg-emerald-400" style="width:12%"></div></div></div>
+      </div>
+    </div>
+    <div class="bg-white/5 rounded-2xl p-5 border border-white/10">
+      <div class="font-bold text-sm mb-1">🗓 نشاط الأسبوع (Heatmap)</div>
+      <div class="text-[11px] text-white/40 mb-3 font-bold">اللون الأقوى = زيارات أكتر · انشر السبت 8م</div>
+      <div class="grid grid-cols-7 gap-1.5" dir="ltr">
+        <div class="hmap bg-violet-500/15"></div><div class="hmap bg-violet-500/25"></div><div class="hmap bg-violet-500/40"></div><div class="hmap bg-violet-500/60"></div><div class="hmap bg-violet-500/80"></div><div class="hmap bg-amber-400"></div><div class="hmap bg-violet-500/50"></div>
+        <div class="hmap bg-violet-500/20"></div><div class="hmap bg-violet-500/30"></div><div class="hmap bg-violet-500/45"></div><div class="hmap bg-violet-500/65"></div><div class="hmap bg-violet-400"></div><div class="hmap bg-amber-400"></div><div class="hmap bg-violet-500/40"></div>
+      </div>
+      <div class="flex justify-between text-[11px] text-white/40 mt-2 font-bold" dir="ltr"><span>Mon</span><span>Wed</span><span>Fri</span><span>Sat●</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E ================= -->
+<div class="flex items-center gap-3">
+  <span class="w-10 h-10 grid place-items-center rounded-2xl bg-orange-500 text-black font-black">E</span>
+  <div><h2 class="font-black text-2xl">التصميم E — جغرافي وسلوكي</h2>
+  <p class="text-white/50 text-sm">لو مهتم منين بيجيلك الشغل: دول + مدن + جديد ضد راجع + أكتر مشاريع اتفتحت + متصفحات.</p></div>
+</div>
+<section id="E" class="rounded-3xl bg-[#faf6ef] text-[#22201a] p-5 sm:p-8" dir="rtl">
+  <div class="grid md:grid-cols-3 gap-3">
+    <div class="md:col-span-2 bg-white rounded-2xl border border-black/10 p-5">
+      <div class="font-black text-sm mb-3">🌍 منين بيجيلك الزوار؟</div>
+      <div class="space-y-3 text-sm font-bold">
+        <div><div class="flex justify-between mb-1"><span>🇪🇬 مصر — القاهرة / إسكندرية</span><span class="num">4,210 · 33%</span></div><div class="h-2.5 bg-black/10 rounded-full"><div class="h-2.5 bg-orange-500 rounded-full" style="width:70%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>🇸🇦 السعودية — الرياض / جدة</span><span class="num">1,860 · 14%</span></div><div class="h-2.5 bg-black/10 rounded-full"><div class="h-2.5 bg-orange-500/70 rounded-full" style="width:38%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>🇦🇪 الإمارات — دبي</span><span class="num">940 · 7%</span></div><div class="h-2.5 bg-black/10 rounded-full"><div class="h-2.5 bg-orange-500/50 rounded-full" style="width:22%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>🇩🇪 ألمانيا + 🇬🇧 بريطانيا</span><span class="num">980 · 8%</span></div><div class="h-2.5 bg-black/10 rounded-full"><div class="h-2.5 bg-black/60 rounded-full" style="width:24%"></div></div></div>
+      </div>
+      <div class="mt-3 text-xs font-bold bg-orange-50 border border-orange-200 rounded-xl p-2.5">💡 47% من زوار الخليج فتحوا صفحة CV — حط نسخة عربية من CV قدامهم.</div>
+    </div>
+    <div class="space-y-3">
+      <div class="bg-[#22201a] text-white rounded-2xl p-5 text-center"><div class="text-xs text-white/50 font-bold">جديد vs راجع</div><div class="num font-black text-3xl">71% <span class="text-sm font-bold text-white/50">جديد</span></div><div class="flex h-2.5 rounded-full overflow-hidden mt-2" dir="ltr"><div class="bg-orange-500" style="width:71%"></div><div class="bg-white/20" style="width:29%"></div></div><div class="text-[11px] text-white/40 mt-1 font-bold">29% بيرجعوا — علامة كويسة 👍</div></div>
+      <div class="bg-white rounded-2xl border border-black/10 p-5"><div class="font-black text-sm mb-2">🔥 أكتر مشاريع اتفتحت</div><div class="text-sm font-bold space-y-1.5"><div class="flex justify-between"><span>Melano</span><span class="num">2,140</span></div><div class="flex justify-between"><span>Nassy</span><span class="num">1,720</span></div><div class="flex justify-between"><span>CV Builder</span><span class="num">1,105</span></div></div></div>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+    <div class="bg-white rounded-2xl border border-black/10 p-4 text-center"><div class="text-xs font-bold text-black/40">متوسط الجلسة</div><div class="num font-black text-2xl">2:47</div></div>
+    <div class="bg-white rounded-2xl border border-black/10 p-4 text-center"><div class="text-xs font-bold text-black/40">صفحات / زيارة</div><div class="num font-black text-2xl">3.2</div></div>
+    <div class="bg-white rounded-2xl border border-black/10 p-4 text-center"><div class="text-xs font-bold text-black/40">معدل الارتداد</div><div class="num font-black text-2xl">38%</div></div>
+    <div class="bg-white rounded-2xl border border-black/10 p-4 text-center"><div class="text-xs font-bold text-black/40">تحميل CV</div><div class="num font-black text-2xl">640</div></div>
+  </div>
+</section>
+
+<div class="rounded-3xl border border-emerald-400/30 bg-emerald-500/10 p-6 text-center">
+  <div class="font-black text-xl">عجبك واحد؟ قولي رقمه 👇</div>
+  <p class="text-white/60 text-sm mt-1">قولي مثلا: <b class="text-white">«عايز B»</b> أو <b class="text-white">«ادمج A + D»</b> — وهركبهولك في الداشبورد الحقيقية مع بيانات Supabase حقيقية + تتبع تلقائي للزيارات.</p>
+  <p class="text-white/40 text-xs mt-2">ملحوظة: عشان الأرقام تبقى حقيقية هنحتاج جدول visits في Supabase + كود تتبع صغير — هعملهولك بعد ما تختار.</p>
+</div>
+
+</div>
+</body>
+</html>

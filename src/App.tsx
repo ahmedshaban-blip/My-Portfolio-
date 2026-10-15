@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatedBackground } from "@/components/animations/AnimatedBackground";
 import { AdminAuthGuard } from "@/components/admin/AdminAuthGuard";
 import { SECRET_ADMIN_PATH, useSecretHotkey } from "@/hooks/use-secret-hotkey";
+import { useVisitTracker } from "@/hooks/use-visit-tracker";
 import { Suspense, lazy } from "react";
 const CVDashboard = lazy(() => import("./pages/CVDashboard"));
 // OPTIMIZE: react-query only serves the private admin route — keep it out of
@@ -20,6 +21,7 @@ import NotFound from "./pages/NotFound";
 
 const AppRoutes = () => {
   useSecretHotkey();
+  useVisitTracker();
 
   return (
     <Routes>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
+import { AnalyticsSection } from "@/components/admin/AnalyticsSection";
 import { useToast } from "@/hooks/use-toast";
 import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCloudinaryUploadEndpoint, getCVDownloadUrl } from "@/config/cv";
 
@@ -216,17 +217,19 @@ export default function CVDashboard() {
       <section className="container mx-auto max-w-6xl space-y-8">
         <div className="space-y-4 text-center">
           <Badge className="rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/10">Private Admin</Badge>
-          <h1 className="text-gradient text-4xl font-extrabold tracking-tight sm:text-5xl">CV Upload Dashboard</h1>
+          <h1 className="text-gradient text-4xl font-extrabold tracking-tight sm:text-5xl">Dashboard</h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            Upload each PDF independently. Existing public download buttons will keep the same Cloudinary URLs.
+            Traffic analysis, plus independent CV uploads. Public download buttons keep the same Cloudinary URLs.
           </p>
         </div>
 
-        <Tabs defaultValue="flutter" className="space-y-6">
-          <TabsList className="mx-auto grid h-auto w-full max-w-xl grid-cols-2 rounded-full bg-muted/70 p-1.5">
+        <Tabs defaultValue="analytics" className="space-y-6">
+          <TabsList className="mx-auto grid h-auto w-full max-w-xl grid-cols-3 rounded-full bg-muted/70 p-1.5">
+            <TabsTrigger value="analytics" className="rounded-full py-3">Analytics</TabsTrigger>
             <TabsTrigger value="flutter" className="rounded-full py-3">Flutter CV</TabsTrigger>
             <TabsTrigger value="frontend" className="rounded-full py-3">Frontend CV</TabsTrigger>
           </TabsList>
+          <TabsContent value="analytics"><AnalyticsSection /></TabsContent>
           <TabsContent value="flutter">{renderTrackPanel("flutter")}</TabsContent>
           <TabsContent value="frontend">{renderTrackPanel("frontend")}</TabsContent>
         </Tabs>

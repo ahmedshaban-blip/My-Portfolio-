@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Activity, Eye, FileDown, MousePointerClick, Timer, Users } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Activity, Eye, FileDown, MousePointerClick, Timer, Trash2, Users } from "lucide-react";
+import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,6 +76,36 @@ export function AnalyticsSection() {
   const customValid = Boolean(custom.from && custom.to && custom.from <= custom.to);
   const { data, isPending, isError } = useVisitsAnalytics(range, customValid ? custom : undefined);
   const [ownerMarked, setOwnerMarked] = useState(isOwnerDevice);
+  const queryClient = useQueryClient();
+  const [resetScope, setResetScope] = useState<"visits" | "cv" | null>(null);
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetMsg, setResetMsg] = useState("");
+
+  const handleReset = async (scope: "visits" | "cv") => {
+    if (resetScope !== scope) {
+      setResetScope(scope);
+      setResetMsg("");
+      return;
+    }
+    setResetBusy(true);
+    try {
+      const pin = sessionStorage.getItem(ADMIN_PIN_SESSION_KEY) ?? "";
+      const res = await fetch("/api/visit-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${pin}` },
+        body: JSON.stringify({ scope }),
+      });
+      const json = (await res.json()) as { ok?: boolean; deleted?: number; error?: string };
+      if (!res.ok || !json.ok) throw new Error(json.error ?? "Reset failed.");
+      setResetMsg(`Cleared ${json.deleted ?? 0} keys — starting fresh.`);
+      await queryClient.invalidateQueries({ queryKey: ["visits-analytics"] });
+    } catch (error) {
+      setResetMsg(error instanceof Error ? error.message : "Reset failed.");
+    } finally {
+      setResetBusy(false);
+      setResetScope(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -445,6 +477,38 @@ export function AnalyticsSection() {
             </CardContent>
           </Card>
           </div>
+
+          {/* ── Danger zone ──────────────────────────── */}
+          <Card className="modern-card border-destructive/30">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-destructive"><Trash2 className="h-4 w-4" /> Danger zone</CardTitle>
+              <CardDescription>Wipe stored analytics and start fresh. This cannot be undone.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant={resetScope === "visits" ? "destructive" : "outline"}
+                size="sm"
+                disabled={resetBusy}
+                onClick={() => void handleReset("visits")}
+                className="rounded-full"
+              >
+                {resetScope === "visits" ? "Click again to confirm visits reset" : "Reset visits history"}
+              </Button>
+              <Button
+                type="button"
+                variant={resetScope === "cv" ? "destructive" : "outline"}
+                size="sm"
+                disabled={resetBusy}
+                onClick={() => void handleReset("cv")}
+                className="rounded-full"
+              >
+                {resetScope === "cv" ? "Click again to confirm CV reset" : "Reset CV downloads"}
+              </Button>
+              {resetBusy && <span className="text-xs text-muted-foreground">Clearing…</span>}
+              {resetMsg && <span className="text-xs font-semibold">{resetMsg}</span>}
+            </CardContent>
+          </Card>
         </>
       )}
     </div>

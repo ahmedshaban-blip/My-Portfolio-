@@ -120,11 +120,12 @@ export function DateRangePicker({ value, active, onApply, onClear }: DateRangePi
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="max-h-[min(90vh,660px)] w-auto max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border-border/60 p-0 shadow-2xl"
+        collisionPadding={12}
+        className="max-h-[var(--radix-popover-content-available-height)] w-auto max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-2xl border-border/60 p-0 shadow-2xl"
       >
         <div className="flex flex-col sm:flex-row">
-          <aside className="flex shrink-0 flex-col gap-0.5 border-b border-border/60 p-2.5 sm:w-44 sm:border-b-0 sm:border-e">
-            <p className="px-2 pb-1.5 pt-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+          <aside className="flex shrink-0 flex-wrap gap-1 border-b border-border/60 p-2.5 sm:w-44 sm:flex-col sm:flex-nowrap sm:gap-0.5 sm:border-b-0 sm:border-e">
+            <p className="w-full px-2 pb-1 pt-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:pb-1.5 sm:pt-1">
               Quick ranges
             </p>
             {PRESETS.map((preset) => {
@@ -136,7 +137,7 @@ export function DateRangePicker({ value, active, onApply, onClear }: DateRangePi
                   type="button"
                   onClick={() => apply(range)}
                   className={cn(
-                    "rounded-lg px-2 py-1.5 text-start text-sm font-semibold transition-colors",
+                    "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:rounded-lg sm:px-2 sm:text-start sm:text-sm sm:font-semibold",
                     isCurrent
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -146,7 +147,7 @@ export function DateRangePicker({ value, active, onApply, onClear }: DateRangePi
                 </button>
               );
             })}
-            <p className="mt-auto px-2 pb-1 pt-4 text-[11px] font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-auto hidden px-2 pb-1 pt-4 text-[11px] font-medium leading-relaxed text-muted-foreground sm:block">
               Or pick any start and end date on the calendar — spans over 180 days are grouped by month.
             </p>
           </aside>
@@ -170,7 +171,7 @@ export function DateRangePicker({ value, active, onApply, onClear }: DateRangePi
                 })
               }
             />
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 px-3 py-2.5">
+            <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 bg-popover/95 px-3 py-2.5 backdrop-blur-sm">
               <span className="text-xs font-semibold text-muted-foreground">
                 {valid ? (
                   <>

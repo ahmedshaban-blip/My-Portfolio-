@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { ANALYTICS_CONFIG } from "../src/lib/analytics-config";
 
 type VercelRequest = {
   method?: string;
@@ -123,7 +124,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pipe.incr(`v:own:day:${day}`);
       pipe.zadd(`v:own:live`, { score: ts, member: `${ts}:${session}:${place}:${path}` });
       pipe.lpush(`v:own:feed`, JSON.stringify({ place, path, ts }));
-      pipe.ltrim(`v:own:feed`, 0, 19);
+      pipe.ltrim(`v:own:feed`, 0, ANALYTICS_CONFIG.feedStoredCount - 1);
       pipe.expire(`v:own:day:${day}`, DAY_TTL_SECONDS);
       pipe.expire(`v:own:feed`, 7 * 24 * 60 * 60);
       pipe.expire(`v:own:live`, 24 * 60 * 60);
@@ -138,7 +139,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pipe.incr(`v:bot:day:${day}`);
       pipe.persist(`v:bot:day:${day}`);
       pipe.lpush(`v:feed`, JSON.stringify({ place, path, ts, bot: true }));
-      pipe.ltrim(`v:feed`, 0, 19);
+      pipe.ltrim(`v:feed`, 0, ANALYTICS_CONFIG.feedStoredCount - 1);
       await pipe.exec();
       return response.status(200).json({ ok: true, stored: "bot" });
     }
@@ -164,7 +165,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     pipe.hincrby(`v:browser:${day}`, browser, 1);
     pipe.zadd(`v:live`, { score: ts, member: `${ts}:${session}:${place}:${path}` });
     pipe.lpush(`v:feed`, JSON.stringify({ place, path, ts }));
-    pipe.ltrim(`v:feed`, 0, 19);
+    pipe.ltrim(`v:feed`, 0, ANALYTICS_CONFIG.feedStoredCount - 1);
     pipe.expire(`v:page:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:device:${day}`, DAY_TTL_SECONDS);
     pipe.expire(`v:source:${day}`, DAY_TTL_SECONDS);

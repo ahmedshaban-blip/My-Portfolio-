@@ -181,8 +181,10 @@ export function areaPaths(values: number[], w: number, h: number, pad = 6) {
   const pts = values.map((v, i) => [i * stepX, y(v)] as const);
   const line = pts.map(([x, yy], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${yy.toFixed(1)}`).join(" ");
   const area = `${line} L${w},${h} L0,${h} Z`;
+  // All-zero series (e.g. right after a reset) has no real peak — point at the end.
   const peakIdx = values.indexOf(max);
-  return { line, area, peak: { x: pts[peakIdx][0], y: pts[peakIdx][1] } };
+  const peakPt = (peakIdx >= 0 ? pts[peakIdx] : pts[pts.length - 1]) ?? ([0, h] as const);
+  return { line, area, peak: { x: peakPt[0], y: peakPt[1] } };
 }
 
 export function detectDevice(): VisitRow["device"] {

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { areaPaths, formatDuration } from "@/lib/analytics";
+import { ANALYTICS_CONFIG } from "@/lib/analytics-config";
 import { isOwnerDevice, setOwnerDevice } from "@/hooks/use-visit-tracker";
 import { useVisitsAnalytics, type CustomRange, type RangeKey } from "@/hooks/use-visits-analytics";
 import { cn } from "@/lib/utils";
@@ -351,7 +352,9 @@ export function AnalyticsSection() {
                 <CardDescription>Latest visits as they happen</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {data.feed.length > 0 ? data.feed.map((f, i) => (
+                {data.feed.length > 0 ? (
+                <div className="space-y-2 overflow-y-auto pe-1" style={{ maxHeight: ANALYTICS_CONFIG.feedMaxHeightPx }}>
+                {data.feed.map((f, i) => (
                   <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-amber-500/40 bg-amber-500/10" : "bg-muted/50")}>
                     <span className="truncate font-semibold">
                       {f.you && <span className="me-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">YOU</span>}
@@ -360,7 +363,9 @@ export function AnalyticsSection() {
                     </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>
                   </div>
-                )) : (
+                ))}
+                </div>
+                ) : (
                   <p className="py-4 text-center text-sm text-muted-foreground">No visits recorded yet.</p>
                 )}
                 {data.source !== "live" && (

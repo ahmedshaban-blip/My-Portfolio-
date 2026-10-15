@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { ANALYTICS_CONFIG } from "../src/lib/analytics-config";
 
 type VercelRequest = {
   method?: string;
@@ -191,10 +192,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
     const ts = Date.now();
     const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, botsToday, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
       redis.zcount(`v:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
-      redis.lrange<string[]>(`v:feed`, 0, 7).catch(() => []),
+      redis.lrange<string[]>(`v:feed`, 0, ANALYTICS_CONFIG.feedFetchCount - 1).catch(() => []),
       redis.get<number>(`v:own:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
       redis.zcount(`v:own:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
-      redis.lrange<string[]>(`v:own:feed`, 0, 4).catch(() => []),
+      redis.lrange<string[]>(`v:own:feed`, 0, ANALYTICS_CONFIG.ownerFeedFetchCount - 1).catch(() => []),
       redis.get<number>(`v:bot:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:flutter:${d}`).catch(() => 0))),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:frontend:${d}`).catch(() => 0))),
@@ -280,7 +281,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pages: pageTotals,
       countries: countryTotals,
       browsers: browserTotals,
-      feed: [...ownFeed, ...feed].slice(0, 8),
+      feed: [...ownFeed, ...feed].slice(0, ANALYTICS_CONFIG.feedVisibleCount),
       botsToday: Number(botsToday) || 0,
       owner: { today: Number(ownToday) || 0, liveNow: Number(ownLive) || 0 },
       cv,

@@ -108,7 +108,7 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     hourly: json.hourly.length > 0 ? json.hourly : mock.hourly,
     sources: toPercentMap(json.sources, SOURCE_COLORS, "#a8a29e"),
     devices: toPercentMap(json.devices, DEVICE_COLORS, "#a8a29e").map((d) => ({
-      label: d.label[0].toUpperCase() + d.label.slice(1),
+      label: (d.label[0] ?? "").toUpperCase() + d.label.slice(1),
       value: d.value,
       color: d.color,
     })),

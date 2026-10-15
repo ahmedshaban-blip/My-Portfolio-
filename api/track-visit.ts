@@ -1,5 +1,25 @@
 import { Redis } from "@upstash/redis";
-import { ANALYTICS_CONFIG } from "../src/lib/analytics-config";
+
+// Same numbers as src/lib/analytics-config.ts (single source of truth).
+// Loaded dynamically so a bundling hiccup can never take the tracker down.
+const FALLBACK_CONFIG = {
+  feedVisibleCount: 15,
+  feedFetchCount: 20,
+  feedStoredCount: 50,
+  ownerFeedFetchCount: 6,
+  feedMaxHeightPx: 420,
+} as const;
+
+async function loadConfig() {
+  try {
+    const mod = (await import("../src/lib/analytics-config")) as {
+      ANALYTICS_CONFIG?: typeof FALLBACK_CONFIG;
+    };
+    return mod.ANALYTICS_CONFIG ?? FALLBACK_CONFIG;
+  } catch {
+    return FALLBACK_CONFIG;
+  }
+}
 
 type VercelRequest = {
   method?: string;
@@ -117,6 +137,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   try {
     const redis = new Redis({ url, token });
+    const ANALYTICS_CONFIG = await loadConfig();
 
     // Owner's own visits are counted apart — never pollute visitor stats.
     if (owner) {

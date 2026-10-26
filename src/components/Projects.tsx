@@ -145,16 +145,21 @@ const ProjectImage = memo(function ProjectImage({
   );
 });
 
+/** Cover images above this index are below the fold — defer them. */
+const EAGER_COVER_COUNT = 2;
+
 const ProjectCard = memo(function ProjectCard({
   project,
   isFlutter,
   reducedMotion,
+  priority,
   onSelect,
   onFullscreen,
 }: {
   project: Project;
   isFlutter: boolean;
   reducedMotion: boolean;
+  priority: boolean;
   onSelect: (p: Project) => void;
   onFullscreen: (p: Project) => void;
 }) {
@@ -175,7 +180,7 @@ const ProjectCard = memo(function ProjectCard({
               src={project.coverImage}
               alt={`${project.title} cover preview`}
               className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
-              eager
+              eager={priority}
             />
             {/* Hover / focus hint — mirrors the inline viewer */}
             <span
@@ -271,13 +276,25 @@ function isTabValue(value: string | null): value is TabValue {
   return value === "flutter" || value === "frontend";
 }
 
+/** slug -> owning tab, built once — avoids a linear scan per lookup. */
+const PROJECT_TAB_BY_SLUG: ReadonlyMap<string, TabValue> = new Map(
+  ALL_PROJECTS.map((p) => [
+    p.slug,
+    flutterProjects.some((f) => f.slug === p.slug) ? "flutter" : "frontend",
+  ]),
+);
+
+const PROJECT_BY_SLUG: ReadonlyMap<string, Project> = new Map(
+  ALL_PROJECTS.map((p) => [p.slug, p]),
+);
+
 function tabOfProject(project: Project): TabValue {
-  return flutterProjects.some((p) => p.slug === project.slug) ? "flutter" : "frontend";
+  return PROJECT_TAB_BY_SLUG.get(project.slug) ?? "frontend";
 }
 
 function projectBySlug(slug: string | null): Project | null {
   if (!slug) return null;
-  return ALL_PROJECTS.find((p) => p.slug === slug) ?? null;
+  return PROJECT_BY_SLUG.get(slug) ?? null;
 }
 
 /** Inline single-dialog viewer: preview image with fade, arrows, counter + fullscreen entry. */
@@ -993,6 +1010,11 @@ const Projects = () => {
   const [lightbox, setLightbox] = useState(false);
 
   // Shareable, refresh-safe state via search params only — the `#projects` anchor is never touched.
+  // `open` / `selected` / `tab` are intentionally NOT deps: this effect is the one
+  // place that reconciles URL -> state, and reacting to state it writes would loop.
+  // `reconciledSlug` mirrors the slug this effect last applied so an unrelated
+  // search-param write (e.g. a tab switch) can't reset the open lightbox.
+  const reconciledSlug = useRef<string | null>(null);
   useEffect(() => {
     const slugParam = searchParams.get("project");
     if (slugParam) {
@@ -1003,14 +1025,15 @@ const Projects = () => {
         setSearchParams(next, { replace: true });
         return;
       }
-      if (selected?.slug !== found.slug) {
+      if (reconciledSlug.current !== found.slug) {
+        reconciledSlug.current = found.slug;
         setSelected(found);
         setViewerIndex(0);
         setLightbox(false);
       }
-      if (!open) setOpen(true);
+      setOpen(true);
       const owner = tabOfProject(found);
-      if (tab !== owner) setTab(owner);
+      setTab((prev) => (prev === owner ? prev : owner));
       if (searchParams.get("tab") !== owner) {
         const next = new URLSearchParams(searchParams);
         next.set("tab", owner);
@@ -1018,10 +1041,11 @@ const Projects = () => {
       }
       return;
     }
-    if (open) setOpen(false);
+    reconciledSlug.current = null;
+    setOpen(false);
     const tabParam = searchParams.get("tab");
-    if (isTabValue(tabParam) && tabParam !== tab) setTab(tabParam);
-  }, [searchParams, open, selected, tab, setSearchParams]);
+    if (isTabValue(tabParam)) setTab((prev) => (prev === tabParam ? prev : tabParam));
+  }, [searchParams, setSearchParams]);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -1143,12 +1167,13 @@ const Projects = () => {
                   exit={{ opacity: 0, transition: { duration: 0.12 } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
                 >
-                  {flutterProjects.map((project) => (
+                  {flutterProjects.map((project, index) => (
                     <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
                       <ProjectCard
                         project={project}
                         isFlutter={true}
                         reducedMotion={reducedMotion}
+                        priority={index < EAGER_COVER_COUNT}
                         onSelect={handleSelect}
                         onFullscreen={handleFullscreen}
                       />
@@ -1165,12 +1190,13 @@ const Projects = () => {
                   exit={{ opacity: 0, transition: { duration: 0.12 } }}
                   className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
                 >
-                  {frontendProjects.map((project) => (
+                  {frontendProjects.map((project, index) => (
                     <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
                       <ProjectCard
                         project={project}
                         isFlutter={false}
                         reducedMotion={reducedMotion}
+                        priority={index < EAGER_COVER_COUNT}
                         onSelect={handleSelect}
                         onFullscreen={handleFullscreen}
                       />

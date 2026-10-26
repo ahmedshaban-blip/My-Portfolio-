@@ -21,9 +21,11 @@ const CODE_SNIPPETS = [
 ];
 
 // PERFORMANCE: Minimal background work for 90Hz foreground animations.
-const PARTICLE_COUNT = typeof window !== "undefined" && window.innerWidth < 768 ? 0 : 5;
-// PERFORMANCE: Cap DPR at 1 — background is decorative.
-const MAX_DPR = 1;
+// Particles are disabled on narrow viewports — the static CSS mesh is enough there.
+const isCompactViewport = () => typeof window !== "undefined" && window.innerWidth < 768;
+const PARTICLE_COUNT = isCompactViewport() ? 0 : 5;
+// PERFORMANCE: Cap DPR at 2 — enough crispness on Retina, half the fill cost of 3x.
+const MAX_DPR = 2;
 // PERFORMANCE: 20fps is enough for ambient background.
 const FRAME_INTERVAL = 50;
 
@@ -124,12 +126,8 @@ export function AnimatedBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    // Mobile: keep the static CSS mesh only, skip canvas work entirely.
-    if (particles.length === 0) {
-      const ctx = canvas.getContext("2d", { alpha: true });
-      ctx?.clearRect(0, 0, canvas.width || 1, canvas.height || 1);
-      return;
-    }
+    // Compact viewport: no canvas is mounted at all — nothing to drive.
+    if (particles.length === 0) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
@@ -213,9 +211,12 @@ export function AnimatedBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    // Compact viewport: particles are off and the static CSS mesh covers the
+    // background, so skip the full-screen canvas allocation entirely.
+    if (particles.length === 0) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     const setupCanvas = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
@@ -237,7 +238,8 @@ export function AnimatedBackground() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // PERFORMANCE: Debounced resize
+    // PERFORMANCE: Debounced resize — DPR can change when the window moves
+    // between displays, so re-read it on every rebuild.
     let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
       clearTimeout(resizeTimer);
@@ -264,9 +266,13 @@ export function AnimatedBackground() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       isAnimatingRef.current = false;
     };
-  }, []);
+  }, [particles]);
 
   // PERFORMANCE: No compositor hint on a full-screen canvas — avoids an extra layer.
+  // Compact viewports render nothing: the static CSS mesh already covers the page,
+  // so no full-screen canvas allocation is needed there.
+  if (particles.length === 0) return null;
+
   return (
     <canvas
       ref={canvasRef}

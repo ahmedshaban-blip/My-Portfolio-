@@ -30,8 +30,6 @@ export default defineConfig(({ mode }) => ({
           radix: [
             "@radix-ui/react-dialog",
             "@radix-ui/react-tabs",
-            "@radix-ui/react-toast",
-            "@radix-ui/react-tooltip",
           ],
           forms: ["react-hook-form", "@hookform/resolvers", "zod"],
           query: ["@tanstack/react-query"],

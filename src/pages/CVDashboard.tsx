@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import { AnalyticsSection } from "@/components/admin/AnalyticsSection";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { CLOUDINARY_CLOUD_NAME, CV_CONFIG, CVTrack, getCloudinaryRawUrl, getCloudinaryUploadEndpoint, getCVDownloadUrl } from "@/config/cv";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
@@ -20,7 +20,6 @@ const initialUploadState: UploadState = {
 };
 
 export default function CVDashboard() {
-  const { toast } = useToast();
   const [uploadState, setUploadState] = useState<UploadState>(initialUploadState);
 
   const uploadEndpoint = getCloudinaryUploadEndpoint();
@@ -54,15 +53,13 @@ export default function CVDashboard() {
     const validationError = validateFile(file);
 
     if (validationError) {
-      toast({ title: "Upload rejected", description: validationError, variant: "destructive" });
+      toast.error("Upload rejected", { description: validationError });
       return;
     }
 
     if (!isCloudinaryConfigured) {
-      toast({
-        title: "Cloudinary is not configured",
+      toast.error("Cloudinary is not configured", {
         description: "Add the required Cloudinary environment variables first.",
-        variant: "destructive",
       });
       return;
     }
@@ -112,12 +109,10 @@ export default function CVDashboard() {
       }
 
       updateTrackState(track, { previewVersion: Date.now(), uploadedUrl, uploadedPublicId });
-      toast({ title: "CV updated", description: `${config.label} was uploaded successfully.` });
+      toast.success("CV updated", { description: `${config.label} was uploaded successfully.` });
     } catch (error) {
-      toast({
-        title: "Upload failed",
+      toast.error("Upload failed", {
         description: error instanceof Error ? error.message : "Unexpected upload error.",
-        variant: "destructive",
       });
     } finally {
       updateTrackState(track, { isUploading: false });

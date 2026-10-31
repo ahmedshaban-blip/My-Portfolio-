@@ -54,7 +54,7 @@ const Hero = () => {
 
   const socials = [
     { icon: Github, href: "https://github.com/ahmedshaban-blip", label: "GitHub", hoverClass: "hover:text-primary" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/ahmedshaban-dev", label: "LinkedIn", hoverClass: "hover:text-primary" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/ahmed-shaban-front-cross", label: "LinkedIn", hoverClass: "hover:text-primary" },
     { icon: WhatsAppIcon, href: whatsappUrl, label: "WhatsApp", hoverClass: "hover:text-[#25D366]" },
     { icon: Mail, href: "mailto:ahmed.shabaan.dev@gmail.com", label: "Email", hoverClass: "hover:text-primary" },
   ];

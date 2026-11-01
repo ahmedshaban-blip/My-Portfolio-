@@ -31,7 +31,7 @@ const ModeToggle = () => {
       className="rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-300"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0 text-amber-500" />
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0 text-accent" />
       <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100 text-primary" />
       <span className="sr-only">Toggle theme</span>
     </Button>
@@ -47,12 +47,12 @@ const ReducedMotionToggle = () => {
       size="icon"
       className={cn(
         "rounded-full border-border glass-effect bg-background/50 hover:bg-primary/10 hover:text-primary transition-interaction duration-300",
-        reducedMotion && "bg-amber-500/10 border-amber-500/30"
+        reducedMotion && "bg-accent/10 border-accent/30"
       )}
       onClick={toggleReducedMotion}
       title={reducedMotion ? "Enable animations" : "Reduce motion"}
     >
-      <Eye className={cn("h-[1.2rem] w-[1.2rem]", reducedMotion ? "text-amber-500" : "text-foreground")} />
+      <Eye className={cn("h-[1.2rem] w-[1.2rem]", reducedMotion ? "text-accent" : "text-foreground")} />
       <span className="sr-only">Toggle reduced motion</span>
     </Button>
   );

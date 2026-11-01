@@ -4,22 +4,31 @@ Visual system design documentation for Ahmed Shaban's portfolio, outlining color
 
 ---
 
-## 🎨 Color Strategy: Committed Emerald Luxury
+## 🎨 Color Strategy: Archival Emerald & Oxidized Brass
 
-We completely reject generic AI-generated dark mode templates (typically `#020617` blue-slate with saturated purple/neon-blue glows). Instead, we use green-tinted neutrals and a deep-emerald primary with warm amber/bronze accents to invoke a feeling of meticulous craft.
+We reject generic blue-slate templates, neon gradients, gradient text, and decorative glassmorphism. The palette takes its cues from archival paper, oxidized brass, and green-black lacquer: tinted neutrals, a deliberate emerald primary, and a restrained bronze accent. Tokens use OKLCH for predictable perceptual contrast across themes.
 
 ### 🌗 Theme Mappings
 
-#### Light Mode (Soft & Crisp)
-- **Background:** Soft green-tinted neutral (`150 15% 95%`)
-- **Primary:** Deep emerald (`162 70% 32%`)
-- **Accent:** Warm bronze (`32 85% 45%`)
+#### Light Mode (Archival Paper)
+- **Background:** Warm green-tinted paper (`oklch(0.965 0.008 145)`)
+- **Foreground:** Green-black ink (`oklch(0.235 0.018 155)`)
+- **Primary:** Deep lacquer emerald (`oklch(0.43 0.11 158)`)
+- **Accent:** Oxidized brass (`oklch(0.48 0.105 68)`)
+- **Card:** Soft raised paper (`oklch(0.985 0.006 145)`)
 
-#### Dark Mode (Forest & Amber)
-- **Background:** Deepest green-tinted charcoal (`160 12% 4%`)
-- **Primary:** Luminous emerald (`160 60% 45%`)
-- **Accent:** Rich amber (`36 85% 58%`)
-- **Card Panels:** Green-tinted charcoal (`160 10% 6%`)
+#### Dark Mode (Green-Black Lacquer)
+- **Background:** Deep green-black lacquer (`oklch(0.145 0.012 155)`)
+- **Foreground:** Soft mineral white (`oklch(0.91 0.012 145)`)
+- **Primary:** Clear mineral emerald (`oklch(0.74 0.115 158)`)
+- **Accent:** Burnished brass (`oklch(0.76 0.11 72)`)
+- **Card Panels:** Lifted green charcoal (`oklch(0.185 0.014 155)`)
+
+### Surface Rules
+- Text emphasis uses solid color, never gradient fills.
+- Cards use opaque tinted surfaces and quiet borders instead of default blur.
+- Ambient color stays low-opacity and must not compete with text.
+- Blur is reserved for functional overlays and sticky navigation.
 
 ---
 

@@ -111,22 +111,22 @@ export function AnalyticsSection() {
   return (
     <div className="space-y-6">
       {/* ── Live strip (B) ─────────────────────────────── */}
-      <div className="flex flex-col gap-2 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.07] px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+      <div className="flex flex-col gap-2 rounded-2xl border border-success/25 bg-success/[0.07] px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
         <div className="flex items-center gap-2.5">
           <span className="relative flex h-2.5 w-2.5 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
           </span>
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
             {isPending ? "Connecting to analytics…" : (
               <>
                 <span>
-                  <span className="num font-extrabold text-emerald-600 dark:text-emerald-300">{data?.liveNow}</span>{" "}
+                  <span className="num font-extrabold text-success">{data?.liveNow}</span>{" "}
                   visitors online now ·{" "}
                   <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
                 </span>
                 {(data?.owner.today ?? 0) > 0 && (
-                  <span className="num rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                  <span className="num rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-bold text-accent">
                     👤 you: {data?.owner.today} excluded
                   </span>
                 )}
@@ -227,7 +227,7 @@ export function AnalyticsSection() {
                     <k.icon className="h-3.5 w-3.5 text-primary" /> {k.label}
                   </div>
                   <div className="num text-3xl font-extrabold tracking-tight">{k.value}</div>
-                  <div className={cn("text-xs font-bold", k.up ? "text-emerald-600 dark:text-emerald-400" : "text-red-500")}>{k.delta}</div>
+                  <div className={cn("text-xs font-bold", k.up ? "text-success" : "text-destructive")}>{k.delta}</div>
                 </CardContent>
               </Card>
             ))}
@@ -252,16 +252,16 @@ export function AnalyticsSection() {
                     <svg viewBox="0 0 560 170" className="h-44 w-full" role="img" aria-label="Visits trend">
                       <defs>
                         <linearGradient id="visitsFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-                          <stop offset="1" stopColor="hsl(var(--primary))" stopOpacity="0" />
+                           <stop offset="0" stopColor="oklch(var(--primary))" stopOpacity="0.3" />
+                           <stop offset="1" stopColor="oklch(var(--primary))" stopOpacity="0" />
                         </linearGradient>
                       </defs>
                       {[0.25, 0.5, 0.75].map((f) => (
                         <line key={f} x1="0" x2="560" y1={170 * f} y2={170 * f} className="stroke-border" strokeDasharray="4 5" />
                       ))}
                       <path d={area} fill="url(#visitsFill)" />
-                      <path d={line} fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" />
-                      <circle cx={peak.x} cy={peak.y} r="5" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="2" />
+                       <path d={line} fill="none" stroke="oklch(var(--primary))" strokeWidth="3" strokeLinecap="round" />
+                       <circle cx={peak.x} cy={peak.y} r="5" fill="oklch(var(--primary))" stroke="oklch(var(--background))" strokeWidth="2" />
                     </svg>
                   );
                 })()}
@@ -306,7 +306,7 @@ export function AnalyticsSection() {
                     return data.hourly.map((h) => (
                       <div key={h.hour} className="flex flex-1 flex-col items-center gap-1" title={`${h.hour}: ${h.value}`}>
                         <div
-                          className={cn("w-full rounded-t-md", h.value === max ? "bg-amber-400" : "bg-primary/70")}
+                          className={cn("w-full rounded-t-md", h.value === max ? "bg-accent" : "bg-primary/70")}
                           style={{ height: `${Math.max((h.value / max) * 100, 6)}%`, minHeight: 6 }}
                         />
                       </div>
@@ -345,9 +345,9 @@ export function AnalyticsSection() {
                 {feed.length > 0 ? (
                 <div className="space-y-2 overflow-y-auto pe-1" style={{ maxHeight: ANALYTICS_CONFIG.feedMaxHeightPx }}>
                 {feed.map((f, i) => (
-                  <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-amber-500/40 bg-amber-500/10" : "bg-muted/50")}>
+                  <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-accent/40 bg-accent/10" : "bg-muted/50")}>
                     <span className="truncate font-semibold">
-                      {f.you && <span className="me-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">YOU</span>}
+                      {f.you && <span className="me-1 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-extrabold text-accent">YOU</span>}
                       {f.place} · <span className="num font-mono text-xs">{f.path}</span>
                     </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>
@@ -424,7 +424,7 @@ export function AnalyticsSection() {
                         <div
                           key={`${d.date}-${i}`}
                           title={`${d.date}: ${d.value}`}
-                          className={cn("flex-1 rounded-sm", c.track === "flutter" ? "bg-primary/80" : "bg-amber-500/80")}
+                          className={cn("flex-1 rounded-sm", c.track === "flutter" ? "bg-primary/80" : "bg-accent/80")}
                           style={{ height: `${Math.max((d.value / max) * 100, 5)}%`, minHeight: 3 }}
                         />
                       ))}

@@ -4,67 +4,82 @@
 
 @layer base {
   :root {
-    /* Light Mode - Soft Emerald & Bronze */
-    --background: 150 15% 95%;
-    --foreground: 160 15% 20%;
-    --card: 150 18% 97%;
-    --card-foreground: 160 15% 20%;
-    --popover: 150 18% 97%;
-    --popover-foreground: 160 15% 20%;
-    --primary: 162 70% 32%;
-    --primary-foreground: 150 20% 98%;
-    --primary-glow: 162 60% 42%;
-    --secondary: 150 14% 90%;
-    --secondary-foreground: 160 15% 20%;
-    --muted: 150 12% 86%;
-    --muted-foreground: 160 12% 32%;
-    --accent: 32 85% 45%;
-    --accent-foreground: 150 20% 98%;
-    --accent-glow: 32 85% 55%;
-    --border: 150 12% 80%;
-    --input: 150 12% 80%;
-    --ring: 162 70% 32%;
+    /* Light mode: archival paper, oxidized brass, green-black lacquer. */
+    --background: 0.965 0.008 145;
+    --foreground: 0.235 0.018 155;
+    --card: 0.985 0.006 145;
+    --card-foreground: 0.235 0.018 155;
+    --popover: 0.985 0.006 145;
+    --popover-foreground: 0.235 0.018 155;
+    --primary: 0.43 0.11 158;
+    --primary-foreground: 0.985 0.006 145;
+    --primary-glow: 0.59 0.09 158;
+    --secondary: 0.925 0.014 145;
+    --secondary-foreground: 0.28 0.02 155;
+    --muted: 0.9 0.012 145;
+    --muted-foreground: 0.43 0.025 155;
+    --accent: 0.48 0.105 68;
+    --accent-foreground: 0.985 0.006 145;
+    --accent-glow: 0.63 0.09 70;
+    --border: 0.82 0.018 145;
+    --input: 0.8 0.02 145;
+    --ring: 0.43 0.11 158;
     --radius: 1rem;
-    --success: 150 65% 32%;
-    --warning: 36 92% 50%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 150 20% 98%;
+    --success: 0.43 0.1 150;
+    --warning: 0.5 0.115 75;
+    --destructive: 0.5 0.18 25;
+    --destructive-foreground: 0.985 0.006 145;
+    --sidebar-background: 0.985 0.006 145;
+    --sidebar-foreground: 0.235 0.018 155;
+    --sidebar-primary: 0.43 0.11 158;
+    --sidebar-primary-foreground: 0.985 0.006 145;
+    --sidebar-accent: 0.925 0.014 145;
+    --sidebar-accent-foreground: 0.28 0.02 155;
+    --sidebar-border: 0.82 0.018 145;
+    --sidebar-ring: 0.43 0.11 158;
 
-    --mesh-bg: 210 20% 94%;
-    --mesh-color-1: hsla(var(--primary) / 0.06);
-    --mesh-color-2: hsla(var(--accent) / 0.05);
+    --mesh-bg: oklch(var(--background));
+    --mesh-color-1: oklch(var(--primary) / 0.045);
+    --mesh-color-2: oklch(var(--accent) / 0.035);
   }
 
   .dark {
-    /* Dark Mode - Deep Emerald & Amber Luxury */
-    --background: 160 12% 4%;
-    --foreground: 150 8% 92%;
-    --card: 160 10% 6%;
-    --card-foreground: 150 8% 92%;
-    --popover: 160 12% 4%;
-    --popover-foreground: 150 8% 92%;
-    --primary: 160 60% 45%;
-    --primary-foreground: 160 15% 6%;
-    --primary-glow: 160 60% 55%;
-    --secondary: 160 10% 9%;
-    --secondary-foreground: 150 8% 92%;
-    --muted: 160 10% 9%;
-    --muted-foreground: 150 6% 62%;
-    --accent: 36 85% 58%;
-    --accent-foreground: 160 15% 6%;
-    --accent-glow: 36 85% 68%;
-    --border: 160 10% 13%;
-    --input: 160 10% 13%;
-    --ring: 160 60% 45%;
-    --success: 150 55% 50%;
-    --warning: 36 90% 58%;
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 150 8% 92%;
+    /* Dark mode: green-black lacquer with softly burnished metal accents. */
+    --background: 0.145 0.012 155;
+    --foreground: 0.91 0.012 145;
+    --card: 0.185 0.014 155;
+    --card-foreground: 0.91 0.012 145;
+    --popover: 0.185 0.014 155;
+    --popover-foreground: 0.91 0.012 145;
+    --primary: 0.74 0.115 158;
+    --primary-foreground: 0.14 0.015 155;
+    --primary-glow: 0.79 0.09 158;
+    --secondary: 0.235 0.016 155;
+    --secondary-foreground: 0.89 0.012 145;
+    --muted: 0.245 0.015 155;
+    --muted-foreground: 0.7 0.025 145;
+    --accent: 0.76 0.11 72;
+    --accent-foreground: 0.16 0.02 60;
+    --accent-glow: 0.82 0.09 75;
+    --border: 0.31 0.02 155;
+    --input: 0.33 0.02 155;
+    --ring: 0.74 0.115 158;
+    --success: 0.72 0.11 150;
+    --warning: 0.79 0.12 80;
+    --destructive: 0.68 0.16 25;
+    --destructive-foreground: 0.14 0.015 155;
+    --sidebar-background: 0.185 0.014 155;
+    --sidebar-foreground: 0.91 0.012 145;
+    --sidebar-primary: 0.74 0.115 158;
+    --sidebar-primary-foreground: 0.14 0.015 155;
+    --sidebar-accent: 0.235 0.016 155;
+    --sidebar-accent-foreground: 0.89 0.012 145;
+    --sidebar-border: 0.31 0.02 155;
+    --sidebar-ring: 0.74 0.115 158;
 
-    /* Mesh Gradient Colors - Emerald Mist */
-    --mesh-bg: #070907;
-    --mesh-color-1: hsla(var(--primary) / 0.07);
-    --mesh-color-2: hsla(var(--accent) / 0.05);
+    --mesh-bg: oklch(var(--background));
+    --mesh-color-1: oklch(var(--primary) / 0.04);
+    --mesh-color-2: oklch(var(--accent) / 0.025);
   }
 }
 
@@ -87,48 +102,34 @@
   }
 
   .glass-effect {
-    @apply border shadow-2xl transition-interaction duration-300;
-    background-color: hsla(var(--background) / 0.65);
-    border-color: hsla(var(--border) / 0.6);
-  }
-
-  @media (min-width: 768px) {
-    .glass-effect {
-      @apply backdrop-blur-md;
-    }
+    @apply border shadow-lg transition-interaction duration-300;
+    background-color: oklch(var(--card) / 0.96);
+    border-color: oklch(var(--border) / 0.78);
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-br;
-    background-image: linear-gradient(to bottom right, hsl(var(--primary)), hsl(var(--accent)));
+    color: oklch(var(--primary));
   }
 
   .text-gradient-subtle {
-    @apply bg-clip-text text-transparent bg-gradient-to-br;
-    background-image: linear-gradient(to bottom right, hsl(var(--foreground)), hsla(var(--foreground) / 0.7));
+    color: oklch(var(--foreground));
   }
 
   .glow-primary {
-    box-shadow: 0 0 40px hsla(var(--primary-glow) / 0.3);
+    box-shadow: 0 18px 50px -28px oklch(var(--primary-glow) / 0.42);
   }
 
   .glow-accent {
-    box-shadow: 0 0 40px hsla(var(--accent-glow) / 0.3);
+    box-shadow: 0 18px 50px -28px oklch(var(--accent-glow) / 0.38);
   }
 
   .modern-card {
-    @apply rounded-2xl border border-border/50 bg-card/50 transition-interaction duration-300;
-  }
-
-  @media (min-width: 768px) {
-    .modern-card {
-      @apply backdrop-blur-sm;
-    }
+    @apply rounded-2xl border border-border/70 bg-card transition-interaction duration-300;
   }
 
   .modern-card:hover {
-    @apply border-primary/50 shadow-xl;
-    box-shadow: 0 0 40px hsla(var(--primary) / 0.05);
+    @apply border-primary/45 shadow-lg;
+    box-shadow: 0 18px 44px -30px oklch(var(--primary) / 0.32);
   }
 
   .section-padding {
@@ -145,7 +146,7 @@ body {
   @apply premium-mesh text-foreground antialiased;
   /* Theme swaps are intentionally instant — a full-page color fade here repaints
      the entire viewport for ~500ms on every toggle. See theme-provider.tsx. */
-  background-color: hsl(var(--background));
+  background-color: oklch(var(--background));
 }
 
 html {
@@ -185,38 +186,38 @@ html.reduced-motion {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: oklch(var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
+  background: oklch(var(--border));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: oklch(var(--muted-foreground) / 0.5);
 }
 
 /* Browser surfaces carry the Emerald Luxury palette */
 ::selection {
-  background: hsl(var(--primary) / 0.28);
-  color: hsl(var(--foreground));
+  background: oklch(var(--primary) / 0.28);
+  color: oklch(var(--foreground));
 }
 
 ::-moz-selection {
-  background: hsl(var(--primary) / 0.28);
-  color: hsl(var(--foreground));
+  background: oklch(var(--primary) / 0.28);
+  color: oklch(var(--foreground));
 }
 
 :focus-visible {
-  outline: 2px solid hsl(var(--ring) / 0.7);
+  outline: 2px solid oklch(var(--ring) / 0.7);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 input,
 textarea {
-  caret-color: hsl(var(--primary));
+  caret-color: oklch(var(--primary));
 }
 
 a {

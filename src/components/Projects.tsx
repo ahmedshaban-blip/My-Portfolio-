@@ -75,7 +75,7 @@ const ProjectImage = memo(function ProjectImage({
           aria-hidden="true"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 30% 20%, hsl(var(--primary) / 0.15) 0, transparent 50%), radial-gradient(circle at 70% 80%, hsl(var(--accent) / 0.12) 0, transparent 50%)",
+              "radial-gradient(circle at 30% 20%, oklch(var(--primary) / 0.12) 0, transparent 50%), radial-gradient(circle at 70% 80%, oklch(var(--accent) / 0.08) 0, transparent 50%)",
           }}
         />
         {failed ? (

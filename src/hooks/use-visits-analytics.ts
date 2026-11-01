@@ -52,14 +52,14 @@ type StatsResponse = {
 };
 
 const SOURCE_COLORS: Record<string, string> = {
-  Google: "#059669",
-  Social: "#d97706",
-  Direct: "#1d2421",
+  Google: "oklch(0.58 0.13 158)",
+  Social: "oklch(0.62 0.12 72)",
+  Direct: "oklch(0.42 0.025 155)",
 };
 const DEVICE_COLORS: Record<string, string> = {
-  Mobile: "#10b981",
-  Desktop: "#f59e0b",
-  Tablet: "#a8a29e",
+  Mobile: "oklch(0.68 0.12 158)",
+  Desktop: "oklch(0.72 0.12 72)",
+  Tablet: "oklch(0.64 0.025 145)",
 };
 
 function toPercentMap(record: Record<string, number>, colors: Record<string, string>, fallback: string) {
@@ -115,8 +115,8 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     deltaWeek: 0,
     daily: json.daily,
     hourly: json.hourly,
-    sources: toPercentMap(json.sources, SOURCE_COLORS, "#a8a29e"),
-    devices: toPercentMap(json.devices, DEVICE_COLORS, "#a8a29e").map((d) => ({
+    sources: toPercentMap(json.sources, SOURCE_COLORS, "oklch(0.64 0.025 145)"),
+    devices: toPercentMap(json.devices, DEVICE_COLORS, "oklch(0.64 0.025 145)").map((d) => ({
       label: (d.label[0] ?? "").toUpperCase() + d.label.slice(1),
       value: d.value,
       color: d.color,

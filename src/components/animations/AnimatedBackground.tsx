@@ -30,15 +30,15 @@ const MAX_DPR = 2;
 const FRAME_INTERVAL = 50;
 
 const GRADIENTS_DARK = [
-  { x: 0.2, y: 0.3, r: 0.35, hue: 160, saturation: 60, lightness: 45 },  // Emerald
-  { x: 0.8, y: 0.6, r: 0.3, hue: 36, saturation: 85, lightness: 58 },   // Amber
-  { x: 0.5, y: 0.8, r: 0.25, hue: 48, saturation: 70, lightness: 55 },  // Champagne Glow
+  { x: 0.2, y: 0.3, r: 0.35, color: "0.74 0.115 158" },
+  { x: 0.8, y: 0.6, r: 0.3, color: "0.76 0.11 72" },
+  { x: 0.5, y: 0.8, r: 0.25, color: "0.45 0.035 145" },
 ];
 
 const GRADIENTS_LIGHT = [
-  { x: 0.2, y: 0.3, r: 0.35, hue: 162, saturation: 70, lightness: 32 },
-  { x: 0.8, y: 0.6, r: 0.3, hue: 32, saturation: 85, lightness: 45 },
-  { x: 0.5, y: 0.8, r: 0.25, hue: 150, saturation: 15, lightness: 70 },
+  { x: 0.2, y: 0.3, r: 0.35, color: "0.43 0.11 158" },
+  { x: 0.8, y: 0.6, r: 0.3, color: "0.48 0.105 68" },
+  { x: 0.5, y: 0.8, r: 0.25, color: "0.72 0.025 145" },
 ];
 
 /**
@@ -59,11 +59,9 @@ function renderMesh(w: number, h: number, isDark: boolean, reducedMotion: boolea
     const py = h * g.y;
 
     const grad = lctx.createRadialGradient(px, py, 0, px, py, w * g.r);
-    const s = g.saturation;
-    const l = g.lightness;
-    grad.addColorStop(0, `hsla(${g.hue}, ${s}%, ${l}%, ${reducedMotion ? 0.04 : 0.08})`);
-    grad.addColorStop(0.5, `hsla(${g.hue}, ${s - 10}%, ${l - 15}%, 0.02)`);
-    grad.addColorStop(1, `hsla(${g.hue}, ${s - 20}%, ${l - 20}%, 0)`);
+    grad.addColorStop(0, `oklch(${g.color} / ${reducedMotion ? 0.025 : 0.05})`);
+    grad.addColorStop(0.5, `oklch(${g.color} / 0.012)`);
+    grad.addColorStop(1, `oklch(${g.color} / 0)`);
 
     lctx.fillStyle = grad;
     lctx.fillRect(0, 0, w, h);
@@ -191,8 +189,8 @@ export function AnimatedBackground() {
         const finalOpacity = p.opacity * fade * speedScale;
 
         ctx.fillStyle = isDark
-          ? `hsla(150, 8%, 90%, ${finalOpacity})`
-          : `hsla(160, 15%, 22%, ${finalOpacity})`;
+          ? `oklch(0.91 0.012 145 / ${finalOpacity})`
+          : `oklch(0.235 0.018 155 / ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
 
@@ -278,7 +276,7 @@ export function AnimatedBackground() {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       aria-hidden="true"
-      style={{ opacity: 0.7 }}
+      style={{ opacity: 0.55 }}
     />
   );
 }

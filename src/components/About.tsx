@@ -124,8 +124,15 @@ const About = () => {
         </div>
       </div>
 
-      {/* Background Decorative Element */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+      {/* Background Decorative Element — gradient, not a blur filter */}
+      <div
+        aria-hidden="true"
+        className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at center, oklch(var(--primary) / 0.06) 0%, transparent 70%)",
+        }}
+      />
     </section>
   );
 };

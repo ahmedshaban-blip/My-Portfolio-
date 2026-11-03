@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { hasFinePointer } from "@/lib/pointer";
 import { cn } from "@/lib/utils";
 
 interface HoverCardProps {
@@ -12,11 +13,7 @@ interface HoverCardProps {
 export function HoverCard({ scale = 1.02, className, children }: HoverCardProps) {
   const { reducedMotion } = useAnimationContext();
   const isMobile = useIsMobile();
-  const finePointer =
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const interactive = !reducedMotion && !isMobile && finePointer && scale !== 1;
+  const interactive = !reducedMotion && !isMobile && hasFinePointer() && scale !== 1;
 
   return (
     <motion.div

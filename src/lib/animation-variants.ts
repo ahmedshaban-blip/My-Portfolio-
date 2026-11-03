@@ -163,12 +163,8 @@ export const revealOnScrollParallaxIntense: Variants = {
 
 // ─── Magnetic Hover Offset ───────────────────────────────────────────
 
-export const magneticTransition: Transition = {
-  type: "tween",
-  duration: 0.2,
-  ease: "easeOut",
-};
-
+// `magneticTransition` was removed: `Magnetic` uses plain CSS/inline transforms
+// now, so no framer-motion transition described this behaviour.
 // ─── Default Fallback ────────────────────────────────────────────────
 
 export const defaultTransition = {

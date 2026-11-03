@@ -1,5 +1,5 @@
 import { ArrowRight, Github, Linkedin, Mail, Download, Play, Layers } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StaggerReveal } from "@/components/animations/StaggerReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
@@ -27,6 +27,17 @@ const heroElementFadeUp = {
     y: 0,
     transition: { duration: 0.45, ease: heroEntranceEase },
   },
+};
+
+/**
+ * PERFORMANCE: the <h1> is the LCP element. Fading it in from `opacity: 0`
+ * kept it invisible for ~1.1s (delay + 9-word stagger), so the page looked
+ * stalled and the browser could not record LCP. Transform-only reveal paints
+ * the text on the first frame and stays on the compositor.
+ */
+const heroWordRise: Variants = {
+  hidden: { y: "0.3em" },
+  visible: { y: "0em", transition: { duration: 0.5, ease: heroEntranceEase } },
 };
 
 const Hero = () => {
@@ -61,9 +72,25 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-28 pb-16 lg:pt-32 lg:pb-20 overflow-hidden">
-      {/* Enhanced gradient orbs with new color palette */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 dark:bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* PERFORMANCE: soft light orbs are painted as radial gradients, not
+          `filter: blur(120px)` — a 120px blur on a 40vw element rasterizes a
+          huge surface on every repaint, which is what made first paint jank. */}
+      <div
+        aria-hidden="true"
+        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at center, oklch(var(--primary) / 0.09) 0%, oklch(var(--primary) / 0.03) 45%, transparent 72%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at center, oklch(var(--accent) / 0.08) 0%, oklch(var(--accent) / 0.025) 45%, transparent 72%)",
+        }}
+      />
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
 
@@ -80,7 +107,7 @@ const Hero = () => {
             <motion.div variants={heroElementFadeUp}>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-sm">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                  <span className="animate-ping [animation-iteration-count:3] absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
                 </span>
                 <span className="text-xs sm:text-sm font-semibold tracking-wide">Available for new opportunities</span>
@@ -93,6 +120,7 @@ const Hero = () => {
               mode="word"
               staggerDelay={0.06}
               delay={0.1}
+              childVariants={heroWordRise}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-foreground"
             >
               Ahmed Shaban — Flutter & Front-end Developer at Truck World
@@ -213,12 +241,19 @@ const Hero = () => {
           {/* Right Column: Personal Image Showcase with Floating Badges & Mobile Stats */}
           <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2">
             <motion.div variants={heroElementFadeUp} className="relative flex flex-col items-center justify-center">
-              {/* Ambient background glow */}
-              <div className="absolute w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-tr from-primary/25 to-accent/20 rounded-full blur-3xl pointer-events-none -z-10" />
+              {/* Ambient background glow — gradient instead of a 64px blur filter */}
+              <div
+                aria-hidden="true"
+                className="absolute w-56 h-56 sm:w-72 sm:h-72 rounded-full pointer-events-none -z-10"
+                style={{
+                  background:
+                    "radial-gradient(circle at center, oklch(var(--primary) / 0.22) 0%, oklch(var(--accent) / 0.12) 45%, transparent 72%)",
+                }}
+              />
 
               {/* Showcase Frame */}
               <div className="relative group">
-                <div className="relative p-1.5 rounded-full bg-gradient-to-b from-primary/40 via-accent/30 to-border/40 shadow-2xl backdrop-blur-sm">
+                <div className="relative p-1.5 rounded-full bg-gradient-to-b from-primary/40 via-accent/30 to-border/40 shadow-xl">
                   <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden bg-background ring-4 ring-background/60 shadow-inner">
                     <picture>
                       <source
@@ -243,7 +278,7 @@ const Hero = () => {
                 {/* Floating Badge 1: Live on Google Play (differentiated proof; the 10+ stat lives in About) */}
                 <motion.div
                   variants={heroElementFadeUp}
-                  className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
+                  className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-success/10 text-success">
                     <Play className="w-4 h-4" />
@@ -257,7 +292,7 @@ const Hero = () => {
                 {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only, static for 90Hz idle) */}
                 <motion.div
                   variants={heroElementFadeUp}
-                  className="hidden sm:flex absolute sm:bottom-4 sm:-right-6 backdrop-blur-md bg-background/90 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
+                  className="hidden sm:flex absolute sm:bottom-4 sm:-right-6 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent">
                     <Layers className="w-4 h-4" />
@@ -271,7 +306,7 @@ const Hero = () => {
 
               {/* Mobile-Only Stats Cards (Clean row directly below the photo) */}
               <motion.div variants={heroElementFadeUp} className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
-                <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
+                <div className="flex-1 bg-background/95 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
                   <div className="p-1.5 rounded-lg bg-success/10 text-success shrink-0">
                     <Play className="w-3.5 h-3.5" />
                   </div>
@@ -281,7 +316,7 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 backdrop-blur-md bg-background/90 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
+                <div className="flex-1 bg-background/95 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent shrink-0">
                     <Layers className="w-3.5 h-3.5" />
                   </div>

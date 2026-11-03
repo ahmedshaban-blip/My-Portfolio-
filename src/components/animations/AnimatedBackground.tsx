@@ -25,9 +25,18 @@ const CODE_SNIPPETS = [
 const isCompactViewport = () => typeof window !== "undefined" && window.innerWidth < 768;
 const PARTICLE_COUNT = isCompactViewport() ? 0 : 5;
 // PERFORMANCE: Cap DPR at 2 — enough crispness on Retina, half the fill cost of 3x.
-const MAX_DPR = 2;
+const MAX_DPR = 1.5;
 // PERFORMANCE: 20fps is enough for ambient background.
 const FRAME_INTERVAL = 50;
+/**
+ * PERFORMANCE: the mesh is a smooth radial blur, so rasterizing it at half the
+ * canvas resolution is visually identical while cutting the one-off fill cost
+ * (3 × createRadialGradient + fillRect) by 4× — that fill used to be a
+ * guaranteed long task during first paint.
+ */
+const MESH_SCALE = 0.5;
+// PERFORMANCE: keep the very first mesh build out of the LCP / hero entrance window.
+const START_DELAY_MS = 350;
 
 const GRADIENTS_DARK = [
   { x: 0.2, y: 0.3, r: 0.35, color: "0.74 0.115 158" },
@@ -48,23 +57,25 @@ const GRADIENTS_LIGHT = [
  * theme/size and blitted with a single drawImage() afterwards.
  */
 function renderMesh(w: number, h: number, isDark: boolean, reducedMotion: boolean) {
+  const mw = Math.max(1, Math.round(w * MESH_SCALE));
+  const mh = Math.max(1, Math.round(h * MESH_SCALE));
   const layer = document.createElement("canvas");
-  layer.width = Math.max(1, w);
-  layer.height = Math.max(1, h);
+  layer.width = mw;
+  layer.height = mh;
   const lctx = layer.getContext("2d");
   if (!lctx) return null;
 
   for (const g of isDark ? GRADIENTS_DARK : GRADIENTS_LIGHT) {
-    const px = w * g.x;
-    const py = h * g.y;
+    const px = mw * g.x;
+    const py = mh * g.y;
 
-    const grad = lctx.createRadialGradient(px, py, 0, px, py, w * g.r);
+    const grad = lctx.createRadialGradient(px, py, 0, px, py, mw * g.r);
     grad.addColorStop(0, `oklch(${g.color} / ${reducedMotion ? 0.025 : 0.05})`);
     grad.addColorStop(0.5, `oklch(${g.color} / 0.012)`);
     grad.addColorStop(1, `oklch(${g.color} / 0)`);
 
     lctx.fillStyle = grad;
-    lctx.fillRect(0, 0, w, h);
+    lctx.fillRect(0, 0, mw, mh);
   }
 
   return layer;
@@ -73,7 +84,6 @@ function renderMesh(w: number, h: number, isDark: boolean, reducedMotion: boolea
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { reducedMotion } = useAnimationContext();
-  const animRef = useRef<number>(0);
   const lastFrameTimeRef = useRef<number>(0);
   const isAnimatingRef = useRef<boolean>(true);
 
@@ -132,28 +142,34 @@ export function AnimatedBackground() {
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     fontRef.current = `600 ${12 * dpr}px 'JetBrains Mono', 'Fira Code', monospace`;
 
-    let rafId: number;
+    let rafId = 0;
+    let stopped = false;
 
-    const draw = (timestamp: number) => {
-      // PERFORMANCE: Throttle to 30fps
-      const elapsed = timestamp - lastFrameTimeRef.current;
-      if (elapsed < FRAME_INTERVAL) {
-        rafId = requestAnimationFrame(draw);
-        return;
-      }
-      lastFrameTimeRef.current = timestamp;
+    // PERFORMANCE: a `document.querySelector` per frame walked the whole tree
+    // 20×/s forever. Track dialog state with an event-driven observer instead.
+    let dialogOpen = !!document.querySelector('[role="dialog"][data-state="open"]');
+    let dialogObserver: MutationObserver | undefined;
+    if (typeof MutationObserver !== "undefined") {
+      dialogObserver = new MutationObserver(() => {
+        dialogOpen = !!document.querySelector('[role="dialog"][data-state="open"]');
+      });
+      dialogObserver.observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ["data-state"],
+      });
+    }
 
-      // PERFORMANCE: Skip heavy gradient+text work while a dialog is open — dialog content is in focus.
-      if (document.querySelector('[role="dialog"][data-state="open"]')) {
-        rafId = requestAnimationFrame(draw);
-        return;
-      }
+    const schedule = () => {
+      if (stopped || rafId) return;
+      rafId = requestAnimationFrame(draw);
+    };
 
-      if (!isAnimatingRef.current) return;
-
+    const paint = (timestamp: number) => {
       const w = canvas.width;
       const h = canvas.height;
-      const time = Date.now() * 0.001;
+      const time = timestamp * 0.001;
       const speedScale = reducedMotionRef.current ? 0.2 : 1;
 
       const isDark = document.documentElement.classList.contains("dark");
@@ -175,7 +191,7 @@ export function AnimatedBackground() {
 
       ctx.clearRect(0, 0, w, h);
       if (meshRef.current) {
-        ctx.drawImage(meshRef.current.layer, 0, 0);
+        ctx.drawImage(meshRef.current.layer, 0, 0, w, h);
       }
 
       // 2. Draw Floating Code Snippets (reduced count, optimized)
@@ -193,14 +209,46 @@ export function AnimatedBackground() {
           : `oklch(0.235 0.018 155 / ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
-
-      rafId = requestAnimationFrame(draw);
     };
 
-    rafId = requestAnimationFrame(draw);
+    const draw = (timestamp: number) => {
+      rafId = 0;
+      // Hidden tab: keep the chain alive so it resumes when the tab returns.
+      // Browsers stop servicing rAF while hidden, so the extra scheduling is
+      // free — returning without re-scheduling used to kill the loop forever.
+      if (document.hidden) {
+        schedule();
+        return;
+      }
+
+      // PERFORMANCE: Throttle to ~20fps.
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      if (elapsed < FRAME_INTERVAL) {
+        schedule();
+        return;
+      }
+      lastFrameTimeRef.current = timestamp;
+
+      // PERFORMANCE: Skip heavy gradient+text work while scrolling or while a
+      // dialog is open. The loop is re-scheduled (not dropped) so it resumes.
+      if (!isAnimatingRef.current || dialogOpen) {
+        schedule();
+        return;
+      }
+
+      paint(timestamp);
+      schedule();
+    };
+
+    // PERFORMANCE: start after the hero is on screen — the first mesh
+    // rasterization must not land inside the initial paint / LCP window.
+    const startTimer = setTimeout(schedule, START_DELAY_MS);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      stopped = true;
+      clearTimeout(startTimer);
+      if (rafId) cancelAnimationFrame(rafId);
+      dialogObserver?.disconnect();
       meshRef.current = null;
     };
   }, [particles]);

@@ -22,6 +22,20 @@ const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
 const adminPath = SECRET_ADMIN_PATH.replace(/\//g, "");
 
+/**
+ * PERFORMANCE: schedule analytics work after the first paint / idle window so
+ * the request never competes with the LCP image and the hero animation.
+ * A `pagehide` flush (see `useVisitTracker`) covers visitors who leave before
+ * the idle window elapses, so the shorter fallback below is only a safety net.
+ */
+function afterIdle(fn: () => void) {
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(fn, { timeout: 2500 });
+    return;
+  }
+  window.setTimeout(fn, 800);
+}
+
 // sessionStorage helpers — never throw (private mode / blocked storage).
 const read = (key: string) => {
   try {
@@ -121,13 +135,30 @@ export function useVisitTracker() {
   // Which public path is currently "open" — cleared while on the admin route so
   // background activity there never inflates public engagement numbers.
   const activePath = useRef("");
+  // Guards the deferred route hit against double-sending (idle callback plus a
+  // `pagehide` that fires first), and carries the payload for that early flush.
+  const sent = useRef(false);
+  const pendingHit = useRef<string | null>(null);
 
   // Flush the running session snapshot when the tab is hidden or closed.
   useEffect(() => {
     const onHide = () => {
       if (document.visibilityState === "hidden") flushEngagement();
     };
-    const onPageHide = () => flushEngagement();
+    const onPageHide = () => {
+      flushEngagement();
+      // A visitor who leaves inside the idle window would otherwise never be
+      // counted for this page view.
+      if (!sent.current && pendingHit.current) {
+        sent.current = true;
+        try {
+          const blob = new Blob([pendingHit.current], { type: "application/json" });
+          navigator.sendBeacon?.("/api/track-visit", blob);
+        } catch {
+          // Tracking must never break the public site.
+        }
+      }
+    };
 
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("pagehide", onPageHide);
@@ -177,13 +208,21 @@ export function useVisitTracker() {
         views,
         landing: read(SESSION_LANDING_KEY) ?? path,
       };
+      const body = JSON.stringify(payload);
+      sent.current = false;
+      pendingHit.current = body;
 
-      void fetch("/api/track-visit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        keepalive: true,
-      }).catch(() => undefined);
+      void afterIdle(() => {
+        if (sent.current) return;
+        sent.current = true;
+        pendingHit.current = null;
+        void fetch("/api/track-visit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+          keepalive: true,
+        }).catch(() => undefined);
+      });
     } catch {
       // Tracking must never break the public site.
     }

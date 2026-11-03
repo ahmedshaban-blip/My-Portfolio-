@@ -124,7 +124,9 @@
   }
 
   .modern-card {
-    @apply rounded-2xl border border-border/70 bg-card transition-interaction duration-300;
+    /* PERFORMANCE: only paint properties transition. Animating `box-shadow`
+       (44px blur) on ~25 cards re-rasterized a large layer on every hover frame. */
+    @apply rounded-2xl border border-border/70 bg-card transition-colors duration-300;
   }
 
   .modern-card:hover {

@@ -59,8 +59,22 @@ const Experience = () => {
 
   return (
     <section id="experience" className="section-padding relative">
-      <div className="absolute top-1/4 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+      <div
+        aria-hidden="true"
+        className="absolute top-1/4 right-0 w-64 h-64 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at center, oklch(var(--primary) / 0.06) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute bottom-1/4 left-0 w-64 h-64 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at center, oklch(var(--accent) / 0.06) 0%, transparent 70%)",
+        }}
+      />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto space-y-12">

@@ -1,0 +1,47 @@
+{
+  "feature": "home-page-jank",
+  "title": "Home page first-load jank / dropped frames",
+  "path": "B",
+  "current_stage": "final-qa",
+  "status": "complete",
+  "iteration_counts": {
+    "qa_fix_loop": 2,
+    "security_fix_loop": 0,
+    "performance_fix_loop": 1,
+    "review_fix_loop": 0,
+    "refactor_rollback_loop": 0
+  },
+  "gates": {
+    "gate_1_requirements": "approved",
+    "gate_2_architecture": "approved",
+    "final_acceptance": "approved_with_environment_caveat"
+  },
+  "snapshots": {
+    "pre_implementation": false,
+    "pre_refactor": false
+  },
+  "completed_stages": ["requirements", "performance", "bug-fixer", "qa", "qa-fix-2", "final-qa-2"],
+  "known_limitations": [
+    "Real FPS / dropped-frame / LCP numbers are NOT measurable in this environment:",
+    "the automation tab is occluded, so Chromium delivers zero requestAnimationFrame",
+    "callbacks even when document.hidden is false and visibilityState is 'visible'.",
+    "Confirmed directly: rAF frame counter stays at 0, and a manually painted canvas",
+    "pixel is never cleared by the app loop. Needs a foregrounded Chrome window or the",
+    "DevTools Performance panel."
+  ],
+  "measured_proxy_metrics": {
+    "long_task_blocking_ms": { "before": 2.99, "after": 1.0 },
+    "layout_ms": { "before": 46, "after": 22 },
+    "update_layout_tree_ms": { "before": 14, "after": 7 },
+    "dom_nodes_at_load": { "before": 437, "after": 223 },
+    "critical_path_js_kb": { "before": 42.41, "after": 21.03 }
+  },
+  "runtime_verified": [
+    "Plain load mounts only 2 sections / 223 DOM nodes; all 6 below-fold sections stay placeholders",
+    "All five anchors (#about..#contact) land consistently at the 96px fixed-navbar offset",
+    "Direct #experience / #contact hash loads land correctly and stay stable",
+    "?project=cv-builder opens the dialog and normalizes to ?project=cv-builder&tab=flutter",
+    "No duplicate section ids once every section has mounted",
+    "Deferred scroll correction is cancelled when the user takes over scrolling"
+  ]
+}

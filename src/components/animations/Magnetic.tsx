@@ -1,13 +1,7 @@
 import { useRef, useCallback, type MouseEvent } from "react";
-import { motion } from "framer-motion";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { magneticTransition } from "@/lib/animation-variants";
-
-function hasFinePointer() {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
-  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-}
+import { hasFinePointer } from "@/lib/pointer";
 
 interface MagneticProps {
   children: React.ReactNode;
@@ -77,15 +71,18 @@ export function Magnetic({
   }
 
   return (
-    <motion.div
+    // PERFORMANCE: no `whileHover` here — framer-motion wrote its own
+    // `transform` for the hover scale while the mouse handler wrote a
+    // different `transform` every rAF, so the two fought over the same
+    // property (jitter + extra style recalcs). The magnetic translate is the
+    // only effect; hover feedback comes from the inner element's CSS.
+    <div
       ref={ref}
       className={className}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.02 }}
-      transition={magneticTransition}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

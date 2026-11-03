@@ -95,10 +95,13 @@ const Navbar = () => {
   return (
     <header className="fixed top-6 left-0 right-0 z-[100] px-4">
       <nav className={cn(
-        "max-w-6xl mx-auto transition-[padding,background-color,border-color,box-shadow] duration-500 rounded-full border relative",
+        // PERFORMANCE: only paint properties transition. Animating `padding`
+        // (layout) for 500ms on a fixed header was the first-scroll jank, and
+        // toggling `backdrop-blur` created/destroyed a blur layer each time.
+        "max-w-6xl mx-auto transition-colors duration-200 rounded-full border relative",
         isScrolled 
-          ? "bg-background/95 backdrop-blur-md border-border shadow-lg py-3 px-8" 
-          : "bg-transparent backdrop-blur-none border-transparent py-5 px-6"
+          ? "bg-background/95 border-border shadow-lg py-3 px-8" 
+          : "bg-transparent border-transparent py-5 px-6"
       )}>
         <div className="flex items-center justify-between">
           <a href="#home" className="text-xl font-bold tracking-tighter whitespace-nowrap hover:opacity-80 transition-opacity">

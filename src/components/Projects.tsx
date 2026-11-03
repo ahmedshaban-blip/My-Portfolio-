@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, memo, type PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, memo, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion, useMotionValue } from "framer-motion";
@@ -106,7 +106,10 @@ const ProjectImage = memo(function ProjectImage({
   return (
     <div className={cn("relative overflow-hidden bg-secondary/50", className)}>
       {!loaded && !failed && (
-        <div className="absolute inset-0 animate-pulse bg-secondary/70" aria-hidden="true" />
+        // PERFORMANCE: a static placeholder — `animate-pulse` kept an infinite
+        // compositor animation alive for every card whose image had not loaded
+        // (up to 10 offscreen cards, forever).
+        <div className="absolute inset-0 bg-secondary/70" aria-hidden="true" />
       )}
       {failed ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/60 px-4 text-center text-muted-foreground">
@@ -145,21 +148,22 @@ const ProjectImage = memo(function ProjectImage({
   );
 });
 
-/** Cover images above this index are below the fold — defer them. */
-const EAGER_COVER_COUNT = 2;
+/**
+ * PERFORMANCE: no cover is above the fold — the section itself is mounted only
+ * when it approaches the viewport, so every cover loads lazily and nothing
+ * competes with the hero LCP image.
+ */
 
 const ProjectCard = memo(function ProjectCard({
   project,
   isFlutter,
   reducedMotion,
-  priority,
   onSelect,
   onFullscreen,
 }: {
   project: Project;
   isFlutter: boolean;
   reducedMotion: boolean;
-  priority: boolean;
   onSelect: (p: Project) => void;
   onFullscreen: (p: Project) => void;
 }) {
@@ -180,7 +184,6 @@ const ProjectCard = memo(function ProjectCard({
               src={project.coverImage}
               alt={`${project.title} cover preview`}
               className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
-              eager={priority}
             />
             {/* Hover / focus hint — mirrors the inline viewer */}
             <span
@@ -311,7 +314,10 @@ function InlineViewer({
   onExpand: () => void;
   reducedMotion: boolean;
 }) {
-  const images = project.screenshots.length > 0 ? project.screenshots : [project.coverImage];
+  const images = useMemo(
+    () => (project.screenshots.length > 0 ? project.screenshots : [project.coverImage]),
+    [project.screenshots, project.coverImage],
+  );
   const safeIndex = ((index % images.length) + images.length) % images.length;
   const src = images[safeIndex];
   const portrait = project.kind === "mobile";
@@ -391,10 +397,6 @@ function InlineViewer({
               initial={false}
               animate={{ opacity: 1 }}
               transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
-              style={{ opacity: 0, willChange: "opacity", transform: "translateZ(0)" }}
-              onLoad={(e) => {
-                (e.target as HTMLImageElement).style.opacity = "1";
-              }}
               className={
                 src.endsWith(".svg")
                   ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
@@ -463,7 +465,10 @@ function Lightbox({
   onClose: () => void;
   reducedMotion: boolean;
 }) {
-  const images = project.screenshots.length > 0 ? project.screenshots : [project.coverImage];
+  const images = useMemo(
+    () => (project.screenshots.length > 0 ? project.screenshots : [project.coverImage]),
+    [project.screenshots, project.coverImage],
+  );
   const safeIndex = ((index % images.length) + images.length) % images.length;
   const src = images[safeIndex];
   const [zoomed, setZoomed] = useState(false);
@@ -477,6 +482,37 @@ function Lightbox({
   const imgRef = useRef<HTMLImageElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef<{ startX: number; startY: number; pinchDist: number; moved: boolean } | null>(null);
+
+  /**
+   * PERFORMANCE: pan/zoom used to call `img.offsetWidth`, `stage.clientWidth`
+   * and `stage.getBoundingClientRect()` on every pointermove / wheel tick —
+   * i.e. 3–5 forced synchronous layouts per frame. Measured once per gesture
+   * start (and on resize / image load) instead.
+   */
+  const metrics = useRef({ imgW: 0, imgH: 0, stageW: 0, stageH: 0, left: 0, top: 0, width: 0, height: 0 });
+
+  const measure = useCallback(() => {
+    const stage = stageRef.current;
+    const img = imgRef.current;
+    if (!stage || !img) return;
+    const rect = stage.getBoundingClientRect();
+    metrics.current = {
+      imgW: img.offsetWidth,
+      imgH: img.offsetHeight,
+      stageW: stage.clientWidth,
+      stageH: stage.clientHeight,
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+  }, []);
+
+  /** Measure only when the cache is still empty (e.g. a wheel before `onLoad`). */
+  const ensureMeasured = useCallback(() => {
+    if (metrics.current.imgW === 0 || metrics.current.width === 0) measure();
+    return metrics.current;
+  }, [measure]);
 
   const resetView = useCallback(() => {
     tx.set(0);
@@ -493,13 +529,12 @@ function Lightbox({
     [onIndex, safeIndex, images.length, resetView],
   );
 
-  // Clamp pan so the image edge never leaves the stage.
+  // Clamp pan so the image edge never leaves the stage (cached metrics — no layout reads).
   const clampPan = useCallback((x: number, y: number, s: number) => {
-    const stage = stageRef.current;
-    const img = imgRef.current;
-    if (!stage || !img || img.offsetWidth === 0) return { x, y };
-    const maxX = Math.max(0, (img.offsetWidth * s - stage.clientWidth) / 2);
-    const maxY = Math.max(0, (img.offsetHeight * s - stage.clientHeight) / 2);
+    const { imgW, imgH, stageW, stageH } = metrics.current;
+    if (!imgW || !imgH) return { x, y };
+    const maxX = Math.max(0, (imgW * s - stageW) / 2);
+    const maxY = Math.max(0, (imgH * s - stageH) / 2);
     return {
       x: Math.min(maxX, Math.max(-maxX, x)),
       y: Math.min(maxY, Math.max(-maxY, y)),
@@ -514,7 +549,7 @@ function Lightbox({
       const s = Math.min(4, Math.max(1, next));
       const prev = sc.get();
       if (s === prev) return;
-      const r = stage.getBoundingClientRect();
+      const r = ensureMeasured();
       const mx = clientX - r.left - r.width / 2;
       const my = clientY - r.top - r.height / 2;
       const k = s / prev;
@@ -525,7 +560,7 @@ function Lightbox({
       sc.set(s);
       setZoomed(s > 1.01);
     },
-    [clampPan, sc, tx, ty],
+    [clampPan, ensureMeasured, sc, tx, ty],
   );
 
   const zoomToggleAt = useCallback(
@@ -536,17 +571,16 @@ function Lightbox({
   );
 
   const zoomToggleCenter = useCallback(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    const r = stage.getBoundingClientRect();
+    const r = ensureMeasured();
     zoomToggleAt(r.left + r.width / 2, r.top + r.height / 2);
-  }, [zoomToggleAt]);
+  }, [ensureMeasured, zoomToggleAt]);
 
   // Unified mouse + touch gestures on the stage:
   // tap on image = zoom toggle · drag = pan (zoomed) or swipe (fit) ·
   // two pointers = pinch zoom. Buttons opt out via closest("button").
   const onStagePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).closest("button")) return;
+    measure();
     e.currentTarget.setPointerCapture?.(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
@@ -631,10 +665,17 @@ function Lightbox({
     return () => stage.removeEventListener("wheel", onWheel);
   }, [sc, zoomAt]);
 
+  // Warm the geometry cache once the lightbox is on screen, so a wheel or
+  // pinch that arrives before `onLoad` anchors around the real stage centre.
+  useEffect(() => {
+    const raf = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(raf);
+  }, [measure]);
+
   // Keep pan clamped across viewport resizes while zoomed.
   useEffect(() => {
     const onResize = () => {
-      if (sc.get() > 1.01) {
+      measure();      if (sc.get() > 1.01) {
         const { x, y } = clampPan(tx.get(), ty.get(), sc.get());
         tx.set(x);
         ty.set(y);
@@ -642,7 +683,7 @@ function Lightbox({
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [clampPan, sc, tx, ty]);
+  }, [clampPan, measure, sc, tx, ty]);
 
   // Lock background scroll + keyboard controls.
   useEffect(() => {
@@ -681,7 +722,7 @@ function Lightbox({
       // Radix modal Dialog sets `pointer-events: none` on <body> while open —
       // this portal lives outside the dialog, so re-enable events or every
       // button/wheel gesture inside the lightbox silently passes through.
-      className="pointer-events-auto fixed inset-0 z-[300] flex flex-col bg-black/85 backdrop-blur-md"
+      className="pointer-events-auto fixed inset-0 z-[300] flex flex-col bg-black/90"
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -757,6 +798,7 @@ function Lightbox({
           transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
           style={{ x: tx, y: ty, scale: sc, touchAction: "none", cursor: zoomed ? "zoom-out" : "zoom-in" }}
           title="Tap to zoom · scroll or pinch to zoom · drag to pan"
+          onLoad={measure}
           className="h-auto max-h-[68vh] w-auto max-w-[92vw] select-none rounded-2xl border border-white/15 bg-black object-contain shadow-2xl sm:max-h-[74vh] md:max-h-[78vh] md:max-w-[78vw]"
         />
         {images.length > 1 && (
@@ -1158,53 +1200,51 @@ const Projects = () => {
               </TabsList>
             </div>
 
-            <AnimatePresence mode="sync" initial={false}>
-              <TabsContent value="flutter" key="flutter" asChild>
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                  exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
-                >
-                  {flutterProjects.map((project, index) => (
-                    <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
-                      <ProjectCard
-                        project={project}
-                        isFlutter={true}
-                        reducedMotion={reducedMotion}
-                        priority={index < EAGER_COVER_COUNT}
-                        onSelect={handleSelect}
-                        onFullscreen={handleFullscreen}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </TabsContent>
+            {/* PERFORMANCE: reveal on approach instead of `animate` on mount —
+                both grids previously ran 12 concurrent tweens offscreen. */}
+            <TabsContent value="flutter" key="flutter" asChild>
+              <motion.div
+                variants={staggerContainer}
+                initial={reducedMotion ? false : "hidden"}
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
+              >
+                {flutterProjects.map((project, index) => (
+                  <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
+                    <ProjectCard
+                      project={project}
+                      isFlutter={true}
+                      reducedMotion={reducedMotion}
+                      onSelect={handleSelect}
+                      onFullscreen={handleFullscreen}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
 
-              <TabsContent value="frontend" key="frontend" asChild>
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                  exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
-                >
-                  {frontendProjects.map((project, index) => (
-                    <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
-                      <ProjectCard
-                        project={project}
-                        isFlutter={false}
-                        reducedMotion={reducedMotion}
-                        priority={index < EAGER_COVER_COUNT}
-                        onSelect={handleSelect}
-                        onFullscreen={handleFullscreen}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </TabsContent>
-            </AnimatePresence>
+            <TabsContent value="frontend" key="frontend" asChild>
+              <motion.div
+                variants={staggerContainer}
+                initial={reducedMotion ? false : "hidden"}
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
+              >
+                {frontendProjects.map((project, index) => (
+                  <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
+                    <ProjectCard
+                      project={project}
+                      isFlutter={false}
+                      reducedMotion={reducedMotion}
+                      onSelect={handleSelect}
+                      onFullscreen={handleFullscreen}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
           </Tabs>
 
           <Dialog open={open} onOpenChange={handleOpenChange}>

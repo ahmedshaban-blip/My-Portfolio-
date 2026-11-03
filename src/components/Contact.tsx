@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { Magnetic } from "@/components/animations/Magnetic";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { playStoreApps } from "@/data/projects";
@@ -36,6 +36,20 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
+/**
+ * PERFORMANCE: `watch("message")` in the section re-rendered the whole form,
+ * the info cards and every motion wrapper on each keystroke. Isolating the
+ * subscription in a leaf keeps typing off the expensive subtree.
+ */
+const MessageCount = ({ control }: { control: Control<ContactForm> }) => {
+  const value = useWatch({ control, name: "message" }) ?? "";
+  return (
+    <span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+      {value.length}/{MESSAGE_MAX}
+    </span>
+  );
+};
+
 const Contact = () => {
   const [copied, setCopied] = useState(false);
   const [mailtoBlocked, setMailtoBlocked] = useState(false);
@@ -44,13 +58,12 @@ const Contact = () => {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
   });
 
-  const messageValue = watch("message") ?? "";
 
   useEffect(() => {
     return () => {
@@ -262,12 +275,7 @@ const Contact = () => {
                       <label htmlFor="message" className="text-sm font-medium block text-foreground">
                         Message
                       </label>
-                      <span
-                        className="text-xs text-muted-foreground tabular-nums"
-                        aria-live="polite"
-                      >
-                        {messageValue.length}/{MESSAGE_MAX}
-                      </span>
+                      <MessageCount control={control} />
                     </div>
                     <Textarea
                       id="message"

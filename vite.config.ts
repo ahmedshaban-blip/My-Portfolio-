@@ -27,10 +27,10 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           react: ["react", "react-dom", "react-router-dom"],
           motion: ["framer-motion"],
-          radix: [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-tabs",
-          ],
+          // PERFORMANCE: clsx / tailwind-merge / cva are needed by the entry
+          // above the fold; keep them in their own small chunk so the entry
+          // doesn't drag the admin/projects-only Radix primitives with it.
+          utils: ["clsx", "tailwind-merge", "class-variance-authority"],
           forms: ["react-hook-form", "@hookform/resolvers", "zod"],
           query: ["@tanstack/react-query"],
         },

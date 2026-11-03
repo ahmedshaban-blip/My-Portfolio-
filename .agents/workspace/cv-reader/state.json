@@ -37,8 +37,9 @@
     "tsc_node": "exit 0",
     "build": "success",
     "contract_harness": "21/21 pass (verify-download-cv.mjs)",
-    "branch_harness": "24/24 pass (verify-cvview-branch.mjs)",
-    "entry_bundle": "mode=view no longer in the entry chunk; CVView ships as its own 5.76 kB chunk"
+    "branch_harness": "27/27 pass (verify-cvview-branch.mjs, incl. dropdown contract)",
+    "entry_bundle": "CVView ships as its own lazy chunk; the Read CV dropdown costs +2.93 kB raw vs +84.8 kB with Radix (measured, radix version rejected)",
+    "live_dropdown": "verified on navbar, hero, and mobile menu: pick opens /api/download-cv?track=<t>&mode=view in a new tab, menus close, Escape works"
   },
   "known_limitations": [
     "vite preview does not execute the Vercel serverless handlers, so the inline",

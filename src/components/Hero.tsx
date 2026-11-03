@@ -1,12 +1,10 @@
-import { ArrowRight, Github, Linkedin, Mail, Download, Play, Layers, BookOpen } from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail, Play, Layers } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StaggerReveal } from "@/components/animations/StaggerReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
+import { CVReadMenu } from "@/components/cv/CVReadMenu";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
-import { getCVPageUrl } from "@/lib/cv-link";
-import { downloadCV } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { playStoreApps } from "@/data/projects";
 
@@ -57,10 +55,6 @@ const Hero = () => {
     }
   };
 
-  const handleDownloadCV = (type: "flutter" | "frontend") => {
-    downloadCV(type);
-  };
-
   const whatsappUrl = `https://wa.me/201114975104?text=${encodeURIComponent(
     "Hello Ahmed, I saw your portfolio and would like to connect"
   )}`;
@@ -73,28 +67,32 @@ const Hero = () => {
   ];
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center pt-28 pb-16 lg:pt-32 lg:pb-20 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center pt-28 pb-16 lg:pt-32 lg:pb-20">
       {/* PERFORMANCE: soft light orbs are painted as radial gradients, not
           `filter: blur(120px)` — a 120px blur on a 40vw element rasterizes a
           huge surface on every repaint, which is what made first paint jank. */}
-      <div
-        aria-hidden="true"
-        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at center, oklch(var(--primary) / 0.09) 0%, oklch(var(--primary) / 0.03) 45%, transparent 72%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at center, oklch(var(--accent) / 0.08) 0%, oklch(var(--accent) / 0.025) 45%, transparent 72%)",
-        }}
-      />
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+      {/* Decorative layer. The orbs overshoot the section on purpose, so they
+          live in their own clipping wrapper — the section itself must stay
+          `overflow-visible` or it would crop the CV dropdown (and any other
+          affordance) that opens past the hero's bottom edge. */}
+      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%]"
+          style={{
+            background:
+              "radial-gradient(circle at center, oklch(var(--primary) / 0.09) 0%, oklch(var(--primary) / 0.03) 45%, transparent 72%)",
+          }}
+        />
+        <div
+          className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%]"
+          style={{
+            background:
+              "radial-gradient(circle at center, oklch(var(--accent) / 0.08) 0%, oklch(var(--accent) / 0.025) 45%, transparent 72%)",
+          }}
+        />
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />
+      </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
@@ -163,42 +161,17 @@ const Hero = () => {
                   </Button>
                 </Magnetic>
 
+                {/* CTA rows: one primary action + one CV pill — every other CV
+                    action (read/download per track) lives inside the dropdown,
+                    so the hero stays uncluttered. */}
                 <div className="flex flex-col gap-1.5">
-                  <div className="flex flex-col sm:flex-row items-center gap-3" role="group" aria-label="CV actions">
-                    <Magnetic strength={0.2}>
-                      <Button asChild size="lg" variant="outline" className="rounded-full h-12 sm:h-14 px-6 sm:px-8 border-border/60">
-                        <Link to={getCVPageUrl("flutter")} title="Read the CV in your browser">
-                          <BookOpen className="mr-2 w-4 h-4" /> Read CV
-                        </Link>
-                      </Button>
-                    </Magnetic>
-                    <Magnetic strength={0.2}>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="relative rounded-full h-12 sm:h-14 px-6 sm:px-8 glass-effect border-primary/40 hover:border-primary/60 hover:bg-primary/5 hover:text-primary transition-interaction duration-200"
-                        onClick={() => handleDownloadCV("flutter")}
-                        title="Recommended for mobile roles"
-                      >
-                        <Download className="mr-2 w-4 h-4" /> Flutter CV
-                        <span className="ml-2 rounded-full bg-primary/10 text-primary border border-primary/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                          Recommended
-                        </span>
-                      </Button>
-                    </Magnetic>
-                    <button
-                      type="button"
-                      onClick={() => handleDownloadCV("frontend")}
-                      title="For React and web roles"
-                      className="inline-flex items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-                    >
-                      <Download className="mr-1.5 w-3.5 h-3.5" aria-hidden="true" /> Frontend CV
-                    </button>
-                  </div>
+                  <Magnetic strength={0.2}>
+                    <CVReadMenu className="h-12 sm:h-14 px-6 sm:px-8" align="start" chips />
+                  </Magnetic>
                   <p className="text-xs text-muted-foreground text-center lg:text-left">
-                    Mobile roles? Start with <span className="font-semibold text-foreground">Flutter CV</span>
-                    <span aria-hidden="true"> · </span>
-                    <span>React roles? Pick Frontend CV.</span>
+                    Pick <span className="font-semibold text-foreground">Flutter CV</span> or
+                    <span className="font-semibold text-foreground"> Frontend CV</span> — read it
+                    here in a new tab, or download it.
                   </p>
                 </div>
               </div>

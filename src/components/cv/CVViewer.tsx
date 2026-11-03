@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CV_CONFIG, type CVTrack } from "@/config/cv";
-import { getCVViewUrl } from "@/lib/cv-view";
+import { getCVViewUrl } from "@/lib/cv-link";
 import { cn } from "@/lib/utils";
 type CVViewerProps = {
   track: CVTrack;

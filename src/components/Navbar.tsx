@@ -1,10 +1,9 @@
 import { useEffect, useState, useMemo, useRef } from "react";
-import { Menu, X, Download, Moon, Sun, Eye, BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, Moon, Sun, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
-import { cn, downloadCV } from "@/lib/utils";
-import { getCVPageUrl } from "@/lib/cv-link";
+import { cn } from "@/lib/utils";
+import { CVReadMenu } from "@/components/cv/CVReadMenu";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollSpy } from "@/hooks/use-scrollspy";
@@ -69,10 +68,6 @@ const links = [
   { name: "Experience", href: "#experience" },
   { name: "Contact", href: "#contact" },
 ];
-
-const handleDownloadCV = (type: "flutter" | "frontend") => {
-  downloadCV(type);
-};
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -142,31 +137,11 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Desktop action buttons: fast access, single recommended default */}
+          {/* Desktop action buttons: one CV pill — read/download per track live in its menu */}
           <div className="hidden md:flex items-center gap-3">
             <ReducedMotionToggle />
             <ModeToggle />
-            <Button asChild size="sm" variant="outline" className="rounded-full px-5 border-border/60">
-              <Link to={getCVPageUrl("flutter")} title="Read the CV in your browser">
-                <BookOpen className="w-4 h-4 mr-2" /> Read CV
-              </Link>
-            </Button>
-            <Button
-              size="sm"
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-interaction active:scale-95 shadow-md shadow-primary/20"
-              onClick={() => handleDownloadCV("flutter")}
-              title="Recommended for mobile roles"
-            >
-              <Download className="w-4 h-4 mr-2" /> Flutter CV
-            </Button>
-            <button
-              type="button"
-              onClick={() => handleDownloadCV("frontend")}
-              title="For React and web roles"
-              className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
-            >
-              Frontend CV
-            </button>
+            <CVReadMenu className="h-9 px-4 text-sm" />
           </div>
 
           {/* Mobile menu icon */}
@@ -215,29 +190,14 @@ const Navbar = () => {
                   })}
                   
                   <div className="grid grid-cols-1 gap-3 pt-6" role="group" aria-label="CV actions">
-                    <Button asChild variant="outline" className="rounded-full w-full h-12 text-base font-medium border-border/60">
-                      <Link to={getCVPageUrl("flutter")} onClick={() => setIsOpen(false)}>
-                        <BookOpen className="w-4 h-4 mr-2" /> Read CV
-                      </Link>
-                    </Button>
-                    <Button
-                      className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-interaction active:scale-95 shadow-xl shadow-primary/20"
-                      onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}
-                      title="Recommended for mobile roles"
-                    >
-                      <Download className="w-5 h-5 mr-2" /> Flutter CV
-                    </Button>
+                    <CVReadMenu
+                      className="h-12 w-full text-base"
+                      onAction={() => setIsOpen(false)}
+                      chips
+                    />
                     <p className="text-xs text-muted-foreground text-center">
-                      Mobile roles? Start here. React roles? Use the Frontend CV below.
+                      Pick Flutter CV or Frontend CV — read it in a new tab, or download it.
                     </p>
-                    <Button
-                      variant="ghost"
-                      className="rounded-full text-muted-foreground w-full h-12 text-base font-medium hover:bg-primary/10 hover:text-primary transition-interaction duration-200 active:scale-95"
-                      onClick={() => { handleDownloadCV("frontend"); setIsOpen(false); }}
-                      title="For React and web roles"
-                    >
-                      <Download className="w-4 h-4 mr-2" /> Frontend CV
-                    </Button>
                   </div>
                </div>
             </motion.div>

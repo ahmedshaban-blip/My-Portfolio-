@@ -1,10 +1,18 @@
 import type { CVTrack } from "@/config/cv";
 
 /**
- * Shareable link to the in-browser CV reader.
- *
- * PERFORMANCE: this lives in its own module (not in `@/lib/cv-view`) because the
- * home page's Hero and Navbar need it, so Rollup inlines it into the entry
- * bundle — while every `/cv`-only helper stays in the lazily loaded reader chunk.
+ * CV actions the home page needs (Hero + Navbar), so they are intentionally
+ * part of the entry bundle. Page-only parsing helpers live in `@/lib/cv-view`
+ * so they stay inside the lazily loaded `/cv` chunk.
  */
-export const getCVPageUrl = (track: CVTrack) => `/cv?track=${track}`;
+
+/** Same-origin URL that renders the PDF in-page instead of downloading it. */
+export const getCVViewUrl = (track: CVTrack) => `/api/download-cv?track=${track}&mode=view`;
+
+/**
+ * Opens the CV PDF in a new tab so the browser's native viewer renders it.
+ * This is the same mechanism the mobile fallback uses.
+ */
+export function openCV(track: CVTrack): void {
+  window.open(getCVViewUrl(track), "_blank", "noopener,noreferrer");
+}

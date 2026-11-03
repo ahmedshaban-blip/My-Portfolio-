@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CV_CONFIG, type CVTrack } from "@/config/cv";
 import { cn, downloadCV } from "@/lib/utils";
-import { openCV } from "@/lib/cv-view";
+import { openCV } from "@/lib/cv-link";
 
 type CVFallbackProps = {
   track: CVTrack;

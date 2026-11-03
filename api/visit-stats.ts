@@ -204,6 +204,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
       pipe.get(`v:cvday:flutter:${d}`);
       pipe.get(`v:cvday:frontend:${d}`);
     }
+    // In-page CV reads (`mode=view`) — separate key family from downloads.
+    pipe.get(`v:cvview:flutter`);
+    pipe.get(`v:cvview:frontend`);
+    for (const d of cvDays) {
+      pipe.get(`v:cvviewday:flutter:${d}`);
+      pipe.get(`v:cvviewday:frontend:${d}`);
+    }
     const results = ((await pipe.exec()) ?? []) as unknown[];
 
     let cursor = 0;
@@ -290,6 +297,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
       cvDailyFlutter.push(Number(next() ?? 0) || 0);
       cvDailyFrontend.push(Number(next() ?? 0) || 0);
     }
+    const cvViewsTotalFlutter = Number(next() ?? 0) || 0;
+    const cvViewsTotalFrontend = Number(next() ?? 0) || 0;
+    const cvViewsDailyFlutter: number[] = [];
+    const cvViewsDailyFrontend: number[] = [];
+    for (const _ of cvDays) {
+      cvViewsDailyFlutter.push(Number(next() ?? 0) || 0);
+      cvViewsDailyFrontend.push(Number(next() ?? 0) || 0);
+    }
 
     const daily = trimmed.map((d) => ({
       ...d,
@@ -332,7 +347,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
 
     const ts = Date.now();
-    const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, botsToday, cvUniqFlutter, cvUniqFrontend] = await Promise.all([
+    const [liveNow, feedRaw, ownToday, ownLive, ownFeedRaw, botsToday, cvUniqFlutter, cvUniqFrontend, cvViewUniqFlutter, cvViewUniqFrontend] = await Promise.all([
       redis.zcount(`v:live`, ts - 5 * 60 * 1000, ts).catch(() => 0),
       redis.lrange<string[]>(`v:feed`, 0, ANALYTICS_CONFIG.feedFetchCount - 1).catch(() => []),
       redis.get<number>(`v:own:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
@@ -341,6 +356,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
       redis.get<number>(`v:bot:day:${dayKeys[dayKeys.length - 1]}`).catch(() => 0),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:flutter:${d}`).catch(() => 0))),
       Promise.all(cvDays.map((d) => redis.pfcount(`v:cvuniq:frontend:${d}`).catch(() => 0))),
+      Promise.all(cvDays.map((d) => redis.pfcount(`v:cvviewuniq:flutter:${d}`).catch(() => 0))),
+      Promise.all(cvDays.map((d) => redis.pfcount(`v:cvviewuniq:frontend:${d}`).catch(() => 0))),
     ]);
 
     // CV downloads per track: all-time total + unique (14d) + daily series (14d).
@@ -348,6 +365,19 @@ export default async function handler(request: VercelRequest, response: VercelRe
       [
         { track: "flutter", total: cvTotalFlutter, uniq: cvUniqFlutter, series: cvDailyFlutter },
         { track: "frontend", total: cvTotalFrontend, uniq: cvUniqFrontend, series: cvDailyFrontend },
+      ] as const
+    ).map((t) => ({
+      track: t.track,
+      total: t.total,
+      unique: t.uniq.reduce((s, v) => s + (Number(v) || 0), 0),
+      daily: cvDays.map((date, i) => ({ date, value: t.series[i] ?? 0 })),
+    }));
+
+    // CV in-page reads (`mode=view`), tracked separately from downloads.
+    const cvViews = (
+      [
+        { track: "flutter", total: cvViewsTotalFlutter, uniq: cvViewUniqFlutter, series: cvViewsDailyFlutter },
+        { track: "frontend", total: cvViewsTotalFrontend, uniq: cvViewUniqFrontend, series: cvViewsDailyFrontend },
       ] as const
     ).map((t) => ({
       track: t.track,
@@ -433,6 +463,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       botsToday: Number(botsToday) || 0,
       owner: { today: Number(ownToday) || 0, liveNow: Number(ownLive) || 0 },
       cv,
+      cvViews,
       peakDay: peak ? `${peak.label} · ${peak.visits.toLocaleString()}` : "",
       hasData: total30 > 0,
     });

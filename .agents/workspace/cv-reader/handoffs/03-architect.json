@@ -1,0 +1,84 @@
+{
+  "agent": "architect",
+  "feature": "cv-reader",
+  "path": "B",
+  "status": "success",
+  "executive_summary": "Architecture for a shareable /cv route (?track=flutter|frontend, default flutter) that renders the CV inline, plus mode=view support in api/download-cv.ts. Path B: reuse existing route/lazy conventions, useIsMobile + hasFinePointer for the mobile fallback, and the existing downloadCV path untouched. Files created: src/pages/CVView.tsx and three src/components/cv/* components. Files modified: api/download-cv.ts, src/config/cv.ts, src/lib/utils.ts, src/App.tsx, Hero.tsx, Navbar.tsx, vercel.json. Zero new npm packages. Redis counting stays as-is (views counted with downloads) - recommended, flagged as the one genuine trade-off for Gate 2. Handoff JSON schema adapted from the Flutter spec to this React/Vite project; no Dart written.",
+  "artifacts": [
+    ".agents/workspace/cv-reader/architecture.md",
+    ".agents/workspace/cv-reader/feature-files.json"
+  ],
+  "files_changed": [],
+  "commands_run": [
+    {
+      "cmd": "read-only inspection of src/config/cv.ts, src/lib/utils.ts, api/download-cv.ts, src/App.tsx, src/components/Hero.tsx, src/components/Navbar.tsx, src/pages/CVDashboard.tsx, src/pages/NotFound.tsx, src/pages/Index.tsx, src/hooks/use-mobile.tsx, src/lib/pointer.ts, src/lib/animation-variants.ts, src/hooks/useAnimationContext.tsx, src/components/ui/{dialog,button,card,tabs}.tsx, vite.config.ts, vercel.json, package.json",
+      "result": "pass",
+      "summary": "Confirmed real exports, routing convention, lazy page pattern, existing iframe preview in CVDashboard, and that no global CSP/X-Frame-Options exists."
+    },
+    {
+      "cmd": "grep for iframe|sandbox|mode=view|preview and Content-Security-Policy|X-Frame-Options|headers|frame-src",
+      "result": "pass",
+      "summary": "No sandboxed iframe anywhere; no CSP/X-Frame-Options/headers block in vercel.json or index.html, so same-origin inline PDF need no header relaxation."
+    }
+  ],
+  "findings": [
+    {
+      "id": "ARCH-01",
+      "severity": "high",
+      "file": "api/download-cv.ts",
+      "line": 79,
+      "description": "Content-Disposition is hardcoded to 'attachment', so the browser always forces a download; there is no inline path today.",
+      "fix": "Parse query param mode (already typed for track); compute disposition = mode==='view' ? 'inline' : 'attachment' and interpolate into the existing setHeader call. Keep the Redis counting block byte-for-byte equivalent so views and downloads share the same counters (recommended option)."
+    },
+    {
+      "id": "ARCH-02",
+      "severity": "high",
+      "file": "vercel.json",
+      "line": 4,
+      "description": "SPA rewrite source '/(.*)' -> '/index.html' would, on a naive reading, also match /api/*. In practice Vercel resolves functions before rewrites (downloadCV already calls /api/download-cv successfully), but the intent is implicit.",
+      "fix": "Defensively change source to '/((?!api/).*)' so the SPA fallback can never shadow the serverless function. Config-only; handler contract unchanged."
+    },
+    {
+      "id": "ARCH-03",
+      "severity": "medium",
+      "file": "src/App.tsx",
+      "line": 40,
+      "description": "NotFound is declared as path='*'; a /cv route inserted after it would never match.",
+      "fix": "Declare the lazy /cv <Route> above the catch-all, matching the CVDashboard/NotFound lazy + Suspense convention."
+    },
+    {
+      "id": "ARCH-04",
+      "severity": "medium",
+      "file": "src/components/Hero.tsx",
+      "line": 165,
+      "description": "Hero/Navbar only expose forced download; there is no read/preview affordance and no router hook in either component.",
+      "fix": "Add a 'Read CV' <Link to={getCVPageUrl(track)}> (preferred, avoids importing useNavigate) inside the existing CV action group in Hero and Navbar desktop + mobile dropdown; leave every downloadCV call and getCVDownloadUrl URL unchanged."
+    },
+    {
+      "id": "ARCH-05",
+      "severity": "medium",
+      "file": "src/components/Navbar.tsx",
+      "line": 210,
+      "description": "The mobile dropdown groups and closes via setIsOpen(false); a new read control must close the menu too or it strands the overlay.",
+      "fix": "Attach setIsOpen(false) to the new mobile 'Read CV' control exactly as the existing mobile download buttons do."
+    },
+    {
+      "id": "ARCH-06",
+      "severity": "low",
+      "file": "src/pages/CVDashboard.tsx",
+      "line": 193,
+      "description": "An existing iframe previews the Cloudinary raw URL directly and has a title, but no referrerPolicy and no fallback for load failure.",
+      "fix": "Reuse the titling convention on the new viewer iframe, add referrerPolicy='no-referrer', and pair it with CVFallback so an iframe failure never becomes a dead end."
+    }
+  ],
+  "open_questions": [
+    "Analytics trade-off (GENUINE, needs the human): should a mode=view load count as a download? Recommendation: YES - keep the existing counters untouched (option 1), because a recruiter opening the inline viewer is a valid reach signal and the pfadd unique set already dedupes repeat opens. Alternative options 2 (separate v:cvview:* keys + AnalyticsSection change + backfill decision) and 3 (count downloads only) are documented in architecture.md section 7 but must be re-approved and would enlarge scope. Implementation proceeds with option 1 unless told otherwise.",
+    "vercel.json hardening (ARCH-02): is the human OK with changing the rewrite source to '/((?!api/).*)'? The feature works without it; this is belt-and-braces. If declined, no functional impact - note it for the security review.",
+    "Hero 'Read CV' implementation form: <Link> (preferred, no new router hook) vs useNavigate(). Architecture recommends <Link> to keep the diff minimal; confirm the planner follows the <Link> form.",
+    "'Open PDF' on mobile: architecture specifies window.open(getCVViewUrl(track), '_blank', 'noopener,noreferrer') so the native PDF viewer takes over. Confirm that opening a new tab (rather than navigating the current tab) is the desired mobile UX; on some in-app browsers new-tab handling differs.",
+    "Should /cv expose a direct-to-download action for the OTHER track as well as the active one, or keep actions bound strictly to the selected track? Architecture specifies active-track-only to avoid ambiguity; confirm if the human wants both.",
+    "navigation label wording ('Read CV' vs 'View CV' vs 'Preview CV') is not fixed by requirements; architecture uses 'Read CV' for consistency with the feature name. Copy can be finalized at the UI stage without an architecture change."
+  ],
+  "next_recommended": "human",
+  "notes": "Gate 2 human sign-off required before planning and implementation. This is a React 18 + Vite + TypeScript + Tailwind + shadcn/ui project: Clean Architecture was adapted (config = domain, lib = services, hooks = logic, components/pages = UI) and no Dart was produced. No new npm dependencies. Write scope for this agent was restricted to .agents/workspace/cv-reader/; no git writes performed; no source or test files written. feature-files.json lists 11 files (8 created, 3 modified) as the authorized write scope for downstream implementers. The /cv page ships as its own lazy route chunk and must not add backdrop-blur, filter blur, or infinite animations (home-page-jank regression guard)."
+}

@@ -15,6 +15,7 @@ const AdminQueryProvider = lazy(() =>
   }))
 );
 import Index from "./pages/Index";
+const CVView = lazy(() => import("./pages/CVView"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const AppRoutes = () => {
@@ -37,6 +38,14 @@ const AppRoutes = () => {
         }
       />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route
+        path="/cv"
+        element={
+          <Suspense fallback={null}>
+            <CVView />
+          </Suspense>
+        }
+      />
       <Route
         path="*"
         element={

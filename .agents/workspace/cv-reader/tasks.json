@@ -1,0 +1,408 @@
+{
+  "feature": "cv-reader",
+  "revision": 2,
+  "path": "B",
+  "generated_by": "planner",
+  "generated_at": "2026-11-03",
+  "source_of_truth": [
+    ".agents/workspace/cv-reader/architecture.md",
+    ".agents/workspace/cv-reader/feature-files.json",
+    ".agents/workspace/cv-reader/handoffs/03b-architect-revision.json"
+  ],
+  "adaptation_note": "Flutter planner spec adapted to a React 18 + Vite + TS + Tailwind + shadcn/ui SPA. No Dart, no build_runner, no flutter analyze. The engineering gate for every code task is `npx tsc --noEmit` (or the repo's typecheck script) plus `npx eslint` on the touched files. Test infrastructure was verified ABSENT in this repo (no *.test.* / *.spec.* files, no vitest/jest config), so no test files are scheduled; per G10 the test-writer tasks below are manual-verification owners, not fabricated automated suites.",
+  "owners": {
+    "data": "Pure config/constant/helper layer (src/config/cv.ts, src/lib/analytics.ts, src/hooks/use-visits-analytics.ts).",
+    "domain-state": "Hooks / logic layer.",
+    "ui-builder": "Creates new UI components and pages (src/pages/CVView.tsx, src/components/cv/*).",
+    "ui-binding": "Wires existing UI to new behaviour (Hero.tsx, Navbar.tsx, src/lib/utils.ts, src/App.tsx, AnalyticsSection.tsx).",
+    "data (api layer)": "Vercel serverless handlers under api/*.ts; owner is \"data\" with layer \"api\".",
+    "test-writer": "Manual verification owner; no automated suite is feasible (no test runner in repo).",
+    "orchestrator": "Config-only edits (vercel.json) and sequencing."
+  },
+  "tasks": [
+    {
+      "id": "TASK-01",
+      "title": "Add cvviews reset scope to api/visit-reset.ts BEFORE any view key can be written",
+      "owner": "data",
+      "layer": "api",
+      "files": ["api/visit-reset.ts"],
+      "depends_on": [],
+      "parallel_group": "P1-server",
+      "acceptance_criteria": [
+        "SCOPES.cv stays byte-for-byte identical: [\"v:cv\", \"v:cv:*\", \"v:cvday:*\", \"v:cvuniq:*\"].",
+        "New SCOPES.cvviews = [\"v:cvview:*\", \"v:cvviewday:*\", \"v:cvviewuniq:*\"] is added as a separate entry.",
+        "Scope guard at the existing `if (scope !== \"visits\" && scope !== \"cv\")` widened to also accept \"cvviews\"; 400 message updated to \"Invalid scope. Use 'visits', 'cv' or 'cvviews'.\".",
+        "No glob in SCOPES.cv matches any v:cvview* key and no glob in SCOPES.cvviews matches any v:cv:* key (literal-prefix reasoning: 'v:cv:*' requires the prefix 'v:cv:' while the real key is 'v:cvview:').",
+        "deletePatterns(), the ADMIN_PIN auth path, method guard and response shape are otherwise unchanged."
+      ],
+      "verification": "Static check: `npx tsc --noEmit` typechecks; then manually diff the SCOPES object and the guard against the strings recorded above. Behavioral check (required before deploy, needs credentials): against a scratch Redis set both `v:cv:flutter=1` and `v:cvview:flutter=1`, POST /api/visit-reset with {scope:\"cv\"}, assert `v:cv:flutter` is gone AND `v:cvview:flutter` still exists; repeat with {scope:\"cvviews\"} and assert the inverse. If no scratch Redis is available, record the behavioral check as NOT RUN with the reason.",
+      "risk": "high",
+      "notes": "HIGH RISK — this is the reason the task is ordered first. The architecture (§7.6, ARCH2-02) verified that today `v:cv:*` does NOT match `v:cvview:*` only because of the literal colon after 'cv'; a future widening or a typo like `v:cv*` would delete both families in one confirm. Shipping the API view keys (TASK-02) before this scope exists leaves an admin with no safe way to clear views, and any later 'fix' to the cv scope risks wiping downloads. Must land in the same deploy as, or before, TASK-02."
+    },
+    {
+      "id": "TASK-02",
+      "title": "api/download-cv.ts: add mode=view (inline) and split the counting namespace between views and downloads",
+      "owner": "data",
+      "layer": "api",
+      "files": ["api/download-cv.ts"],
+      "depends_on": ["TASK-01"],
+      "parallel_group": "P1-server",
+      "acceptance_criteria": [
+        "`mode` is parsed with the same array-safe rule as `track`: `const rawMode = Array.isArray(request.query?.mode) ? request.query?.mode[0] : request.query?.mode; const isViewMode = rawMode === \"view\";` and the VercelRequest query type gains `mode?: string | string[];`.",
+        "Content-Disposition is computed as `${isViewMode ? \"inline\" : \"attachment\"}; filename=\"${cvFile.fileName}\"`; Content-Type stays application/pdf and Cache-Control stays no-store.",
+        "`X-Content-Type-Options: nosniff` is set on both the inline and attachment responses.",
+        "Counting block derives `const ns = isViewMode ? \"cvview\" : \"cv\";` and builds totalKey=`v:${ns}:${track}`, dayKey=`v:${ns}day:${track}:${day}`, uniqKey=`v:${ns}uniq:${track}:${day}`; the 90*24*60*60 TTL is applied to dayKey and uniqKey in both branches.",
+        "INVARIANT (view): mode=view writes ONLY v:cvview:<track>, v:cvviewday:<track>:<day>, v:cvviewuniq:<track>:<day> and never touches v:cv:*, v:cvday:*, v:cvuniq:*.",
+        "INVARIANT (download): absent mode, mode=download, or any unknown mode writes ONLY v:cv:<track>, v:cvday:<track>:<day>, v:cvuniq:<track>:<day> and never touches any v:cvview* key. Default behaviour is byte-for-byte identical to today.",
+        "The 400 invalid-track and 500 unconfigured paths and the non-ok Cloudinary path still return BEFORE the counting block, so failures are never counted.",
+        "`day` derivation (`new Date().toISOString().slice(0, 10)`) and the sha1(x-forwarded-for first hop) visitor derivation are unchanged.",
+        "No all-time-unique key is added (no v:cvviewuniq:all) — uniqueness stays a sum of 14 daily PFCOUNTs read by visit-stats."
+      ],
+      "verification": "Static: `npx tsc --noEmit`. Manual (local `vercel dev`): GET /api/download-cv?track=flutter&mode=view → response header Content-Disposition starts with `inline;`; GET /api/download-cv?track=flutter → `attachment;`. Then inspect Redis: after the view call only `v:cvview:flutter`, `v:cvviewday:flutter:<today>` and `v:cvviewuniq:flutter:<today>` exist for flutter; after the plain call only `v:cv:flutter` etc. increment. Record `TTL v:cvviewday:flutter:<today>` as ~7776000 seconds.",
+      "risk": "high",
+      "notes": "Blocks any meaningful /cv testing (the page's iframe points at this endpoint). Depends on TASK-01 so the new key family is resettable the moment it starts being written. Open question carried from handoff 03b: whether to add the optional `Range` header guard (architecture §7.5 mitigation) — if adopted, apply it symmetrically to BOTH families and record the choice; if declined, note that the view figure is a reach proxy, not an exact count."
+    },
+    {
+      "id": "TASK-03",
+      "title": "Data layer: extend src/config/cv.ts with track constants, guards and URL builders",
+      "owner": "data",
+      "layer": "config",
+      "files": ["src/config/cv.ts"],
+      "depends_on": [],
+      "parallel_group": "P2-client-data",
+      "acceptance_criteria": [
+        "Existing exports CVTrack, CV_CONFIG, CLOUDINARY_CLOUD_NAME, getCloudinaryRawUrl, getCloudinaryUploadEndpoint, getCVDownloadUrl are untouched (CVDashboard.tsx and src/lib/utils.ts keep compiling).",
+        "Adds `CV_TRACKS: readonly CVTrack[] = [\"flutter\", \"frontend\"]` and `DEFAULT_CV_TRACK: CVTrack = \"flutter\"`.",
+        "Adds `isCVTrack(value: unknown): value is CVTrack` returning true only for the two literal strings.",
+        "Adds `parseCVTrack(value: string | null | undefined): CVTrack` that never throws and never returns undefined; unknown/absent multi-value input resolves to DEFAULT_CV_TRACK.",
+        "Adds `getCVPageUrl(track: CVTrack): string` returning `/cv?track=<track>`.",
+        "Adds `getCVViewUrl(track: CVTrack): string` returning `/api/download-cv?track=<track>&mode=view`.",
+        "getCVDownloadUrl still emits the mode-less `/api/download-cv?track=<track>` so the default stays attachment."
+      ],
+      "verification": "Static: `npx tsc --noEmit` plus `npx eslint src/config/cv.ts`. Manual in a REPL/console: parseCVTrack(null)===\"flutter\", parseCVTrack(\"frontend\")===\"frontend\", parseCVTrack(\"abc\")===\"flutter\", getCVPageUrl(\"frontend\")===\"/cv?track=frontend\", getCVViewUrl(\"flutter\")===\"/api/download-cv?track=flutter&mode=view\".",
+      "risk": "low",
+      "notes": "Pure additive layer; the single source of truth for every /cv and view URL so no component string-concatenates. No dependency on the API tasks — can be built in parallel with P1-server."
+    },
+    {
+      "id": "TASK-04",
+      "title": "ui/lib: add openCV(track) beside downloadCV in src/lib/utils.ts",
+      "owner": "ui-binding",
+      "layer": "lib",
+      "files": ["src/lib/utils.ts"],
+      "depends_on": ["TASK-03"],
+      "parallel_group": "P2-client-data",
+      "acceptance_criteria": [
+        "Adds `export function openCV(type: CVTrack): void` calling `window.open(getCVViewUrl(type), \"_blank\", \"noopener,noreferrer\")`.",
+        "openCV does NOT run downloadCV's HEAD reachability probe and does NOT fall back to the local static file — a view always goes through the endpoint so its JSON error is surfaced.",
+        "downloadCV(type), canReachRemoteCV and triggerDownload are unchanged.",
+        "Import list adds getCVViewUrl alongside the existing @/config/cv imports with no unused imports left behind."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/lib/utils.ts`. Manual: from a scratch call in the browser console, openCV(\"flutter\") opens a new tab at /api/download-cv?track=flutter&mode=view and the tab renders the PDF inline (requires TASK-02 deployed or vercel dev).",
+      "risk": "low",
+      "notes": "Used by the mobile/coarse-pointer fallback card. Deliberately independent of the download fallback path (architecture §2.2)."
+    },
+    {
+      "id": "TASK-05",
+      "title": "UI: build CVViewer, CVFallback and CVTrackTabs in src/components/cv/",
+      "owner": "ui-builder",
+      "layer": "ui",
+      "files": [
+        "src/components/cv/CVViewer.tsx",
+        "src/components/cv/CVFallback.tsx",
+        "src/components/cv/CVTrackTabs.tsx"
+      ],
+      "depends_on": ["TASK-03", "TASK-04"],
+      "parallel_group": "P3-ui",
+      "acceptance_criteria": [
+        "CVViewer props are exactly `{ track: CVTrack; className?: string; onError?: () => void }`, default-exported or named-exported consistently with the import used in CVView.tsx.",
+        "CVViewer renders a single <iframe> with `src={getCVViewUrl(track)}`, `key={getCVViewUrl(track)}`, `title={<CV_CONFIG[track].label> + \" — inline PDF viewer\"}`, `tabIndex={0}`, `referrerPolicy=\"no-referrer\"`, and no `sandbox` attribute; it invokes onError when the load fails.",
+        "CVFallback props are exactly `{ track: CVTrack; reason: \"coarse-pointer\" | \"load-error\"; className?: string }`.",
+        "CVFallback renders two real controls: \"Open PDF\" calling openCV(track) (new tab, rel noreferrer noopener) and \"Download\" calling downloadCV(track); each carries an aria-label naming the track, e.g. `Open ${CV_CONFIG[track].label} in a new tab` and `Download ${CV_CONFIG[track].label}`.",
+        "CVFallback copy differs by reason: load-error → \"This CV can't be displayed here. Open it in a new tab or download it.\"; coarse-pointer → \"Open or download this CV.\".",
+        "CVTrackTabs props are exactly `{ track: CVTrack; onChange: (next: CVTrack) => void; className?: string }` and it is a thin wrapper over Tabs/TabsList/TabsTrigger from src/components/ui/tabs.tsx over CV_TRACKS using CV_CONFIG[t].label; no TabsContent; each trigger has visible text (no icon-only trigger).",
+        "No component hardcodes a /cv or /api/download-cv URL or re-implements track validation."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/components/cv`. Manual in the running app once TASK-06/TASK-07 land: tab through the track switcher with arrow keys (Radix roving tabindex), confirm the switcher reports aria-selected, and confirm the fallback renders both buttons.",
+      "risk": "medium",
+      "notes": "Can be built in parallel with P1-server because the page only depends on the contract of getCVViewUrl/openCV, not on the endpoint being deployed. Approved packages only: react-router-dom, framer-motion, lucide-react, @radix-ui/react-tabs (via ui/tabs.tsx), cn."
+    },
+    {
+      "id": "TASK-06",
+      "title": "UI: build the /cv page src/pages/CVView.tsx composing tabs + viewer/fallback",
+      "owner": "ui-builder",
+      "layer": "ui",
+      "files": ["src/pages/CVView.tsx"],
+      "depends_on": ["TASK-05"],
+      "parallel_group": "P3-ui",
+      "acceptance_criteria": [
+        "src/pages/CVView.tsx has a default export so `lazy(() => import(\"./pages/CVView\"))` resolves.",
+        "Track is URL-derived: `const [searchParams, setSearchParams] = useSearchParams(); const raw = searchParams.get(\"track\"); const track = parseCVTrack(raw);` — there is no useState for the selected track.",
+        "When the raw param is present but invalid, the page renders a role=\"status\" (polite) notice reading \"We couldn't find that CV track, showing the Flutter CV instead.\" ABOVE the viewer AND normalizes the URL with `setSearchParams({ track: DEFAULT_CV_TRACK }, { replace: true })`; it never throws and never renders an empty screen.",
+        "CVTrackTabs.onChange calls `setSearchParams({ track: next })` (push, not replace) so back/forward and copy-link both work.",
+        "Fallback branch: `const isMobile = useIsMobile(); const coarse = !hasFinePointer(); const showFallback = isMobile || coarse;` — when true, CVFallback reason=\"coarse-pointer\" renders INSTEAD of the iframe; when the viewer reports onError, CVFallback reason=\"load-error\" renders.",
+        "The page owns an <h1>, a \"Download this CV\" action delegating to downloadCV(track), and a \"Back to portfolio\" <Link to=\"/\">.",
+        "Entrance motion uses useAnimationContext().reducedMotion with `initial={reducedMotion ? \"visible\" : \"hidden\"}` exactly like Hero.tsx; no backdrop-blur, no filter: blur, no infinite animate-* is introduced.",
+        "Focus order is h1 → track tabs → viewer/fallback → actions → back link."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/pages/CVView.tsx`. Manual: /cv renders; arrow keys move the switcher; clicking \"Frontend Developer CV\" updates the URL query string to track=frontend without a full reload. Full cold-load behaviour is covered by the verification_plan entry E2E-01..E2E-04 once TASK-07 is present.",
+      "risk": "medium",
+      "notes": "Reuses useIsMobile() from src/hooks/use-mobile.tsx (max-width: 767px; read during first render) and hasFinePointer() from src/lib/pointer.ts (module-cached '(hover: hover) and (pointer: fine)'). Both verified to exist with those names. No new hook and no new state primitive is introduced."
+    },
+    {
+      "id": "TASK-07",
+      "title": "Routing: declare the lazy /cv route ABOVE the * catch-all in src/App.tsx",
+      "owner": "ui-binding",
+      "layer": "app",
+      "files": ["src/App.tsx"],
+      "depends_on": ["TASK-06"],
+      "parallel_group": "P4-binding",
+      "acceptance_criteria": [
+        "`const CVView = lazy(() => import(\"./pages/CVView\"));` is declared alongside the existing CVDashboard/NotFound lazy consts.",
+        "A `<Route path=\"/cv\" element={<Suspense fallback={null}><CVView /></Suspense>} />` is declared ABOVE the `path=\"*\"` NotFound route, in the region commented `ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL \"*\" ROUTE`.",
+        "The existing /, SECRET_ADMIN_PATH and * routes are otherwise unchanged.",
+        "`/cv?track=frontend` resolves to the same route (query strings are not part of route matching), so it does not fall through to NotFound."
+      ],
+      "verification": "Static: `npx tsc --noEmit`. Manual: navigate to /cv and confirm the CVView page renders rather than the NotFound page; navigate to /cv?track=frontend and confirm the same page renders with the frontend track selected. A cold direct load (hard refresh on /cv) is covered by E2E-01 and requires TASK-08.",
+      "risk": "high",
+      "notes": "HIGH RISK ONLY IF ORDERING IS VIOLATED: React Router v6 ranks routes, but this repo's convention (and the architecture §3 requirement) is that the explicit route must sit above `path=\"*\"`. Declaring it after the catch-all is the documented failure mode — it will never match. This task is also blocked on TASK-06 because the lazy import must resolve at build time."
+    },
+    {
+      "id": "TASK-08",
+      "title": "orchestrator: harden the SPA rewrite in vercel.json to /((?!api/).*)",
+      "owner": "orchestrator",
+      "layer": "config",
+      "files": ["vercel.json"],
+      "depends_on": ["TASK-07"],
+      "parallel_group": "P5-config",
+      "acceptance_criteria": [
+        "The rewrites array contains exactly one entry whose `source` is `/((?!api/).*)` and whose `destination` is `/index.html`.",
+        "No other key is added to vercel.json (no headers block, no redirects block).",
+        "`/api/download-cv`, `/api/visit-stats` and `/api/visit-reset` still resolve to the serverless functions (the negative lookahead excludes api/).",
+        "Non-API deep links (/cv, /cv?track=frontend, /dashboard) still rewrite to /index.html so /cv stays cold-visit shareable."
+      ],
+      "verification": "Static: `node -e \"JSON.parse(require('fs').readFileSync('vercel.json','utf8'))\"` to prove the file is valid JSON, then assert the source string equals `/((?!api/).*)`. Manual after deploy/preview: GET /api/download-cv?track=flutter returns application/pdf, and a hard load of /cv returns index.html rather than a 404.",
+      "risk": "medium",
+      "notes": "APPROVED at Gate 2 (architecture §7.3, ARCH2-08). Config-only; no handler contract changes. Ordered after routing so that the /cv route exists before the SPA rewrite is relied on for the cold-load test. Defence-in-depth: Vercel already resolves functions before rewrites, but the intent is now explicit."
+    },
+    {
+      "id": "TASK-09",
+      "title": "Analytics data layer: analytics.ts type + empty skeleton, then use-visits-analytics passthrough with stale-client guard",
+      "owner": "data",
+      "layer": "client-data",
+      "files": ["src/lib/analytics.ts", "src/hooks/use-visits-analytics.ts"],
+      "depends_on": ["TASK-02"],
+      "parallel_group": "P6-analytics",
+      "acceptance_criteria": [
+        "src/lib/analytics.ts keeps `export type CvTrack = { track: \"flutter\" | \"frontend\"; total: number; unique: number; daily: { date: string; value: number }[] };` unchanged and adds `export type CvViewTrack = CvTrack;`.",
+        "AnalyticsData gains `cvViews: CvViewTrack[];` next to `cv: CvTrack[];`; no existing field is renamed, removed or retyped.",
+        "buildEmptyAnalytics returns `cvViews: ([\"flutter\", \"frontend\"] as const).map((track) => ({ track, total: 0, unique: 0, daily: [] }))` next to the existing cv fallback, so the honest zero state covers views.",
+        "src/hooks/use-visits-analytics.ts declares `cvViews?: CvTrack[];` in StatsResponse (OPTIONAL — a stale server payload without the field must not throw).",
+        "mapStatsResponse adds `cvViews: (json.cvViews ?? []) as CvTrack[],` next to the existing `cv: (json.cv ?? []) as CvTrack[],`.",
+        "Existing imports and the existing `cv` passthrough are otherwise untouched; the hook signature, queryKey, staleTime and refetchInterval are unchanged."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/lib/analytics.ts src/hooks/use-visits-analytics.ts`. Manual stale-client check: temporarily strip the cvViews key from a mocked /api/visit-stats response (or point the hook at a response without it) and confirm the dashboard still renders instead of throwing — this is the ARCH2-04 stale-client guard.",
+      "risk": "medium",
+      "notes": "Ordered so types flow in ONE direction: TASK-09 type source (analytics.ts) → optional mapping (use-visits-analytics.ts) → TASK-10 rendering (AnalyticsSection.tsx). Depends on TASK-02 because cvViews has no source data until the endpoint writes the view family; it does not depend on TASK-01 at type level, but the deploy ordering of TASK-01 before TASK-02 covers both."
+    },
+    {
+      "id": "TASK-10",
+      "title": "UI binding: show views beside downloads in AnalyticsSection and add the third reset button",
+      "owner": "ui-binding",
+      "layer": "admin-ui",
+      "files": ["src/components/admin/AnalyticsSection.tsx"],
+      "depends_on": ["TASK-09", "TASK-01"],
+      "parallel_group": "P6-analytics",
+      "acceptance_criteria": [
+        "Card title becomes `📄 CV views & downloads` (FileDown icon retained; a paired Eye icon only if it does not wrap) and the description becomes `Inline views vs. downloads · last 14 days`.",
+        "The empty state text becomes `No views or downloads recorded yet.` (replacing \"No downloads recorded yet.\").",
+        "The big number per track block stays the DOWNLOADS total and the existing \"unique downloaders\" line is unchanged; a new line is added beneath it showing the view total labelled \"views\" and the unique view count labelled \"unique viewers\".",
+        "The views entry is looked up defensively: `const v = data.cvViews.find((x) => x.track === c.track) ?? { total: 0, unique: 0, daily: [] };` — a missing/stale cvViews renders `0 views · 0 unique viewers` and never throws.",
+        "The existing 14-bar download sparkline and its per-track colours (bg-primary/80, bg-accent/80) are unchanged; any views sparkline is optional, goes under the download row, uses bg-accent/40 and its own per-series max.",
+        "The \"💡 … takes N% of downloads\" insight stays computed from downloads ONLY and is not blended with views.",
+        "resetScope widens to `useState<\"visits\" | \"cv\" | \"cvviews\" | null>` and handleReset accepts `\"visits\" | \"cv\" | \"cvviews\"` (body unchanged).",
+        "The Danger zone gains a THIRD button using the existing pattern (variant={resetScope === \"cvviews\" ? \"destructive\" : \"outline\"}, size=\"sm\", disabled={resetBusy}, className=\"rounded-full\") with idle label `Reset CV views` and confirm label `Click again to confirm CV views reset`.",
+        "The existing `Reset CV downloads` button keeps onClick handleReset(\"cv\") and its labels unchanged; there is no combined reset-both scope."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/components/admin/AnalyticsSection.tsx`. Manual (admin dashboard): the card shows a downloads number and a views line per track; the Danger zone shows three buttons; the new one requires two clicks; after confirming, only the views numbers reset while the downloads numbers persist (see E2E-07..E2E-08).",
+      "risk": "medium",
+      "notes": "Depends on TASK-09 for the AnalyticsData.cvViews type and on TASK-01 for the cvviews scope it calls. The Eye icon is already imported at line 3; Trash2/FileDown already present. No second Card is added — the lg:grid-cols-2 rhythm with Top countries is preserved."
+    },
+    {
+      "id": "TASK-11",
+      "title": "Entry points: add a Read CV affordance to Hero.tsx and Navbar.tsx without disturbing existing downloads",
+      "owner": "ui-binding",
+      "layer": "ui-binding",
+      "files": ["src/components/Hero.tsx", "src/components/Navbar.tsx"],
+      "depends_on": ["TASK-03", "TASK-07"],
+      "parallel_group": "P4-binding",
+      "acceptance_criteria": [
+        "Hero.tsx: the existing `role=\"group\" aria-label=\"Download CV\"` row is renamed to aria-label=\"CV actions\" and gains one \"Read CV\" control wrapping `<Link to={getCVPageUrl(track)}>` from react-router-dom, placed between the Flutter download button and the Frontend download link; a lucide-react icon (Eye or BookOpen) is used and lucide-react icons are already imported.",
+        "Hero.tsx: the Flutter download Button (onClick handleDownloadCV(\"flutter\")) and the Frontend download button (handleDownloadCV(\"frontend\")) are unchanged byte-for-byte.",
+        "Navbar.tsx desktop actions block (`hidden md:flex`) gains one \"Read CV\" control navigating to getCVPageUrl(\"flutter\") placed BEFORE the existing Flutter CV download Button; the existing Flutter CV Button and Frontend CV link are unchanged.",
+        "Navbar.tsx mobile dropdown group (aria-label renamed to \"CV actions\") gains a ghost \"Read CV\" control at the top that navigates to getCVPageUrl(\"flutter\") AND calls setIsOpen(false); the two existing download buttons below it are unchanged.",
+        "No new dependency is added and no heavy module is pulled into the entry bundle (getCVPageUrl is a pure string helper in the already-loaded @/config/cv).",
+        "The Link form is used in preference to useNavigate so no router hook is added where none exists (Hero currently imports no router hook)."
+      ],
+      "verification": "Static: `npx tsc --noEmit` and `npx eslint src/components/Hero.tsx src/components/Navbar.tsx`. Manual: on /, the Hero row shows Flutter CV (download), Read CV (navigates to /cv), Frontend CV (download); clicking the two downloads still downloads and does NOT navigate. In the Navbar, desktop \"Read CV\" and mobile \"Read CV\" both land on /cv and the mobile menu closes.",
+      "risk": "medium",
+      "notes": "Highest regression risk is accidental behaviour change to the existing download controls, which are explicitly required to stay intact. Depends on TASK-03 for getCVPageUrl and on TASK-07 so the link target actually resolves rather than hitting NotFound. Admin dashboard (P6-analytics) can proceed in parallel with this task."
+    },
+    {
+      "id": "TASK-12",
+      "title": "test-writer: manual verification of the separated-counter invariants (no automated runner in repo)",
+      "owner": "test-writer",
+      "layer": "verification",
+      "files": [],
+      "depends_on": ["TASK-02", "TASK-08", "TASK-10", "TASK-11"],
+      "parallel_group": "P7-verify",
+      "acceptance_criteria": [
+        "Every check in verification_plan entries E2E-01 through E2E-08 is executed and its REAL observed result recorded (pass/fail/NOT RUN with reason); no result is claimed without evidence.",
+        "The reset isolation invariant is explicitly exercised: resetting `cv` leaves `v:cvview:*` intact and resetting `cvviews` leaves `v:cv:*` intact.",
+        "The stale-client guard is explicitly exercised: a /api/visit-stats payload without `cvViews` still renders the dashboard.",
+        "The download regression is explicitly exercised: the existing Flutter and Frontend download controls still produce a Content-Disposition: attachment response and no navigation.",
+        "The counter separation is explicitly exercised: a view increments only the v:cvview family and a download increments only the v:cv family."
+      ],
+      "verification": "Execute the verification_plan entries manually (browser + a scratch Redis or a preview deployment). Record each result verbatim in the QA report; per G10 mark anything not executed as NOT RUN with the reason.",
+      "risk": "low",
+      "notes": "This repo has NO test infrastructure (verified: zero *.test.* / *.spec.* files, no vitest/jest config). Per policy G10 the planner does not fabricate an automated suite, and per the planner spec test writing must not precede implementation. This task therefore owns MANUAL verification only. If the human later wants automated coverage, adding a runner is a separate, approved decision and must not be silently introduced here."
+    }
+  ],
+  "dependency_graph": {
+    "TASK-01": [],
+    "TASK-02": ["TASK-01"],
+    "TASK-03": [],
+    "TASK-04": ["TASK-03"],
+    "TASK-05": ["TASK-03", "TASK-04"],
+    "TASK-06": ["TASK-05"],
+    "TASK-07": ["TASK-06"],
+    "TASK-08": ["TASK-07"],
+    "TASK-09": ["TASK-02"],
+    "TASK-10": ["TASK-09", "TASK-01"],
+    "TASK-11": ["TASK-03", "TASK-07"],
+    "TASK-12": ["TASK-02", "TASK-08", "TASK-10", "TASK-11"]
+  },
+  "acyclic_check": "PASS — every edge points from a lower-numbered id to a higher-numbered id, so no cycle can exist. TASK-01 and TASK-03 are the only roots.",
+  "parallel_groups": {
+    "P1-server": ["TASK-01", "TASK-02"],
+    "P2-client-data": ["TASK-03", "TASK-04"],
+    "P3-ui": ["TASK-05", "TASK-06"],
+    "P4-binding": ["TASK-07", "TASK-11"],
+    "P5-config": ["TASK-08"],
+    "P6-analytics": ["TASK-09", "TASK-10"],
+    "P7-verify": ["TASK-12"]
+  },
+  "critical_ordering_constraints": [
+    "TASK-01 (cvviews scope) MUST land before or with TASK-02 (the first writer of v:cvview* keys), otherwise the new key family has no safe reset path and any later widening of the cv scope risks deleting downloads.",
+    "TASK-02 MUST land before the /cv page can be meaningfully tested, because the page's iframe points at /api/download-cv?track=<t>&mode=view; the page itself (TASK-05/TASK-06) is built in parallel on the contract only.",
+    "TASK-06 MUST exist before TASK-07 can declare the lazy /cv route, because a lazy import of a missing module fails at build time.",
+    "TASK-07 MUST place the /cv route ABOVE path=\"*\" in src/App.tsx or the route can never match.",
+    "TASK-09 type ordering: src/lib/analytics.ts (CvViewTrack + AnalyticsData.cvViews + empty skeleton) → src/hooks/use-visits-analytics.ts (optional StatsResponse.cvViews + ?? [] mapping) → TASK-10 rendering (AnalyticsSection.tsx).",
+    "api/visit-stats.ts is NOT edited in this plan (its cvViews field is written server-side per architecture §7.7, but the file is not in the listed client-file read set for the dashboard chain and the human-approved change set here is the route + counters + reset + dashboard client). If the human wants the server-side cvViews producer included, it is an ADDITIVE task on api/visit-stats.ts that must be inserted after TASK-02 and before TASK-09 depends on real data; flagged as an open question.",
+    "api/visit-stats.ts must stay backward compatible: the cvViews field is additive only and the client treats it as optional (cvViews?: CvTrack[] with ?? []), so a stale client or a stale server can never crash.",
+    "TASK-08 is config-only and ordered last so the SPA rewrite is only relied on once the /cv route exists."
+  ],
+  "verification_plan": [
+    {
+      "id": "E2E-01",
+      "name": "Cold load of /cv?track=flutter",
+      "steps": [
+        "Hard-navigate (address bar, full page load) to https://<host>/cv?track=flutter.",
+        "Assert the CVView page renders (not NotFound), the Flutter CV track tab is selected, and the embedded PDF loads in the iframe on a fine-pointer desktop."
+      ],
+      "expected": "Page renders directly on a cold visit with the Flutter track selected and the PDF visible inline.",
+      "requires": ["TASK-06", "TASK-07", "TASK-08", "TASK-02"]
+    },
+    {
+      "id": "E2E-02",
+      "name": "Cold load of /cv?track=frontend",
+      "steps": [
+        "Hard-navigate to https://<host>/cv?track=frontend.",
+        "Assert the Frontend Developer CV tab is selected and the frontend PDF loads inline."
+      ],
+      "expected": "Frontend track selected on cold load; the iframe src is /api/download-cv?track=frontend&mode=view.",
+      "requires": ["TASK-06", "TASK-07", "TASK-08", "TASK-02"]
+    },
+    {
+      "id": "E2E-03",
+      "name": "Invalid track",
+      "steps": [
+        "Navigate to /cv?track=abc.",
+        "Assert the role=\"status\" notice 'We couldn't find that CV track, showing the Flutter CV instead.' appears above the viewer.",
+        "Assert the URL is normalized to ?track=flutter via a replace navigation and the Flutter viewer renders."
+      ],
+      "expected": "No throw, no empty screen; notice shown and URL normalized to track=flutter.",
+      "requires": ["TASK-06", "TASK-07"]
+    },
+    {
+      "id": "E2E-04",
+      "name": "Mobile / coarse-pointer emulation",
+      "steps": [
+        "In DevTools, emulate a mobile device (width < 768px) and then emulate a coarse pointer (touch).",
+        "Reload /cv?track=flutter.",
+        "Assert no iframe is rendered and CVFallback reason=\"coarse-pointer\" shows the copy 'Open or download this CV.' with Open PDF and Download buttons.",
+        "Tap Open PDF and assert a new tab opens the inline endpoint; tap Download and assert a download starts."
+      ],
+      "expected": "Fallback card instead of a broken iframe; both actions work.",
+      "requires": ["TASK-06", "TASK-05", "TASK-04"]
+    },
+    {
+      "id": "E2E-05",
+      "name": "Downloads still work and are not converted to views",
+      "steps": [
+        "From the Hero and the Navbar, trigger the Flutter CV download and the Frontend CV download.",
+        "Assert the response Content-Disposition is `attachment` (DevTools Network) and the file downloads as before.",
+        "Assert no navigation to /cv occurred."
+      ],
+      "expected": "Existing download behaviour is byte-for-byte intact; default mode remains attachment.",
+      "requires": ["TASK-11", "TASK-02"]
+    },
+    {
+      "id": "E2E-06",
+      "name": "Counters increment separately",
+      "steps": [
+        "Record the current values of v:cv:flutter and v:cvview:flutter in Redis.",
+        "Perform exactly one inline view of /cv?track=flutter and assert ONLY v:cvview:flutter (+ its day/uniq keys) incremented by 1.",
+        "Perform exactly one Flutter download and assert ONLY v:cv:flutter (+ its day/uniq keys) incremented by 1.",
+        "Assert the two families never increment together."
+      ],
+      "expected": "Views and downloads are counted in strictly separate key families with no cross-write in either direction.",
+      "requires": ["TASK-02"],
+      "note": "If the optional Range guard is adopted, ranged follow-up requests must not increment either counter."
+    },
+    {
+      "id": "E2E-07",
+      "name": "Reset flows are non-destructive to each other",
+      "steps": [
+        "Seed both a v:cv:flutter key and a v:cvview:flutter key.",
+        "POST /api/visit-reset with {\"scope\":\"cv\"} and assert v:cv:flutter is deleted while v:cvview:flutter REMAINS.",
+        "Re-seed and POST with {\"scope\":\"cvviews\"} and assert v:cvview:flutter is deleted while v:cv:flutter REMAINS.",
+        "In the dashboard Danger zone, confirm each of the three buttons resets only its own family."
+      ],
+      "expected": "The cv scope clears downloads only; the cvviews scope clears views only; neither can clear the other.",
+      "requires": ["TASK-01", "TASK-10"],
+      "note": "This is the highest-value invariant of revision 2 (ARCH2-02). Record the observed key sets."
+    },
+    {
+      "id": "E2E-08",
+      "name": "Stale-client / stale-server robustness and honest zero state",
+      "steps": [
+        "Serve an /api/visit-stats payload WITHOUT the cvViews field and assert the analytics card renders (0 views · 0 unique viewers) instead of throwing.",
+        "Serve a payload WITH cvViews and assert the views and downloads numbers are both shown with the labels 'views', 'unique viewers' and 'unique downloaders'.",
+        "On a freshly deployed environment with no view history, assert the card legitimately shows 0 views next to the real all-time download total and that no seeding was performed."
+      ],
+      "expected": "No crash on a missing field; the dashboard honestly shows zero views before the first post-deploy view.",
+      "requires": ["TASK-09", "TASK-10"],
+      "note": "Views start at zero on deploy with no backfill (architecture §7.9, policy G10). The asymmetry against downloads is correct and must not be 'fixed' by seeding."
+    }
+  ],
+  "open_questions": [
+    "api/visit-stats.ts: architecture §7.7 specifies an additive server-side cvViews producer in api/visit-stats.ts. It is listed in feature-files.json but was not part of the three client files the planner was told to read, and it is not in the human-approved decision list beyond 'SEPARATE view counters'. Decision needed: schedule it as a new additive API task between TASK-02 and TASK-09, or is the current scope (keys + reset + client dashboard) sufficient for this phase? The dashboard cannot display a real view number until the producer exists.",
+    "Range guard (ARCH2-06): adopt the request.headers['range'] skip-counting guard symmetrically for both families, or accept the small over-count and label the view figure a reach proxy? Architecture recommends adopting it.",
+    "Views sparkline: architecture marks a second 14-bar views row as OPTIONAL. Add it (bg-accent/40, own per-series max) or keep a text-only views line? The download sparkline and its colours must not change either way.",
+    "Hero Read CV control: <Link> form (planner's recommendation, no router hook added) vs useNavigate(), and final copy 'Read CV' vs 'View CV'.",
+    "Mobile 'Open PDF': open in a new tab (architecture §2.2, what openCV does) vs navigate in place.",
+    "Should /cv offer a direct download for the non-selected track as well as the selected one?",
+    "No automated test runner exists in the repo. Confirm that manual verification (TASK-12) is acceptable for this phase rather than introducing a test dependency."
+  ],
+  "notes": "Revision 2 plan. 12 tasks, 8 parallel groups, acyclic by construction (every edge points to a higher id). Read surface honoured: architecture.md, feature-files.json, handoffs/03b-architect-revision.json, src/App.tsx, src/config/cv.ts, src/lib/utils.ts, src/lib/analytics.ts, src/hooks/use-visits-analytics.ts, api/download-cv.ts, api/visit-stats.ts, api/visit-reset.ts, vercel.json, plus the supporting files needed to confirm real export names/shapes (Hero.tsx, Navbar.tsx, AnalyticsSection.tsx, use-mobile.tsx, pointer.ts, ui/tabs.tsx, useAnimationContext.tsx). VERIFIED names/shapes, not invented: CVTrack and getCVDownloadUrl exist in src/config/cv.ts; CvTrack and AnalyticsData.cv exist in src/lib/analytics.ts (line 17, line 42) with buildEmptyAnalytics seeding cv at line 84; StatsResponse.cv and mapStatsResponse's `(json.cv ?? [])` exist in src/hooks/use-visits-analytics.ts (line 48, line 127); downloadCV exists in src/lib/utils.ts; useIsMobile is exported from src/hooks/use-mobile.tsx; hasFinePointer is exported from src/lib/pointer.ts; Tabs/TabsList/TabsTrigger/TabsContent are exported from src/components/ui/tabs.tsx; useAnimationContext returns { reducedMotion } plus a toggle. The /cv route must be declared above path=\"*\" in src/App.tsx (currently the catch-all is lines 40-47 and the marker comment sits at line 39). No application source was edited, no tests were written, no git writes, no commands claiming to have passed. Every task is independently verifiable and the verification column states the exact static command or manual check."
+}

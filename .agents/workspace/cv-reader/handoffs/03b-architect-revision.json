@@ -1,0 +1,133 @@
+{
+  "agent": "architect",
+  "feature": "cv-reader",
+  "path": "B",
+  "status": "success",
+  "revision": 2,
+  "supersedes": ".agents/workspace/cv-reader/handoffs/03-architect.json",
+  "executive_summary": "Gate 2 revision of the cv-reader architecture. Two human decisions applied: (1) views are now counted in a SEPARATE Redis key family instead of being folded into the download counters - the human chose option 2, overriding the architect's option 1 recommendation; (2) the vercel.json negative-lookahead rewrite is APPROVED and now in scope. This grew the write surface from 11 files to 16: api/visit-stats.ts (new additive cvViews field), api/visit-reset.ts (new 'cvviews' reset scope, 'cv' stays downloads-only), src/lib/analytics.ts (CvViewTrack + cvViews on AnalyticsData + empty-state skeleton), src/hooks/use-visits-analytics.ts (StatsResponse + mapStatsResponse passthrough with a stale-client default), and src/components/admin/AnalyticsSection.tsx (card shows views vs downloads; a THIRD 'Reset CV views' button). New Redis keys v:cvview:<track>, v:cvviewday:<track>:<day>, v:cvviewuniq:<track>:<day> with the existing 90-day TTL. Views start at zero on deploy - no backfill, because reconstructing them from the download counter would fabricate data (policy G10). Endpoint contract is additive and backward-compatible; a stale client cannot crash. Everything else from revision 1 (file list, /cv page, mobile fallback, entry points, a11y, performance, security) is unchanged. No Dart written; no application source or tests written; no git writes.",
+  "artifacts": [
+    ".agents/workspace/cv-reader/architecture.md",
+    ".agents/workspace/cv-reader/feature-files.json",
+    ".agents/workspace/cv-reader/handoffs/03b-architect-revision.json"
+  ],
+  "files_changed": [],
+  "commands_run": [
+    {
+      "cmd": "read api/download-cv.ts (83 lines)",
+      "result": "pass",
+      "summary": "Counting block is lines 55-76, after the Cloudinary fetch and before the headers. Existing keys: v:cv:<track> (line 67), v:cvday:<track>:<day> (68), pfadd v:cvuniq:<track>:<day> (69); both day/uniq get .expire(..., 90*24*60*60) at lines 70-71. day = new Date().toISOString().slice(0,10) (62); visitor = sha1(x-forwarded-for first hop) (63-65). Content-Disposition hardcoded 'attachment' at line 79."
+    },
+    {
+      "cmd": "read api/visit-stats.ts (442 lines)",
+      "result": "pass",
+      "summary": "PIN-gated (401 without Bearer ADMIN_PIN, lines 80-84). Batched pipeline reads v:cv:flutter/frontend (201-202) and v:cvday:<track>:<d> over cvDays = dayKeys.slice(-14) (159, 203-206). Uniques come from Promise.all over redis.pfcount(v:cvuniq:<track>:<d>) at 342-343. The comment at line 346 reads 'CV downloads per track: all-time total + unique (14d) + daily series (14d)'. cv array built at 347-357 as { track, total, unique, daily: [{date, value}] }. Response field cv at line 435."
+    },
+    {
+      "cmd": "read api/visit-reset.ts (82 lines)",
+      "result": "pass",
+      "summary": "SCOPES at lines 20-23; cv scope is [\"v:cv\",\"v:cv:*\",\"v:cvday:*\",\"v:cvuniq:*\"]. Scope guard at 70-73 accepts only 'visits' or 'cv'. deletePatterns() SCAN+DEL helper at 25-49. Auth via Bearer ADMIN_PIN at 58-62. Globs are literal-prefix based, so v:cv:* does NOT match v:cvview:*."
+    },
+    {
+      "cmd": "read src/components/admin/AnalyticsSection.tsx (lines 1-200 and 340-510)",
+      "result": "pass",
+      "summary": "resetScope state is useState<\"visits\"|\"cv\"|null> at line 81; handleReset(scope) two-click confirm at 85-109. 'CV downloads' card is lines 402-446: CardTitle line 406, description 407, empty state 411, per-track total 419, '{unique} unique downloaders' 421, 14-bar sparkline 422-431, mixed '% of downloads' insight 435-444. Danger zone reset buttons at 481-504; existing CV button onClick handleReset(\"cv\") at 497, confirm label at 500. Eye is already imported at line 3."
+    },
+    {
+      "cmd": "read src/pages/CVDashboard.tsx (234 lines)",
+      "result": "pass",
+      "summary": "Analytics are not fetched here - CVDashboard renders <AnalyticsSection /> inside a TabsContent (line 227). The analytics data layer is use-visits-analytics.ts + lib/analytics.ts. Existing iframe preview at 193-198 with title but no referrerPolicy."
+    },
+    {
+      "cmd": "read src/hooks/use-visits-analytics.ts (162 lines) and src/lib/analytics.ts (191 lines)",
+      "result": "pass",
+      "summary": "StatsResponse type at lines 23-52 with cv: CvTrack[] at 48; mapStatsResponse passes cv through at 127. CvTrack type defined in lib/analytics.ts line 17; AnalyticsData.cv at line 42; buildEmptyAnalytics seeds cv with the two zero tracks at line 84. staleTime 60_000 / refetchInterval 60_000 at 159-160 - relevant to stale-client skew."
+    },
+    {
+      "cmd": "read vercel.json (8 lines)",
+      "result": "pass",
+      "summary": "Single rewrite with source '/(.*)' and destination '/index.html'. Approved change is the source value only."
+    },
+    {
+      "cmd": "grep api/ for resetScope|cv (40 matches across 5 files)",
+      "result": "pass",
+      "summary": "Confirms the only writers of CV keys in api/ are download-cv.ts lines 67-71, and the only deleter is visit-reset.ts line 22. No v:cvview* key exists anywhere in the repo, so the view family starts empty."
+    }
+  ],
+  "findings": [
+    {
+      "id": "ARCH2-01",
+      "severity": "high",
+      "file": "api/download-cv.ts",
+      "line": 66,
+      "description": "The counting pipeline is not gated on mode, so with mode=view support added naively every inline view would INCR v:cv:<track>, v:cvday:<track>:<day> and pfadd v:cvuniq:<track>:<day> - views counted as downloads, which the human explicitly rejected.",
+      "fix": "Derive the key namespace from the parsed mode: const ns = isViewMode ? 'cvview' : 'cv'; then build totalKey/dayKey/uniqKey from it. A view writes only v:cvview:*, a download only v:cv:*. Keep day, visitor, the 90-day TTLs and the try/catch exactly as they are. The view increments on the inline response only, i.e. the single successful /cv iframe request."
+    },
+    {
+      "id": "ARCH2-02",
+      "severity": "high",
+      "file": "api/visit-reset.ts",
+      "line": 22,
+      "description": "The cv reset scope is [\"v:cv\",\"v:cv:*\",\"v:cvday:*\",\"v:cvuniq:*\"]. Today it happens to leave v:cvview:* untouched only because 'v:cv:*' requires the literal prefix 'v:cv:' and 'cvview:' differs after 'cv'. That is a fragile accident: a future widening or a glob typo like 'v:cv*' would delete BOTH counter families in one confirm.",
+      "fix": "Keep the cv scope byte-for-byte unchanged (downloads only) and add a distinct cvviews scope [\"v:cvview:*\",\"v:cvviewday:*\",\"v:cvviewuniq:*\"]; widen the guard at lines 70-73 to accept 'visits' | 'cv' | 'cvviews'. Document that the two scopes share no key prefix. Verify deleting cv leaves v:cvview:* intact and vice versa."
+    },
+    {
+      "id": "ARCH2-03",
+      "severity": "medium",
+      "file": "api/visit-stats.ts",
+      "line": 346,
+      "description": "The endpoint reads only the download family, so the new view counters would be invisible in the dashboard. The existing comment at 346 already names the exact shape the view field should mirror.",
+      "fix": "Append v:cvview:<track> gets and a v:cvviewday:<track>:<d> loop AFTER the existing v:cvday loop (so existing next() cursor order at 285-292 is untouched), add two more Promise.all pfcount groups for v:cvviewuniq to the batch at 335-344, and return a new additive cvViews field beside cv at line 435 with the identical { track, total, unique, daily:[{date,value}] } shape over the same cvDays window."
+    },
+    {
+      "id": "ARCH2-04",
+      "severity": "medium",
+      "file": "src/hooks/use-visits-analytics.ts",
+      "line": 48,
+      "description": "StatsResponse and mapStatsResponse (line 127) only carry cv. A second family needs a passthrough, and a browser holding an older bundle can see a payload where cvViews is undefined - destructuring it would throw inside the render.",
+      "fix": "Declare cvViews?: CvTrack[] in StatsResponse and map it with (json.cvViews ?? []) at line 127; in the card look up per-track with ?? { total: 0, unique: 0, daily: [] }. buildEmptyAnalytics already returns zero skeletons - add the cvViews counterpart at lib/analytics.ts line 84."
+    },
+    {
+      "id": "ARCH2-05",
+      "severity": "medium",
+      "file": "src/components/admin/AnalyticsSection.tsx",
+      "line": 81,
+      "description": "resetScope is typed '\"visits\"|\"cv\"|null' and the Danger zone has exactly two buttons (481-504). A third scope needs a third button; reusing 'cv' for views would silently change the meaning of an existing admin action.",
+      "fix": "Widen the union to include 'cvviews', copy the existing button pattern verbatim with onClick handleReset('cvviews'), confirm label 'Click again to confirm CV views reset', idle label 'Reset CV views'. The existing 'Reset CV downloads' button keeps onClick handleReset('cv') and its labels unchanged. No combined reset-both scope."
+    },
+    {
+      "id": "ARCH2-06",
+      "severity": "medium",
+      "file": "api/download-cv.ts",
+      "line": 55,
+      "description": "Inline PDF viewing is more likely than a download to trigger follow-up ranged requests, each of which re-enters the counting block and INCRs the view counter again, drifting the number upward. The same exposure already exists for downloads but is far less exercised.",
+      "fix": "Optional but recommended: read request.headers['range'] and skip the counting block when it is present, applying the same guard to BOTH families so they stay comparable. If omitted, the view figure is a reach proxy and must be labelled as such; it is not exact either way."
+    },
+    {
+      "id": "ARCH2-07",
+      "severity": "low",
+      "file": "api/download-cv.ts",
+      "line": 62,
+      "description": "No view history exists and none can be reconstructed. The only candidate source is the download counter, and copying it would relabel every past download as a view - a fabricated number in an admin dashboard.",
+      "fix": "Do nothing. Per policy G10, ship with views starting at zero and say so. The dashboard will legitimately show a real all-time download total next to 0 views on day one; that asymmetry is correct, and must not be 'fixed' by seeding or a one-off INCRBY."
+    },
+    {
+      "id": "ARCH2-08",
+      "severity": "low",
+      "file": "vercel.json",
+      "line": 4,
+      "description": "APPROVED. The SPA rewrite source '/(.*)' would, on a naive reading, also match /api/*. Vercel resolves functions before rewrites so it works today, but the intent is implicit and one config edit away from breaking every endpoint.",
+      "fix": "Change only the source value to '/((?!api/).*)'; destination stays '/index.html'. The negative lookahead excludes api/ so /api/download-cv, /api/visit-stats and /api/visit-reset still resolve, while /cv still rewrites to index.html for cold shareable visits."
+    }
+  ],
+  "open_questions": [
+    "RESOLVED at Gate 2: counters are SEPARATE (option 2, the human's choice, overriding the architect's option 1 recommendation). Documented in architecture.md section 7.4-7.5. Download keys keep working exactly as today.",
+    "RESOLVED at Gate 2: vercel.json hardening APPROVED. The exact source value '/((?!api/).*)' is specified in section 7.3 and in the Definition of Done.",
+    "Reset flow semantics - DECIDED by the architect, flagged for confirmation: the cv scope stays downloads-only and views get a THIRD, separate 'Reset CV views' button (scope 'cvviews') rather than widening cv to wipe both. Rationale: widening would silently change an existing admin action and would remove the ability to clear one series while keeping the other, which is the point of separated counters. If the human prefers a single combined 'reset both' action, that is a one-line change to the SCOPES map but must be an explicit choice, not a default.",
+    "Ranged-request view over-count (ARCH2-06): should the implementer add the request.headers['range'] guard to skip counting on range continuations? Recommended yes, applied symmetrically to both families, at a cost of a few lines. If declined, the view number is a reach proxy rather than an exact count. Needs a yes/no before implementation.",
+    "Sparkline for views: architecture marks a second 14-bar row for views as OPTIONAL and leaves it to the UI stage. The download sparkline and its colours must not change. Confirm whether the human wants a visual views series or a text-only line beside the download total.",
+    "Still open from revision 1 and unaffected by this revision: Hero 'Read CV' as <Link> (preferred) vs useNavigate(); mobile 'Open PDF' opening a new tab vs navigating in place; whether /cv should offer a direct download for the non-selected track; final copy ('Read CV' vs 'View CV')."
+  ],
+  "next_recommended": "planner",
+  "notes": "Revision 2 of the cv-reader architecture, produced after the human answered the two Gate 2 questions. Write scope honoured exactly: .agents/workspace/cv-reader/architecture.md (revised in place), .agents/workspace/cv-reader/feature-files.json (11 -> 16 entries), and the new .agents/workspace/cv-reader/handoffs/03b-architect-revision.json. No application source, no tests, no git writes. English artifacts only. This is a React 18 + Vite + TypeScript + Tailwind + shadcn/ui project, so no Dart was produced and the FVM/Dart portions of the Flutter architect spec do not apply. New Redis keys are v:cvview:<track>, v:cvviewday:<track>:<day> and v:cvviewuniq:<track>:<day>, each day/uniq key carrying the existing 90*24*60*60 TTL; no all-time-unique key is added, matching the existing design where uniqueness is summed from 14 daily PFCOUNTs. GET /api/visit-stats is PIN-gated (401 without Bearer ADMIN_PIN), the new cvViews field is two integers plus a 14-element integer series per track, and no identifier or IP-derived hash is ever returned - the hash is only ever written into a HyperLogLog. The response is additive and backward-compatible so a stale client cannot crash. Views start at zero on deploy with no backfill, per policy G10. vercel.json source changes to '/((?!api/).*)' with destination unchanged, so /api/* still resolves and /cv still rewrites to index.html. Six new risks are enumerated in architecture.md section 12b, the highest being the wrong-family reset in api/visit-reset.ts. Zero new npm dependencies; the /cv page still ships as its own lazy chunk with no home-page-jank regressions."
+}

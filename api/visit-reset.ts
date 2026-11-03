@@ -19,7 +19,13 @@ type VercelResponse = {
 
 const SCOPES = {
   visits: ["v:day:*", "v:uniq:*", "v:page:*", "v:device:*", "v:source:*", "v:hour:*", "v:country:*", "v:browser:*", "v:live", "v:feed", "v:own:*", "v:bot:*", "v:total", "v:uniq:all", "v:tot:*"],
+  // Downloads only. `v:cv:*` would also match the `v:cvview:*` keys introduced
+  // for in-page CV reads, so the view family is deliberately NOT covered here
+  // and is reset through its own `cvviews` scope below.
   cv: ["v:cv", "v:cv:*", "v:cvday:*", "v:cvuniq:*"],
+  // In-page CV reads (`mode=view`). Kept separate from `cv` so resetting one
+  // metric never wipes the other.
+  cvviews: ["v:cvview", "v:cvview:*", "v:cvviewday:*", "v:cvviewuniq:*"],
 } as const;
 
 async function deletePatterns(redis: InstanceType<typeof Redis>, patterns: readonly string[]) {
@@ -68,8 +74,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   const scope = request.body?.scope;
-  if (scope !== "visits" && scope !== "cv") {
-    return response.status(400).json({ error: "Invalid scope. Use 'visits' or 'cv'." });
+  if (scope !== "visits" && scope !== "cv" && scope !== "cvviews") {
+    return response.status(400).json({ error: "Invalid scope. Use 'visits', 'cv' or 'cvviews'." });
   }
 
   try {

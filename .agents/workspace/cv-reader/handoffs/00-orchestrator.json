@@ -1,0 +1,52 @@
+{
+  "agent": "orchestrator",
+  "feature": "cv-reader",
+  "path": "B",
+  "status": "success",
+  "executive_summary": "Delivered an in-browser CV reader: a shareable /cv?track=flutter|frontend page that embeds the PDF inline, plus a mobile/coarse-pointer fallback with Open PDF and Download. api/download-cv now honours mode=view (Content-Disposition: inline, nosniff, Range requests uncounted) and writes to a separate v:cvview:* key family, so in-page reads and downloads are tracked independently; visit-stats exposes an additive cvViews field and the dashboard gained its own 'CV views' card and reset scope. visit-reset's cv scope provably cannot wipe view keys. Hero and Navbar gained a Read CV link on desktop and mobile with both existing download paths unchanged. Zero new npm dependencies; /cv ships as its own lazy chunk and mode=view no longer leaks into the entry bundle.",
+  "artifacts": [
+    ".agents/workspace/cv-reader/state.json",
+    ".agents/workspace/cv-reader/architecture.md",
+    ".agents/workspace/cv-reader/tasks.json",
+    ".agents/workspace/cv-reader/feature-files.json",
+    ".agents/workspace/cv-reader/reports/bug-fix-log.md",
+    ".agents/workspace/cv-reader/reports/e2e-verification.md",
+    ".agents/workspace/cv-reader/reports/qa-report.md",
+    ".agents/workspace/cv-reader/reports/security-report.md",
+    ".agents/workspace/cv-reader/reports/performance-report.md",
+    ".agents/workspace/cv-reader/verify-download-cv.mjs",
+    ".agents/workspace/cv-reader/verify-cvview-branch.mjs"
+  ],
+  "files_changed": [
+    "src/lib/cv-link.ts",
+    "src/lib/cv-view.ts",
+    "src/pages/CVView.tsx",
+    "src/components/cv/CVViewer.tsx",
+    "src/components/cv/CVFallback.tsx",
+    "src/components/cv/CVTrackTabs.tsx",
+    "api/download-cv.ts",
+    "api/visit-stats.ts",
+    "api/visit-reset.ts",
+    "src/App.tsx",
+    "src/components/Hero.tsx",
+    "src/components/Navbar.tsx",
+    "src/lib/analytics.ts",
+    "src/hooks/use-visits-analytics.ts",
+    "src/components/admin/AnalyticsSection.tsx",
+    "vercel.json"
+  ],
+  "commands_run": [
+    { "cmd": "npx eslint src --ext .ts,.tsx", "result": "pass", "summary": "exit 0, no output" },
+    { "cmd": "npx tsc --noEmit -p tsconfig.app.json --ignoreDeprecations 5.0", "result": "pass", "summary": "only the pre-existing @supabase/supabase-js TS2307 error" },
+    { "cmd": "npx tsc --noEmit -p tsconfig.node.json", "result": "pass", "summary": "exit 0" },
+    { "cmd": "npm run build", "result": "pass", "summary": "success; CVView is its own 5.76 kB chunk and mode=view is absent from the entry chunk" },
+    { "cmd": "node .agents/workspace/cv-reader/verify-download-cv.mjs", "result": "pass", "summary": "21/21 contract checks, including that the cv reset scope cannot match v:cvview:* keys" },
+    { "cmd": "node .agents/workspace/cv-reader/verify-cvview-branch.mjs", "result": "pass", "summary": "24/24 branch, helper and module-isolation checks" }
+  ],
+  "findings": [],
+  "open_questions": [
+    "Deploy to a Vercel preview to confirm the live inline disposition, the separated Redis counters, and the PDF rendering inside the iframe."
+  ],
+  "next_recommended": "human",
+  "notes": "All changes are uncommitted in the working tree; no git write commands were run. Per G10, the following are NOT MEASURED with reasons in reports/e2e-verification.md: live inline response, real Redis view numbers, PDF pixels, and the desktop iframe branch after the import-only refactor (the automation window is pinned at 702px, below the 768px breakpoint)."
+}

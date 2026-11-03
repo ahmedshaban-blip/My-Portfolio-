@@ -8,6 +8,7 @@ import {
   formatRangeLabel,
   type AnalyticsData,
   type CvTrack,
+  type CvViewTrack,
   type DayPoint,
   type FeedItem,
   type HourlyPoint,
@@ -46,6 +47,7 @@ type StatsResponse = {
   browsers: Record<string, number>;
   feed: FeedItem[];
   cv: CvTrack[];
+  cvViews?: CvViewTrack[];
   owner: { today: number; liveNow: number };
   botsToday: number;
   peakDay: string;
@@ -125,6 +127,8 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     topPages,
     feed: json.feed,
     cv: (json.cv ?? []) as CvTrack[],
+    // Optional on the wire: an older deployment simply has no view numbers.
+    cvViews: (json.cvViews ?? []) as CvViewTrack[],
     countries,
     owner: json.owner ?? { today: 0, liveNow: 0 },
     botsToday: Number(json.botsToday) || 0,

@@ -1,0 +1,20 @@
+[
+  { "path": "src/lib/cv-link.ts", "kind": "source", "created_by": "ui-binding" },
+  { "path": "src/lib/cv-view.ts", "kind": "source", "created_by": "ui-binding" },
+  { "path": "src/pages/CVView.tsx", "kind": "source", "created_by": "ui-builder" },
+  { "path": "src/components/cv/CVViewer.tsx", "kind": "source", "created_by": "ui-builder" },
+  { "path": "src/components/cv/CVFallback.tsx", "kind": "source", "created_by": "ui-builder" },
+  { "path": "src/components/cv/CVTrackTabs.tsx", "kind": "source", "created_by": "ui-builder" },
+  { "path": "api/download-cv.ts", "kind": "source", "created_by": "data" },
+  { "path": "api/visit-stats.ts", "kind": "source", "created_by": "data" },
+  { "path": "api/visit-reset.ts", "kind": "source", "created_by": "data" },
+  { "path": "src/App.tsx", "kind": "source", "created_by": "ui-binding" },
+  { "path": "src/components/Hero.tsx", "kind": "source", "created_by": "ui-binding" },
+  { "path": "src/components/Navbar.tsx", "kind": "source", "created_by": "ui-binding" },
+  { "path": "src/lib/analytics.ts", "kind": "source", "created_by": "data" },
+  { "path": "src/hooks/use-visits-analytics.ts", "kind": "source", "created_by": "data" },
+  { "path": "src/components/admin/AnalyticsSection.tsx", "kind": "source", "created_by": "ui-binding" },
+  { "path": "vercel.json", "kind": "config", "created_by": "orchestrator" },
+  { "path": ".agents/workspace/cv-reader/verify-download-cv.mjs", "kind": "test", "created_by": "test-writer" },
+  { "path": ".agents/workspace/cv-reader/verify-cvview-branch.mjs", "kind": "test", "created_by": "test-writer" }
+]

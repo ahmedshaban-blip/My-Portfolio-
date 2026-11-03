@@ -1,8 +1,10 @@
 import { useEffect, useState, useMemo, useRef } from "react";
-import { Menu, X, Download, Moon, Sun, Eye } from "lucide-react";
+import { Menu, X, Download, Moon, Sun, Eye, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { cn, downloadCV } from "@/lib/utils";
+import { getCVPageUrl } from "@/lib/cv-link";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollSpy } from "@/hooks/use-scrollspy";
@@ -144,6 +146,11 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <ReducedMotionToggle />
             <ModeToggle />
+            <Button asChild size="sm" variant="outline" className="rounded-full px-5 border-border/60">
+              <Link to={getCVPageUrl("flutter")} title="Read the CV in your browser">
+                <BookOpen className="w-4 h-4 mr-2" /> Read CV
+              </Link>
+            </Button>
             <Button
               size="sm"
               className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-5 transition-interaction active:scale-95 shadow-md shadow-primary/20"
@@ -207,7 +214,12 @@ const Navbar = () => {
                     );
                   })}
                   
-                  <div className="grid grid-cols-1 gap-3 pt-6" role="group" aria-label="Download CV">
+                  <div className="grid grid-cols-1 gap-3 pt-6" role="group" aria-label="CV actions">
+                    <Button asChild variant="outline" className="rounded-full w-full h-12 text-base font-medium border-border/60">
+                      <Link to={getCVPageUrl("flutter")} onClick={() => setIsOpen(false)}>
+                        <BookOpen className="w-4 h-4 mr-2" /> Read CV
+                      </Link>
+                    </Button>
                     <Button
                       className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground w-full h-14 text-lg font-bold transition-interaction active:scale-95 shadow-xl shadow-primary/20"
                       onClick={() => { handleDownloadCV("flutter"); setIsOpen(false); }}

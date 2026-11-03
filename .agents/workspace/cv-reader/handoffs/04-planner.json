@@ -1,0 +1,75 @@
+{
+  "agent": "planner",
+  "feature": "cv-reader",
+  "path": "B",
+  "status": "success",
+  "revision": 2,
+  "executive_summary": "Broke the REVISION 2 cv-reader architecture into 12 ordered, dependency-aware, independently verifiable tasks and recorded 8 end-to-end manual checks. The plan is acyclic by construction: every dependency edge points from a lower task id to a higher one, with TASK-01 and TASK-03 as the only roots. Highest-risk tasks are called out explicitly: TASK-01 lands the 'cvviews' reset scope BEFORE any v:cvview* key can be written (a widened cv glob would otherwise wipe downloads), TASK-02 adds mode=view plus the separated counting namespace on api/download-cv.ts, and TASK-07 must declare the lazy /cv route ABOVE path=\"*\" in src/App.tsx or it can never match. The /cv page (TASK-05/TASK-06) is scheduled to build in parallel with the API on the getCVViewUrl/openCV contract only, so the endpoint landing does not block the UI. The dashboard chain is ordered so types flow one way: lib/analytics.ts (TASK-09) to use-visits-analytics.ts mapping (TASK-09) to AnalyticsSection.tsx (TASK-10), with cvViews optional and defaulted so a stale client or server cannot crash. Owners were adapted from the Flutter spec to this React 18 + Vite + TS repo: data, ui-builder, ui-binding, test-writer, orchestrator, and data-with-layer-api for the Vercel handlers. No automated test suite is scheduled because the repo has NO test runner (verified: zero *.test.*/*.spec.* files); per G10 the test task is a MANUAL verification owner rather than a fabricated suite. Read the real client files and confirmed every export name and shape actually used; nothing was invented.",
+  "artifacts": [
+    ".agents/workspace/cv-reader/tasks.json",
+    ".agents/workspace/cv-reader/handoffs/04-planner.json"
+  ],
+  "files_changed": [],
+  "commands_run": [],
+  "findings": [
+    {
+      "id": "PLAN2-01",
+      "severity": "high",
+      "file": "api/visit-reset.ts",
+      "line": 22,
+      "description": "The cv reset scope SCOPES.cv = [\"v:cv\", \"v:cv:*\", \"v:cvday:*\", \"v:cvuniq:*\"] only avoids deleting v:cvview:* because the glob 'v:cv:*' requires the literal prefix 'v:cv:' while the real key is 'v:cvview:'. If the cvviews scope does not exist before the first v:cvview* key is written, the only way an admin could clear views would be to widen the cv scope, and a widening or a typo like 'v:cv*' would delete BOTH families in one confirm.",
+      "fix": "TASK-01 adds a separate SCOPES.cvviews = [\"v:cvview:*\", \"v:cvviewday:*\", \"v:cvviewuniq:*\"] and widens the scope guard to accept 'cvviews', leaving the cv scope byte-for-byte unchanged. TASK-01 is ordered before TASK-02 (the first writer of the view family) and carries an explicit reset-isolation verification (E2E-07)."
+    },
+    {
+      "id": "PLAN2-02",
+      "severity": "medium",
+      "file": "src/App.tsx",
+      "line": 40,
+      "description": "The path=\"*\" NotFound catch-all is currently lines 40-47 with the marker comment at line 39. A /cv route declared below the catch-all would never match; the repo convention is explicit about this.",
+      "fix": "TASK-07 declares `const CVView = lazy(() => import(\"./pages/CVView\"))` and places the /cv route in the region above the catch-all, in the same style as CVDashboard and NotFound (lazy + Suspense fallback={null})."
+    },
+    {
+      "id": "PLAN2-03",
+      "severity": "medium",
+      "file": "src/hooks/use-visits-analytics.ts",
+      "line": 48,
+      "description": "StatsResponse carries only cv and mapStatsResponse maps it with `(json.cv ?? [])`. A browser holding an older bundle, or a cached response, can see a payload where cvViews is undefined; treating it as required would throw inside the render.",
+      "fix": "TASK-09 declares cvViews?: CvTrack[] in StatsResponse and maps it with `cvViews: (json.cvViews ?? []) as CvTrack[],`; TASK-10 additionally looks each track up with `?? { total: 0, unique: 0, daily: [] }`. buildEmptyAnalytics gains a matching cvViews zero skeleton."
+    },
+    {
+      "id": "PLAN2-04",
+      "severity": "medium",
+      "file": "api/visit-stats.ts",
+      "line": 435,
+      "description": "architecture.md §7.7 specifies an additive server-side cvViews producer in api/visit-stats.ts, and that file is listed in feature-files.json, but it was not among the client files the planner was instructed to read and no task in this plan edits it. Without it the dashboard has no real view number to display, only the honest zero skeleton.",
+      "fix": "Recorded as the first open question. If approved, insert an ADDITIVE api-layer task on api/visit-stats.ts after TASK-02 and before TASK-09: append v:cvview:<track> gets and the v:cvviewday loop AFTER the existing v:cvday loop (preserving the existing next() cursor order at lines 285-292), add two PFCOUNT Promise.all groups at the batch at lines 335-344, and return a new cvViews field beside cv at line 435 with the identical { track, total, unique, daily:[{date,value}] } shape over the same cvDays window. cv itself must stay untouched."
+    },
+    {
+      "id": "PLAN2-05",
+      "severity": "low",
+      "file": "api/download-cv.ts",
+      "line": 55,
+      "description": "Inline PDF viewing is more likely than a download to trigger follow-up ranged requests, each of which re-enters the counting block and INCRs the view counter again. The architecture marks the request.headers['range'] guard as optional-but-recommended.",
+      "fix": "Carried as an open question and as a note on TASK-02. If adopted it must be applied symmetrically to BOTH families so the two numbers stay semantically comparable; if declined, the view figure is a reach proxy and must be described that way."
+    },
+    {
+      "id": "PLAN2-06",
+      "severity": "low",
+      "file": ".",
+      "line": 0,
+      "description": "The repo has no test infrastructure: zero *.test.* and *.spec.* files and no vitest/jest configuration were found.",
+      "fix": "No automated suite is scheduled. TASK-12 (test-writer) owns the 8 manual verification_plan checks and, per G10, must record each result verbatim and mark anything unexecuted as NOT RUN with the reason. Introducing a test runner is a separate approved decision. This is recorded as an open question for the human."
+    }
+  ],
+  "open_questions": [
+    "api/visit-stats.ts producer: schedule the additive cvViews read task (architecture §7.7) so the dashboard shows a real number, or defer it to a later phase? Without it the views line is always the honest zero skeleton.",
+    "Range guard (ARCH2-06): adopt request.headers['range'] skip-counting symmetrically, or accept the small view over-count and label the figure a reach proxy?",
+    "Views sparkline: add the optional second 14-bar views row (bg-accent/40, own per-series max) or keep a text-only views line? The download sparkline and its colours must not change either way.",
+    "Hero Read CV control: <Link> form (planner recommendation, keeps Hero router-hook-free) vs useNavigate(), and final copy 'Read CV' vs 'View CV'.",
+    "Mobile 'Open PDF': open a new tab (what openCV does per architecture §2.2) vs navigate in place.",
+    "Should /cv also offer a direct download for the non-selected track?",
+    "Is manual verification (TASK-12) acceptable for this phase instead of introducing a test runner dependency?"
+  ],
+  "next_recommended": "orchestrator",
+  "notes": "Revision 2 implementation plan for cv-reader, adapted from the Flutter planner spec to this React 18 + Vite + TypeScript + Tailwind + shadcn/ui SPA - no Dart, no build_runner, no flutter analyze was planned or produced; the engineering gate is `npx tsc --noEmit` plus `npx eslint` on the touched files, stated per task. Write scope honoured exactly: .agents/workspace/cv-reader/tasks.json and .agents/workspace/cv-reader/handoffs/04-planner.json, nothing else. No application source edits, no tests written, no git writes, and no command was run or claimed as passing (commands_run is empty by design - this is a planning step, policy G10). 12 tasks in 8 parallel groups; each task carries id, title, owner, layer, files, depends_on, acceptance_criteria, verification, risk and notes. Files referenced in tasks were cross-checked against feature-files.json (16 entries): api/download-cv.ts, api/visit-stats.ts, api/visit-reset.ts, src/config/cv.ts, src/lib/analytics.ts, src/lib/utils.ts, src/hooks/use-visits-analytics.ts, src/App.tsx, src/pages/CVView.tsx, src/components/cv/CVViewer.tsx, src/components/cv/CVFallback.tsx, src/components/cv/CVTrackTabs.tsx, src/components/Hero.tsx, src/components/Navbar.tsx, src/components/admin/AnalyticsSection.tsx, vercel.json. Only api/visit-stats.ts has no task that edits it - see PLAN2-04 and open question 1. Critical ordering constraints encoded: TASK-01 before-with TASK-02; TASK-02 before meaningful /cv testing with the page built in parallel; the dashboard chain analytics.ts -> use-visits-analytics.ts -> AnalyticsSection.tsx as TASK-09 then TASK-10; /cv above path=\"*\" as TASK-07; vercel.json hardening last as TASK-08 after the route exists. The human decisions (separate /cv page, mode=view inline, mobile fallback, SEPARATE v:cvview:* counters with downloads keys untouched, and the /((?!api/).*) rewrite) are treated as fixed and were not re-litigated."
+}

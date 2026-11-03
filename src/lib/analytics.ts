@@ -15,6 +15,8 @@ export type TopPage = { path: string; visits: number; avgSeconds: number; bounce
 export type FeedItem = { place: string; path: string; when: string; you?: boolean; bot?: boolean };
 export type HourlyPoint = { hour: string; value: number };
 export type CvTrack = { track: "flutter" | "frontend"; total: number; unique: number; daily: { date: string; value: number }[] };
+/** In-page CV reads (`mode=view`), counted separately from downloads. */
+export type CvViewTrack = CvTrack;
 export type CountryStat = { code: string; flag: string; visits: number };
 
 export type AnalyticsData = {
@@ -40,6 +42,8 @@ export type AnalyticsData = {
   topPages: TopPage[];
   feed: FeedItem[];
   cv: CvTrack[];
+  /** Optional so a stale API response can never break the dashboard. */
+  cvViews?: CvViewTrack[];
   countries: CountryStat[];
   owner: { today: number; liveNow: number };
   botsToday: number;
@@ -82,6 +86,7 @@ export function buildEmptyAnalytics(dates: string[]): AnalyticsData {
     botsToday: 0,
     rangeLabel: dates.length > 0 ? formatRangeLabel(dates[0], dates[dates.length - 1], false) : "—",
     cv: (["flutter", "frontend"] as const).map((track) => ({ track, total: 0, unique: 0, daily: [] })),
+    cvViews: (["flutter", "frontend"] as const).map((track) => ({ track, total: 0, unique: 0, daily: [] })),
     peakDay: "—",
   };
 }

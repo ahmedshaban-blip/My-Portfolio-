@@ -1,9 +1,11 @@
-import { ArrowRight, Github, Linkedin, Mail, Download, Play, Layers } from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail, Download, Play, Layers, BookOpen } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StaggerReveal } from "@/components/animations/StaggerReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
+import { getCVPageUrl } from "@/lib/cv-link";
 import { downloadCV } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { playStoreApps } from "@/data/projects";
@@ -162,7 +164,14 @@ const Hero = () => {
                 </Magnetic>
 
                 <div className="flex flex-col gap-1.5">
-                  <div className="flex flex-col sm:flex-row items-center gap-3" role="group" aria-label="Download CV">
+                  <div className="flex flex-col sm:flex-row items-center gap-3" role="group" aria-label="CV actions">
+                    <Magnetic strength={0.2}>
+                      <Button asChild size="lg" variant="outline" className="rounded-full h-12 sm:h-14 px-6 sm:px-8 border-border/60">
+                        <Link to={getCVPageUrl("flutter")} title="Read the CV in your browser">
+                          <BookOpen className="mr-2 w-4 h-4" /> Read CV
+                        </Link>
+                      </Button>
+                    </Magnetic>
                     <Magnetic strength={0.2}>
                       <Button
                         size="lg"

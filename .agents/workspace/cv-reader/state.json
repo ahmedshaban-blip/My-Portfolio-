@@ -1,0 +1,51 @@
+{
+  "feature": "cv-reader",
+  "title": "Read CVs in-browser without downloading",
+  "path": "B",
+  "current_stage": "final-qa",
+  "status": "complete",
+  "iteration_counts": {
+    "qa_fix_loop": 1,
+    "security_fix_loop": 0,
+    "performance_fix_loop": 1,
+    "review_fix_loop": 0,
+    "refactor_rollback_loop": 0
+  },
+  "gates": {
+    "gate_1_requirements": "approved",
+    "ui_gap_decision": "existing_ui_reused",
+    "gate_2_architecture": "approved",
+    "final_acceptance": "pending_human"
+  },
+  "snapshots": {
+    "pre_implementation": true,
+    "pre_refactor": false
+  },
+  "completed_stages": ["requirements", "architect", "architect-revision", "planner", "implementation", "e2e-verification", "qa", "security", "performance", "review-fix"],
+  "human_decisions": {
+    "presentation": "Dedicated shareable page /cv?track=flutter|frontend",
+    "pdf_source": "api/download-cv supports mode=view returning Content-Disposition inline; download keeps attachment",
+    "mobile": "Mobile/coarse-pointer shows an Open PDF + Download fallback instead of a broken embed",
+    "counters": "SEPARATE view counters (v:cvview:* family); downloads unchanged",
+    "vercel_rewrite_hardening": "APPROVED - rewrite source changed to /((?!api/).*)",
+    "analytics_layout": "SEPARATE card for CV views",
+    "view_counting_precision": "Range requests are not counted (avoids one view counting many times)"
+  },
+  "verification": {
+    "eslint": "exit 0",
+    "tsc_app": "only the pre-existing @supabase/supabase-js TS2307",
+    "tsc_node": "exit 0",
+    "build": "success",
+    "contract_harness": "21/21 pass (verify-download-cv.mjs)",
+    "branch_harness": "24/24 pass (verify-cvview-branch.mjs)",
+    "entry_bundle": "mode=view no longer in the entry chunk; CVView ships as its own 5.76 kB chunk"
+  },
+  "known_limitations": [
+    "vite preview does not execute the Vercel serverless handlers, so the inline",
+    "disposition and the Redis counter separation were verified by contract harness",
+    "rather than over the wire. The automation browser window is pinned at 702px,",
+    "below the 768px mobile breakpoint, so the desktop iframe branch could not be",
+    "exercised end-to-end after the refactor (it was observed rendering before it).",
+    "Real view numbers require a deployed environment with Upstash configured."
+  ]
+}

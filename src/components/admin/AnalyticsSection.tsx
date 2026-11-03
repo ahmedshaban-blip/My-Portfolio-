@@ -78,11 +78,11 @@ export function AnalyticsSection() {
   const feed = (data?.feed ?? []).filter((item) => !item.bot);
   const [ownerMarked, setOwnerMarked] = useState(isOwnerDevice);
   const queryClient = useQueryClient();
-  const [resetScope, setResetScope] = useState<"visits" | "cv" | null>(null);
+  const [resetScope, setResetScope] = useState<"visits" | "cv" | "cvviews" | null>(null);
   const [resetBusy, setResetBusy] = useState(false);
   const [resetMsg, setResetMsg] = useState("");
 
-  const handleReset = async (scope: "visits" | "cv") => {
+  const handleReset = async (scope: "visits" | "cv" | "cvviews") => {
     if (resetScope !== scope) {
       setResetScope(scope);
       setResetMsg("");
@@ -470,6 +470,55 @@ export function AnalyticsSection() {
               })()}
             </CardContent>
           </Card>
+
+          <Card className="modern-card glass-effect">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg"><Eye className="h-4 w-4 text-primary" /> CV views</CardTitle>
+              <CardDescription>Reads in the browser, no download · last 14 days</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(data.cvViews ?? []).length === 0 && (
+                <p className="py-4 text-center text-sm text-muted-foreground">No in-browser reads recorded yet.</p>
+              )}
+              {(data.cvViews ?? []).map((c) => {
+                const max = Math.max(...c.daily.map((d) => d.value), 1);
+                return (
+                  <div key={c.track} className="rounded-2xl border border-border/60 p-4">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-extrabold capitalize">{c.track} CV</span>
+                      <span className="num text-2xl font-extrabold">{c.total.toLocaleString()}</span>
+                    </div>
+                    <div className="num text-xs text-muted-foreground">{c.unique.toLocaleString()} unique viewers</div>
+                    <div className="mt-2 flex h-10 items-end gap-1" dir="ltr">
+                      {c.daily.map((d, i) => (
+                        <div
+                          key={`${d.date}-${i}`}
+                          title={`${d.date}: ${d.value}`}
+                          className={cn("flex-1 rounded-sm", c.track === "flutter" ? "bg-primary/80" : "bg-accent/80")}
+                          style={{ height: `${Math.max((d.value / max) * 100, 5)}%`, minHeight: 3 }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {(data.cvViews ?? []).length === 2 && (
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {(() => {
+                    const downloads = data.cv.reduce((s, c) => s + c.total, 0);
+                    const views = (data.cvViews ?? []).reduce((s, c) => s + c.total, 0);
+                    if (views === 0) {
+                      return downloads > 0
+                        ? `💡 No in-browser reads yet — ${downloads.toLocaleString()} downloads so far.`
+                        : "💡 No CV activity recorded yet.";
+                    }
+                    const ratio = Math.round((downloads / views) * 100);
+                    return `💡 ${views.toLocaleString()} reads vs ${downloads.toLocaleString()} downloads (${ratio}% download rate).`;
+                  })()}
+                </p>
+              )}
+            </CardContent>
+          </Card>
           </div>
 
           {/* ── Danger zone ──────────────────────────── */}
@@ -498,6 +547,16 @@ export function AnalyticsSection() {
                 className="rounded-full"
               >
                 {resetScope === "cv" ? "Click again to confirm CV reset" : "Reset CV downloads"}
+              </Button>
+              <Button
+                type="button"
+                variant={resetScope === "cvviews" ? "destructive" : "outline"}
+                size="sm"
+                disabled={resetBusy}
+                onClick={() => void handleReset("cvviews")}
+                className="rounded-full"
+              >
+                {resetScope === "cvviews" ? "Click again to confirm views reset" : "Reset CV views"}
               </Button>
               {resetBusy && <span className="text-xs text-muted-foreground">Clearing…</span>}
               {resetMsg && <span className="text-xs font-semibold">{resetMsg}</span>}

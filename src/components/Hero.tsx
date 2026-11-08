@@ -62,7 +62,7 @@ const Hero = () => {
   const socials = [
     { icon: Github, href: "https://github.com/ahmedshaban-blip", label: "GitHub", hoverClass: "hover:text-primary" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/ahmed-shaban-front-cross", label: "LinkedIn", hoverClass: "hover:text-primary" },
-    { icon: WhatsAppIcon, href: whatsappUrl, label: "WhatsApp", hoverClass: "hover:text-[#25D366]" },
+    { icon: WhatsAppIcon, href: whatsappUrl, label: "WhatsApp", hoverClass: "hover:text-[hsl(var(--whatsapp))]" },
     { icon: Mail, href: "mailto:ahmed.shabaan.dev@gmail.com", label: "Email", hoverClass: "hover:text-primary" },
   ];
 
@@ -123,7 +123,7 @@ const Hero = () => {
               childVariants={heroWordRise}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] text-foreground"
             >
-              Ahmed Shaban — Flutter & Front-end Developer at Truck World
+              Ahmed Shaban — Flutter & Front-end Developer
             </StaggerReveal>
 
             {/* Subtext */}
@@ -143,7 +143,7 @@ const Hero = () => {
                   Flutter · React · Clean Architecture
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
-                  Cairo, Egypt (GMT+2) · Remote-ready
+                  Cairo, Egypt (GMT+2) · Open to remote & on-site
                 </span>
               </p>
             </motion.div>

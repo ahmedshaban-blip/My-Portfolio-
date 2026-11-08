@@ -80,7 +80,7 @@ const Footer = () => {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-interaction duration-200 hover:scale-110"
+                  className="p-2.5 rounded-xl bg-secondary/50 hover:bg-[hsl(var(--whatsapp))]/10 hover:text-[hsl(var(--whatsapp))] transition-interaction duration-200 hover:scale-110"
                   aria-label="WhatsApp"
                 >
                   <WhatsAppIcon className="h-5 w-5" />

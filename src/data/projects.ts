@@ -129,6 +129,9 @@ export const flutterProjects: Project[] = [
       "/projects/enjez-mobile/4.webp",
     ],
   },
+  // ==== HIDDEN: projects after Enjez Mobile Application are temporarily commented
+  // out (kept in the code, not deleted). Remove the /* */ markers to restore. ====
+  /*
   {
     slug: "ecommerce-app",
     kind: "mobile",
@@ -263,6 +266,7 @@ export const flutterProjects: Project[] = [
     coverImage: "/projects/flutter-cover.svg",
     screenshots: ["/projects/flutter-cover.svg"],
   },
+  */
 ];
 
 export const frontendProjects: Project[] = [

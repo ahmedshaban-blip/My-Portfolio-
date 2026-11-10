@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ahmed Shaban — Palettes v2 · 5 Friendly Vibrant Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   TOOLBAR
+   ============================================================ */
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#0c0c0c;color:#f4f4f4;font-family:"Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.lab{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 22px;background:#0c0c0c;color:#f4f4f4;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid #262626}
+.lab strong{color:#fff;font-size:13px}
+.lab nav{display:flex;gap:14px;margin-left:auto;flex-wrap:wrap}
+.lab nav a{text-decoration:none;opacity:.72}
+.lab nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+.toggle{display:flex;gap:0;border:1px solid #3a3a3a;border-radius:6px;overflow:hidden}
+.toggle button{background:transparent;color:#cfcfcf;border:0;padding:6px 12px;font:inherit;cursor:pointer}
+.toggle button.on{background:#f4f4f4;color:#0c0c0c}
+.divider{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:16px 22px;background:#111;color:#ededed;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-top:2px solid #000}
+.divider b{color:#fff;font-size:15px}
+.divider .note{margin-left:auto;opacity:.55}
+
+/* ============================================================
+   SHARED MOCKUP SHELL  (identical layout, only colors change)
+   ============================================================ */
+.pf{
+  --bg:var(--p-bg);--fg:var(--p-fg);--card:var(--p-card);--card-fg:var(--p-fg);
+  --muted:var(--p-muted);--muted-fg:var(--p-mutedFg);
+  --primary:var(--p-primary);--primary-fg:var(--p-primaryFg);
+  --accent:var(--p-accent);--accent-fg:var(--p-accentFg);
+  --secondary:var(--p-secondary);--border:var(--p-border);
+  --success:var(--p-success);--whatsapp:#25D366;
+  background:var(--bg);color:var(--fg);
+  font-size:16px;line-height:1.6;
+}
+.pf *{box-sizing:border-box}
+.pf .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+.pf .topbar{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border)}
+.pf .nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 24px;max-width:1140px;margin:0 auto}
+.pf .brand{font-weight:800;font-size:19px;letter-spacing:-.02em}
+.pf .nav .links{display:flex;gap:22px;font-size:14px;font-weight:500}
+.pf .nav .links a{text-decoration:none;color:var(--muted-fg)}
+.pf .nav .links a:hover,.pf .nav .links a.on{color:var(--primary)}
+.pf .tools{display:flex;gap:8px}
+.pf .ic{width:36px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer}
+.pf .ic:hover{background:var(--secondary)}
+
+.pf .hero{padding:64px 0 56px;display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
+.pf .badge{display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:999px;background:var(--secondary);border:1px solid var(--border);color:var(--fg);font-size:13px;font-weight:600}
+.pf .badge .dot{width:9px;height:9px;border-radius:50%;background:var(--success)}
+.pf h1{font-size:clamp(34px,5vw,58px);line-height:1.1;letter-spacing:-.025em;font-weight:800;margin:20px 0 0}
+.pf h1 .hl{color:var(--primary)}
+.pf .lede{margin-top:18px;color:var(--muted-fg);max-width:56ch}
+.pf .lede b{color:var(--fg);font-weight:700}
+.pf .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;font-size:12px;font-weight:500;color:var(--muted-fg)}
+.pf .tag{border:1px solid var(--border);background:var(--secondary);border-radius:999px;padding:5px 12px}
+.pf .ctas{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.pf .btn{border:0;cursor:pointer;font:inherit;font-weight:600;border-radius:999px;padding:14px 30px;background:var(--primary);color:var(--primary-fg);display:inline-flex;align-items:center;gap:8px}
+.pf .btn:hover{opacity:.9}
+.pf .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--border)}
+.pf .btn.ghost:hover{background:var(--secondary)}
+.pf .proof{margin-top:20px;font-size:13px;color:var(--muted-fg)}
+.pf .proof a{color:var(--fg);font-weight:600;text-decoration:none;border-bottom:1px solid var(--border)}
+.pf .proof a:hover{color:var(--primary);border-color:var(--primary)}
+.pf .proof .ok{color:var(--success);font-weight:700}
+.pf .socials{display:flex;gap:22px;margin-top:22px}
+.pf .socials a{width:40px;height:40px;border:1px solid var(--border);border-radius:12px;display:grid;place-items:center;color:var(--muted-fg);text-decoration:none}
+.pf .socials a:hover{color:var(--primary);border-color:var(--primary)}
+
+.pf .portrait{position:relative;justify-self:center}
+.pf .frame{width:300px;height:300px;border-radius:999px;overflow:hidden;background:var(--secondary);border:6px solid var(--card);
+  box-shadow:0 0 0 1px var(--border) inset, 0 0 0 1px var(--border);display:grid;place-items:center}
+.pf .frame .initials{font-size:96px;font-weight:800;letter-spacing:-.04em;color:var(--primary)}
+.pf .float{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:12px;box-shadow:0 6px 20px -12px rgba(0,0,0,.4)}
+.pf .float .t{font-weight:700}
+.pf .float .s{color:var(--muted-fg);font-size:11px}
+.pf .float.f1{top:14%;left:-26px}
+.pf .float.f2{bottom:16%;right:-22px}
+
+.pf .sec{padding:56px 0;border-top:1px solid var(--border)}
+.pf .kicker{display:flex;align-items:center;gap:12px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.pf .kicker::after{content:"";flex:1;height:1px;background:var(--border)}
+.pf .sec h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.02em;margin:12px 0 0}
+.pf .sec h2 .hl{color:var(--primary)}
+.pf .sec p.sub{color:var(--muted-fg);margin-top:8px;max-width:60ch}
+.pf .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
+.pf .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+.pf .card:hover{border-color:var(--primary)}
+.pf .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pf .chip{border:1px solid var(--border);background:var(--secondary);color:var(--muted-fg);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:500}
+.pf .chip:hover{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.pf .proj{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.pf .proj .thumb{height:150px;background:var(--primary);color:var(--primary-fg);display:grid;place-items:center;font-weight:800;font-size:34px;letter-spacing:-.03em}
+.pf .proj .body{padding:18px}
+.pf .proj h3{margin:0;font-size:17px}
+.pf .proj p{margin:6px 0 0;color:var(--muted-fg);font-size:14px}
+.pf .proj .meta{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.pf .rowline{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:20px 0;border-top:1px solid var(--border)}
+.pf .rowline .when{font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+.pf .rowline h3{margin:0;font-size:16px}
+.pf .rowline p{margin:5px 0 0;color:var(--muted-fg);font-size:14px}
+.pf .contact{background:var(--fg);color:var(--bg);padding:64px 24px;text-align:center}
+.pf .contact h2{font-size:clamp(28px,4vw,48px);margin:0;color:var(--bg);font-weight:800;letter-spacing:-.02em}
+.pf .contact a.big{color:var(--bg);text-decoration:none;border-bottom:2px solid var(--accent);font-weight:700}
+.pf .contact a.big:hover{color:var(--accent)}
+.pf .contact .links{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-top:22px;font-size:13px;font-weight:600}
+.pf .contact .links a{color:var(--bg);opacity:.75;text-decoration:none}
+.pf .contact .links a:hover{opacity:1;color:var(--accent)}
+.pf .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:20px 24px;background:var(--card);border-top:1px solid var(--border);font-size:12px;color:var(--muted-fg)}
+.pf .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.pf .sw{display:flex;flex-direction:column;gap:6px;align-items:center;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted-fg)}
+.pf .sw i{width:56px;height:56px;border-radius:10px;border:1px solid var(--border);display:block}
+@media(max-width:900px){.pf .hero{grid-template-columns:1fr;gap:40px}.pf .grid2{grid-template-columns:1fr}.pf .nav .links{display:none}}
+</style>
+</head>
+<body>
+
+<div class="lab">
+  <strong>Palettes · 5</strong>
+  <span>solid · no gradients · anti-slop</span>
+  <div class="toggle" role="group" aria-label="Theme">
+    <button id="btn-light" class="on" type="button">Light</button>
+    <button id="btn-dark" type="button">Dark</button>
+  </div>
+  <nav>
+    <a href="#p1">01 Fresh Mint</a><a href="#p2">02 Electric Violet</a><a href="#p3">03 Sunny Coral</a><a href="#p4">04 Sky &amp; Lime</a><a href="#p5">05 Vivid Joy</a>
+  </nav>
+</div>
+
+<style>
+/* ============================================================
+   PALETTE TOKEN SETS
+   Each palette defines LIGHT (default) and DARK (html.dark) values.
+   Wire: --p-* is resolved from the active set below.
+   ============================================================ */
+/* --- P1 · Fresh Mint (warm white bg + mint/teal) --- */
+#p1{--L-bg:#F7FBF9;--L-fg:#0F2A22;--L-card:#FFFFFF;--L-muted:#E6F4EE;--L-mutedFg:#4C6B60;
+  --L-primary:#0FA87E;--L-primaryFg:#FFFFFF;--L-accent:#FF6B4A;--L-accentFg:#FFFFFF;--L-secondary:#EAF6F1;--L-border:#CCE6DB;--L-success:#0FA87E}
+#p1{--p-bg:var(--L-bg);--p-fg:var(--L-fg);--p-card:var(--L-card);--p-muted:var(--L-muted);--p-mutedFg:var(--L-mutedFg);
+  --p-primary:var(--L-primary);--p-primaryFg:var(--L-primaryFg);--p-accent:var(--L-accent);--p-accentFg:var(--L-accentFg);--p-secondary:var(--L-secondary);--p-border:var(--L-border);--p-success:var(--L-success)}
+html.dark #p1{--p-bg:#0A1714;--p-fg:#E6F5EF;--p-card:#102420;--p-muted:#153029;--p-mutedFg:#93B5AA;
+  --p-primary:#2BE0A8;--p-primaryFg:#04140F;--p-accent:#FF8668;--p-accentFg:#1E0A04;--p-secondary:#12302A;--p-border:#1F4038;--p-success:#2BE0A8}
+
+/* --- P2 · Electric Violet (cool off-white bg + violet/pink) --- */
+#p2{--L-bg:#F8F7FE;--L-fg:#1A1330;--L-card:#FFFFFF;--L-muted:#EEEBFB;--L-mutedFg:#5E5580;
+  --L-primary:#6D3BFF;--L-primaryFg:#FFFFFF;--L-accent:#FF3D8B;--L-accentFg:#FFFFFF;--L-secondary:#F1EEFD;--L-border:#DED6F7;--L-success:#12B886}
+#p2{--p-bg:var(--L-bg);--p-fg:var(--L-fg);--p-card:var(--L-card);--p-muted:var(--L-muted);--p-mutedFg:var(--L-mutedFg);
+  --p-primary:var(--L-primary);--p-primaryFg:var(--L-primaryFg);--p-accent:var(--L-accent);--p-accentFg:var(--L-accentFg);--p-secondary:var(--L-secondary);--p-border:var(--L-border);--p-success:var(--L-success)}
+html.dark #p2{--p-bg:#0F0B20;--p-fg:#EDE9FF;--p-card:#171132;--p-muted:#1E1740;--p-mutedFg:#A79ED6;
+  --p-primary:#9E7BFF;--p-primaryFg:#0C0720;--p-accent:#FF6BA8;--p-accentFg:#220820;--p-secondary:#1B1438;--p-border:#2E2559;--p-success:#2ED9A6}
+
+/* --- P3 · Sunny Coral (cream bg + coral/amber) --- */
+#p3{--L-bg:#FFF9F3;--L-fg:#33231A;--L-card:#FFFFFF;--L-muted:#FFEFE2;--L-mutedFg:#7A5A48;
+  --L-primary:#FF5C2E;--L-primaryFg:#FFFFFF;--L-accent:#F5A524;--L-accentFg:#3A2503;--L-secondary:#FFF1E5;--L-border:#F6DCC6;--L-success:#12B886}
+#p3{--p-bg:var(--L-bg);--p-fg:var(--L-fg);--p-card:var(--L-card);--p-muted:var(--L-muted);--p-mutedFg:var(--L-mutedFg);
+  --p-primary:var(--L-primary);--p-primaryFg:var(--L-primaryFg);--p-accent:var(--L-accent);--p-accentFg:var(--L-accentFg);--p-secondary:var(--L-secondary);--p-border:var(--L-border);--p-success:var(--L-success)}
+html.dark #p3{--p-bg:#1C120C;--p-fg:#FFEDE0;--p-card:#26180F;--p-muted:#332014;--p-mutedFg:#C8A38C;
+  --p-primary:#FF8156;--p-primaryFg:#200B03;--p-accent:#FFC94D;--p-accentFg:#241802;--p-secondary:#301D12;--p-border:#4A2E1C;--p-success:#33D9A0}
+
+/* --- P4 · Sky & Lime (crisp blue-white bg + sky/lime) --- */
+#p4{--L-bg:#F5FAFF;--L-fg:#0B2233;--L-card:#FFFFFF;--L-muted:#E5F2FC;--L-mutedFg:#48657A;
+  --L-primary:#0E8DF2;--L-primaryFg:#FFFFFF;--L-accent:#7BC419;--L-accentFg:#16260A;--L-secondary:#EAF4FD;--L-border:#C9E2F5;--L-success:#12B886}
+#p4{--p-bg:var(--L-bg);--p-fg:var(--L-fg);--p-card:var(--L-card);--p-muted:var(--L-muted);--p-mutedFg:var(--L-mutedFg);
+  --p-primary:var(--L-primary);--p-primaryFg:var(--L-primaryFg);--p-accent:var(--L-accent);--p-accentFg:var(--L-accentFg);--p-secondary:var(--L-secondary);--p-border:var(--L-border);--p-success:var(--L-success)}
+html.dark #p4{--p-bg:#07141F;--p-fg:#E3F1FB;--p-card:#0D2030;--p-muted:#122B3E;--p-mutedFg:#8FB3CA;
+  --p-primary:#3BA9FF;--p-primaryFg:#04121E;--p-accent:#A6E22E;--p-accentFg:#14210A;--p-secondary:#0F2635;--p-border:#1D3B52;--p-success:#2ED9A6}
+
+/* --- P5 · Vivid Joy (bright tint bg + magenta/cyan) --- */
+#p5{--L-bg:#FDF7FC;--L-fg:#2B1030;--L-card:#FFFFFF;--L-muted:#FBE8F6;--L-mutedFg:#6E4A6C;
+  --L-primary:#E01E9C;--L-primaryFg:#FFFFFF;--L-accent:#00BFD8;--L-accentFg:#04222A;--L-secondary:#FDECF8;--L-border:#F4D0EC;--L-success:#12B886}
+#p5{--p-bg:var(--L-bg);--p-fg:var(--L-fg);--p-card:var(--L-card);--p-muted:var(--L-muted);--p-mutedFg:var(--L-mutedFg);
+  --p-primary:var(--L-primary);--p-primaryFg:var(--L-primaryFg);--p-accent:var(--L-accent);--p-accentFg:var(--L-accentFg);--p-secondary:var(--L-secondary);--p-border:var(--L-border);--p-success:var(--L-success)}
+html.dark #p5{--p-bg:#1B0A1E;--p-fg:#FBE6F6;--p-card:#270F2B;--p-muted:#321538;--p-mutedFg:#C79BC4;
+  --p-primary:#FF56B1;--p-primaryFg:#24051A;--p-accent:#3DDBEE;--p-accentFg:#032027;--p-secondary:#2E1333;--p-border:#472152;--p-success:#2ED9A6}
+</style>
+
+<!-- ============ P1 · WARM NEUTRAL + BOLD ACCENT ============ -->
+<div class="divider" id="p1-label"><b>01</b><span>Fresh Mint</span><span>warm-white · mint teal · coral pop</span><span class="note">friendly · vibrant · solid</span></div>
+<section class="pf" id="p1">
+  <div class="topbar"><div class="nav">
+    <span class="brand">Ahmed Shaban</span>
+    <div class="links"><a class="on" href="#p1">Home</a><a href="#p1">About</a><a href="#p1">Skills</a><a href="#p1">Projects</a><a href="#p1">Experience</a><a href="#p1">Contact</a></div>
+    <div class="tools"><span class="ic">◐</span><span class="ic">◑</span></div>
+  </div></div>
+
+  <div class="wrap hero">
+    <div>
+      <span class="badge"><span class="dot"></span>Available for new opportunities</span>
+      <h1>Ahmed Shaban — Flutter &amp; Front-end Developer at <span class="hl">Truck World</span></h1>
+      <p class="lede">Computer Science graduate specializing in <b>Flutter</b>, <b>React Native</b>, and <b>React</b>. I build high-performance, cross-platform experiences with clean code.</p>
+      <div class="tags"><span class="tag">Full-time · Truck World, Saudi Arabia</span><span class="tag">Flutter · React · Clean Architecture</span><span class="tag">Cairo, Egypt (GMT+2) · Remote-ready</span></div>
+      <div class="ctas"><button class="btn">View Projects →</button><button class="btn ghost">Read CV ▾</button></div>
+      <p class="proof"><span class="ok">▶</span> <a href="#p1">Nassy</a> · <a href="#p1">CV Builder</a> · <a href="#p1">RSS Reader Pro</a> live on Google Play</p>
+      <div class="socials"><a href="#p1">GH</a><a href="#p1">IN</a><a href="#p1">WA</a><a href="#p1">✉</a></div>
+    </div>
+    <div class="portrait">
+      <div class="frame"><span class="initials">AS</span></div>
+      <div class="float f1"><span class="ic">▶</span><div><div class="t">3 Apps Live</div><div class="s">Google Play</div></div></div>
+      <div class="float f2"><span class="ic">★</span><div><div class="t">10+ Projects</div><div class="s">Shipped</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">01 · My Expertise</div>
+    <h2>Technical <span class="hl">Skills</span></h2>
+    <p class="sub">Focused stack for building production-ready mobile and web apps.</p>
+    <div class="grid2">
+      <div class="card"><h3 style="margin:0">Mobile</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">Flutter, Dart, React Native</p>
+        <div class="chiprow"><span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">Bloc</span><span class="chip">GetX</span><span class="chip">Provider</span><span class="chip">Firebase</span></div></div>
+      <div class="card"><h3 style="margin:0">Web &amp; Tooling</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">React, Redux, TypeScript, Supabase</p>
+        <div class="chiprow"><span class="chip">React</span><span class="chip">Redux</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">REST</span></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">02 · Featured Work</div>
+    <h2>Featured <span class="hl">Projects</span></h2>
+    <div class="grid2" style="margin-top:24px">
+      <div class="proj"><div class="thumb">M</div><div class="body"><h3>Melano</h3><p>Luxury cosmetics e-commerce. React 19, Redux, Supabase.</p><div class="meta">Web · Live</div></div></div>
+      <div class="proj"><div class="thumb">N</div><div class="body"><h3>Nassy</h3><p>AI Arabic copy studio. Flutter, Gemini, AES-256 BYOK.</p><div class="meta">Mobile · Google Play</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">03 · Experience</div>
+    <h2>Experience &amp; <span class="hl">Education</span></h2>
+    <div style="margin-top:20px">
+      <div class="rowline"><span class="when">2026 — Now</span><div><h3>Truck World — ERP React + Flutter</h3><p>Saudi Arabia · Full-time. ERP web apps, HR tools, Figma→responsive UI, REST.</p></div></div>
+      <div class="rowline"><span class="when">2025</span><div><h3>ITI — Cross-platform internship</h3><p>Bloc/Cubit/GetX, Firebase, React+Redux, Stripe/PayPal.</p></div></div>
+      <div class="rowline"><span class="when">2020–25</span><div><h3>BSc CS — Minya University</h3><p>Graduation project A+. Clean architecture, MVVM, animations.</p></div></div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <h2>Let's build something solid.</h2>
+    <p style="margin-top:14px"><a class="big" href="#p1">ahmed.shabaan.dev@gmail.com</a></p>
+    <div class="links"><a href="#p1">GitHub</a><a href="#p1">LinkedIn</a><a href="#p1">WhatsApp</a></div>
+    <div class="swatches" style="justify-content:center">
+      <span class="sw"><i style="background:var(--p-bg)"></i>bg</span><span class="sw"><i style="background:var(--p-fg)"></i>fg</span>
+      <span class="sw"><i style="background:var(--p-primary)"></i>primary</span><span class="sw"><i style="background:var(--p-accent)"></i>accent</span>
+      <span class="sw"><i style="background:var(--p-card)"></i>card</span><span class="sw"><i style="background:var(--p-border)"></i>border</span>
+    </div>
+  </div>
+  <div class="foot"><span>© 2026 Ahmed Shaban</span><span>Palette 01 · Fresh Mint</span></div>
+</section>
+<!-- ============ P2 · TRUE MONOCHROME ============ -->
+<div class="divider" id="p2-label"><b>02</b><span>Electric Violet</span><span>cool off-white · violet · magenta pop</span><span class="note">energetic · clean · solid</span></div>
+<section class="pf" id="p2">
+  <div class="topbar"><div class="nav">
+    <span class="brand">Ahmed Shaban</span>
+    <div class="links"><a class="on" href="#p2">Home</a><a href="#p2">About</a><a href="#p2">Skills</a><a href="#p2">Projects</a><a href="#p2">Experience</a><a href="#p2">Contact</a></div>
+    <div class="tools"><span class="ic">◐</span><span class="ic">◑</span></div>
+  </div></div>
+
+  <div class="wrap hero">
+    <div>
+      <span class="badge"><span class="dot"></span>Available for new opportunities</span>
+      <h1>Ahmed Shaban — Flutter &amp; Front-end Developer at <span class="hl">Truck World</span></h1>
+      <p class="lede">Computer Science graduate specializing in <b>Flutter</b>, <b>React Native</b>, and <b>React</b>. I build high-performance, cross-platform experiences with clean code.</p>
+      <div class="tags"><span class="tag">Full-time · Truck World, Saudi Arabia</span><span class="tag">Flutter · React · Clean Architecture</span><span class="tag">Cairo, Egypt (GMT+2) · Remote-ready</span></div>
+      <div class="ctas"><button class="btn">View Projects →</button><button class="btn ghost">Read CV ▾</button></div>
+      <p class="proof"><span class="ok">▶</span> <a href="#p2">Nassy</a> · <a href="#p2">CV Builder</a> · <a href="#p2">RSS Reader Pro</a> live on Google Play</p>
+      <div class="socials"><a href="#p2">GH</a><a href="#p2">IN</a><a href="#p2">WA</a><a href="#p2">✉</a></div>
+    </div>
+    <div class="portrait">
+      <div class="frame"><span class="initials">AS</span></div>
+      <div class="float f1"><span class="ic">▶</span><div><div class="t">3 Apps Live</div><div class="s">Google Play</div></div></div>
+      <div class="float f2"><span class="ic">★</span><div><div class="t">10+ Projects</div><div class="s">Shipped</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">01 · My Expertise</div>
+    <h2>Technical <span class="hl">Skills</span></h2>
+    <p class="sub">Focused stack for building production-ready mobile and web apps.</p>
+    <div class="grid2">
+      <div class="card"><h3 style="margin:0">Mobile</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">Flutter, Dart, React Native</p>
+        <div class="chiprow"><span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">Bloc</span><span class="chip">GetX</span><span class="chip">Provider</span><span class="chip">Firebase</span></div></div>
+      <div class="card"><h3 style="margin:0">Web &amp; Tooling</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">React, Redux, TypeScript, Supabase</p>
+        <div class="chiprow"><span class="chip">React</span><span class="chip">Redux</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">REST</span></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">02 · Featured Work</div>
+    <h2>Featured <span class="hl">Projects</span></h2>
+    <div class="grid2" style="margin-top:24px">
+      <div class="proj"><div class="thumb">M</div><div class="body"><h3>Melano</h3><p>Luxury cosmetics e-commerce. React 19, Redux, Supabase.</p><div class="meta">Web · Live</div></div></div>
+      <div class="proj"><div class="thumb">N</div><div class="body"><h3>Nassy</h3><p>AI Arabic copy studio. Flutter, Gemini, AES-256 BYOK.</p><div class="meta">Mobile · Google Play</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">03 · Experience</div>
+    <h2>Experience &amp; <span class="hl">Education</span></h2>
+    <div style="margin-top:20px">
+      <div class="rowline"><span class="when">2026 — Now</span><div><h3>Truck World — ERP React + Flutter</h3><p>Saudi Arabia · Full-time. ERP web apps, HR tools, Figma→responsive UI, REST.</p></div></div>
+      <div class="rowline"><span class="when">2025</span><div><h3>ITI — Cross-platform internship</h3><p>Bloc/Cubit/GetX, Firebase, React+Redux, Stripe/PayPal.</p></div></div>
+      <div class="rowline"><span class="when">2020–25</span><div><h3>BSc CS — Minya University</h3><p>Graduation project A+. Clean architecture, MVVM, animations.</p></div></div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <h2>Let's build something solid.</h2>
+    <p style="margin-top:14px"><a class="big" href="#p2">ahmed.shabaan.dev@gmail.com</a></p>
+    <div class="links"><a href="#p2">GitHub</a><a href="#p2">LinkedIn</a><a href="#p2">WhatsApp</a></div>
+    <div class="swatches" style="justify-content:center">
+      <span class="sw"><i style="background:var(--p-bg)"></i>bg</span><span class="sw"><i style="background:var(--p-fg)"></i>fg</span>
+      <span class="sw"><i style="background:var(--p-primary)"></i>primary</span><span class="sw"><i style="background:var(--p-accent)"></i>accent</span>
+      <span class="sw"><i style="background:var(--p-card)"></i>card</span><span class="sw"><i style="background:var(--p-border)"></i>border</span>
+    </div>
+  </div>
+  <div class="foot"><span>© 2026 Ahmed Shaban</span><span>Palette 02 · Electric Violet</span></div>
+</section>
+
+<!-- ============ P3 · MUTED EARTH / ARCHIVE ============ -->
+<div class="divider" id="p3-label"><b>03</b><span>Sunny Coral</span><span>cream · coral · amber pop</span><span class="note">warm · approachable · solid</span></div>
+<section class="pf" id="p3">
+  <div class="topbar"><div class="nav">
+    <span class="brand">Ahmed Shaban</span>
+    <div class="links"><a class="on" href="#p3">Home</a><a href="#p3">About</a><a href="#p3">Skills</a><a href="#p3">Projects</a><a href="#p3">Experience</a><a href="#p3">Contact</a></div>
+    <div class="tools"><span class="ic">◐</span><span class="ic">◑</span></div>
+  </div></div>
+
+  <div class="wrap hero">
+    <div>
+      <span class="badge"><span class="dot"></span>Available for new opportunities</span>
+      <h1>Ahmed Shaban — Flutter &amp; Front-end Developer at <span class="hl">Truck World</span></h1>
+      <p class="lede">Computer Science graduate specializing in <b>Flutter</b>, <b>React Native</b>, and <b>React</b>. I build high-performance, cross-platform experiences with clean code.</p>
+      <div class="tags"><span class="tag">Full-time · Truck World, Saudi Arabia</span><span class="tag">Flutter · React · Clean Architecture</span><span class="tag">Cairo, Egypt (GMT+2) · Remote-ready</span></div>
+      <div class="ctas"><button class="btn">View Projects →</button><button class="btn ghost">Read CV ▾</button></div>
+      <p class="proof"><span class="ok">▶</span> <a href="#p3">Nassy</a> · <a href="#p3">CV Builder</a> · <a href="#p3">RSS Reader Pro</a> live on Google Play</p>
+      <div class="socials"><a href="#p3">GH</a><a href="#p3">IN</a><a href="#p3">WA</a><a href="#p3">✉</a></div>
+    </div>
+    <div class="portrait">
+      <div class="frame"><span class="initials">AS</span></div>
+      <div class="float f1"><span class="ic">▶</span><div><div class="t">3 Apps Live</div><div class="s">Google Play</div></div></div>
+      <div class="float f2"><span class="ic">★</span><div><div class="t">10+ Projects</div><div class="s">Shipped</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">01 · My Expertise</div>
+    <h2>Technical <span class="hl">Skills</span></h2>
+    <p class="sub">Focused stack for building production-ready mobile and web apps.</p>
+    <div class="grid2">
+      <div class="card"><h3 style="margin:0">Mobile</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">Flutter, Dart, React Native</p>
+        <div class="chiprow"><span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">Bloc</span><span class="chip">GetX</span><span class="chip">Provider</span><span class="chip">Firebase</span></div></div>
+      <div class="card"><h3 style="margin:0">Web &amp; Tooling</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">React, Redux, TypeScript, Supabase</p>
+        <div class="chiprow"><span class="chip">React</span><span class="chip">Redux</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">REST</span></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">02 · Featured Work</div>
+    <h2>Featured <span class="hl">Projects</span></h2>
+    <div class="grid2" style="margin-top:24px">
+      <div class="proj"><div class="thumb">M</div><div class="body"><h3>Melano</h3><p>Luxury cosmetics e-commerce. React 19, Redux, Supabase.</p><div class="meta">Web · Live</div></div></div>
+      <div class="proj"><div class="thumb">N</div><div class="body"><h3>Nassy</h3><p>AI Arabic copy studio. Flutter, Gemini, AES-256 BYOK.</p><div class="meta">Mobile · Google Play</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">03 · Experience</div>
+    <h2>Experience &amp; <span class="hl">Education</span></h2>
+    <div style="margin-top:20px">
+      <div class="rowline"><span class="when">2026 — Now</span><div><h3>Truck World — ERP React + Flutter</h3><p>Saudi Arabia · Full-time. ERP web apps, HR tools, Figma→responsive UI, REST.</p></div></div>
+      <div class="rowline"><span class="when">2025</span><div><h3>ITI — Cross-platform internship</h3><p>Bloc/Cubit/GetX, Firebase, React+Redux, Stripe/PayPal.</p></div></div>
+      <div class="rowline"><span class="when">2020–25</span><div><h3>BSc CS — Minya University</h3><p>Graduation project A+. Clean architecture, MVVM, animations.</p></div></div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <h2>Let's build something solid.</h2>
+    <p style="margin-top:14px"><a class="big" href="#p3">ahmed.shabaan.dev@gmail.com</a></p>
+    <div class="links"><a href="#p3">GitHub</a><a href="#p3">LinkedIn</a><a href="#p3">WhatsApp</a></div>
+    <div class="swatches" style="justify-content:center">
+      <span class="sw"><i style="background:var(--p-bg)"></i>bg</span><span class="sw"><i style="background:var(--p-fg)"></i>fg</span>
+      <span class="sw"><i style="background:var(--p-primary)"></i>primary</span><span class="sw"><i style="background:var(--p-accent)"></i>accent</span>
+      <span class="sw"><i style="background:var(--p-card)"></i>card</span><span class="sw"><i style="background:var(--p-border)"></i>border</span>
+    </div>
+  </div>
+  <div class="foot"><span>© 2026 Ahmed Shaban</span><span>Palette 03 · Sunny Coral</span></div>
+</section>
+
+<!-- ============ P4 · HIGH-CONTRAST INK + ELECTRIC POP ============ -->
+<div class="divider" id="p4-label"><b>04</b><span>Sky &amp; Lime</span><span>blue-white · sky blue · lime pop</span><span class="note">fresh · techy · solid</span></div>
+<section class="pf" id="p4">
+  <div class="topbar"><div class="nav">
+    <span class="brand">Ahmed Shaban</span>
+    <div class="links"><a class="on" href="#p4">Home</a><a href="#p4">About</a><a href="#p4">Skills</a><a href="#p4">Projects</a><a href="#p4">Experience</a><a href="#p4">Contact</a></div>
+    <div class="tools"><span class="ic">◐</span><span class="ic">◑</span></div>
+  </div></div>
+
+  <div class="wrap hero">
+    <div>
+      <span class="badge"><span class="dot"></span>Available for new opportunities</span>
+      <h1>Ahmed Shaban — Flutter &amp; Front-end Developer at <span class="hl">Truck World</span></h1>
+      <p class="lede">Computer Science graduate specializing in <b>Flutter</b>, <b>React Native</b>, and <b>React</b>. I build high-performance, cross-platform experiences with clean code.</p>
+      <div class="tags"><span class="tag">Full-time · Truck World, Saudi Arabia</span><span class="tag">Flutter · React · Clean Architecture</span><span class="tag">Cairo, Egypt (GMT+2) · Remote-ready</span></div>
+      <div class="ctas"><button class="btn">View Projects →</button><button class="btn ghost">Read CV ▾</button></div>
+      <p class="proof"><span class="ok">▶</span> <a href="#p4">Nassy</a> · <a href="#p4">CV Builder</a> · <a href="#p4">RSS Reader Pro</a> live on Google Play</p>
+      <div class="socials"><a href="#p4">GH</a><a href="#p4">IN</a><a href="#p4">WA</a><a href="#p4">✉</a></div>
+    </div>
+    <div class="portrait">
+      <div class="frame"><span class="initials">AS</span></div>
+      <div class="float f1"><span class="ic">▶</span><div><div class="t">3 Apps Live</div><div class="s">Google Play</div></div></div>
+      <div class="float f2"><span class="ic">★</span><div><div class="t">10+ Projects</div><div class="s">Shipped</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">01 · My Expertise</div>
+    <h2>Technical <span class="hl">Skills</span></h2>
+    <p class="sub">Focused stack for building production-ready mobile and web apps.</p>
+    <div class="grid2">
+      <div class="card"><h3 style="margin:0">Mobile</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">Flutter, Dart, React Native</p>
+        <div class="chiprow"><span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">Bloc</span><span class="chip">GetX</span><span class="chip">Provider</span><span class="chip">Firebase</span></div></div>
+      <div class="card"><h3 style="margin:0">Web &amp; Tooling</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">React, Redux, TypeScript, Supabase</p>
+        <div class="chiprow"><span class="chip">React</span><span class="chip">Redux</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">REST</span></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">02 · Featured Work</div>
+    <h2>Featured <span class="hl">Projects</span></h2>
+    <div class="grid2" style="margin-top:24px">
+      <div class="proj"><div class="thumb">M</div><div class="body"><h3>Melano</h3><p>Luxury cosmetics e-commerce. React 19, Redux, Supabase.</p><div class="meta">Web · Live</div></div></div>
+      <div class="proj"><div class="thumb">N</div><div class="body"><h3>Nassy</h3><p>AI Arabic copy studio. Flutter, Gemini, AES-256 BYOK.</p><div class="meta">Mobile · Google Play</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">03 · Experience</div>
+    <h2>Experience &amp; <span class="hl">Education</span></h2>
+    <div style="margin-top:20px">
+      <div class="rowline"><span class="when">2026 — Now</span><div><h3>Truck World — ERP React + Flutter</h3><p>Saudi Arabia · Full-time. ERP web apps, HR tools, Figma→responsive UI, REST.</p></div></div>
+      <div class="rowline"><span class="when">2025</span><div><h3>ITI — Cross-platform internship</h3><p>Bloc/Cubit/GetX, Firebase, React+Redux, Stripe/PayPal.</p></div></div>
+      <div class="rowline"><span class="when">2020–25</span><div><h3>BSc CS — Minya University</h3><p>Graduation project A+. Clean architecture, MVVM, animations.</p></div></div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <h2>Let's build something solid.</h2>
+    <p style="margin-top:14px"><a class="big" href="#p4">ahmed.shabaan.dev@gmail.com</a></p>
+    <div class="links"><a href="#p4">GitHub</a><a href="#p4">LinkedIn</a><a href="#p4">WhatsApp</a></div>
+    <div class="swatches" style="justify-content:center">
+      <span class="sw"><i style="background:var(--p-bg)"></i>bg</span><span class="sw"><i style="background:var(--p-fg)"></i>fg</span>
+      <span class="sw"><i style="background:var(--p-primary)"></i>primary</span><span class="sw"><i style="background:var(--p-accent)"></i>accent</span>
+      <span class="sw"><i style="background:var(--p-card)"></i>card</span><span class="sw"><i style="background:var(--p-border)"></i>border</span>
+    </div>
+  </div>
+  <div class="foot"><span>© 2026 Ahmed Shaban</span><span>Palette 04 · Sky &amp; Lime</span></div>
+</section>
+
+<!-- ============ P5 · DEEP JEWEL SOLIDS ============ -->
+<div class="divider" id="p5-label"><b>05</b><span>Vivid Joy</span><span>pink-tinted · magenta · cyan pop</span><span class="note">bold · playful · solid</span></div>
+<section class="pf" id="p5">
+  <div class="topbar"><div class="nav">
+    <span class="brand">Ahmed Shaban</span>
+    <div class="links"><a class="on" href="#p5">Home</a><a href="#p5">About</a><a href="#p5">Skills</a><a href="#p5">Projects</a><a href="#p5">Experience</a><a href="#p5">Contact</a></div>
+    <div class="tools"><span class="ic">◐</span><span class="ic">◑</span></div>
+  </div></div>
+
+  <div class="wrap hero">
+    <div>
+      <span class="badge"><span class="dot"></span>Available for new opportunities</span>
+      <h1>Ahmed Shaban — Flutter &amp; Front-end Developer at <span class="hl">Truck World</span></h1>
+      <p class="lede">Computer Science graduate specializing in <b>Flutter</b>, <b>React Native</b>, and <b>React</b>. I build high-performance, cross-platform experiences with clean code.</p>
+      <div class="tags"><span class="tag">Full-time · Truck World, Saudi Arabia</span><span class="tag">Flutter · React · Clean Architecture</span><span class="tag">Cairo, Egypt (GMT+2) · Remote-ready</span></div>
+      <div class="ctas"><button class="btn">View Projects →</button><button class="btn ghost">Read CV ▾</button></div>
+      <p class="proof"><span class="ok">▶</span> <a href="#p5">Nassy</a> · <a href="#p5">CV Builder</a> · <a href="#p5">RSS Reader Pro</a> live on Google Play</p>
+      <div class="socials"><a href="#p5">GH</a><a href="#p5">IN</a><a href="#p5">WA</a><a href="#p5">✉</a></div>
+    </div>
+    <div class="portrait">
+      <div class="frame"><span class="initials">AS</span></div>
+      <div class="float f1"><span class="ic">▶</span><div><div class="t">3 Apps Live</div><div class="s">Google Play</div></div></div>
+      <div class="float f2"><span class="ic">★</span><div><div class="t">10+ Projects</div><div class="s">Shipped</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">01 · My Expertise</div>
+    <h2>Technical <span class="hl">Skills</span></h2>
+    <p class="sub">Focused stack for building production-ready mobile and web apps.</p>
+    <div class="grid2">
+      <div class="card"><h3 style="margin:0">Mobile</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">Flutter, Dart, React Native</p>
+        <div class="chiprow"><span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">Bloc</span><span class="chip">GetX</span><span class="chip">Provider</span><span class="chip">Firebase</span></div></div>
+      <div class="card"><h3 style="margin:0">Web &amp; Tooling</h3><p style="color:var(--muted-fg);margin:6px 0 0;font-size:14px">React, Redux, TypeScript, Supabase</p>
+        <div class="chiprow"><span class="chip">React</span><span class="chip">Redux</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">REST</span></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">02 · Featured Work</div>
+    <h2>Featured <span class="hl">Projects</span></h2>
+    <div class="grid2" style="margin-top:24px">
+      <div class="proj"><div class="thumb">M</div><div class="body"><h3>Melano</h3><p>Luxury cosmetics e-commerce. React 19, Redux, Supabase.</p><div class="meta">Web · Live</div></div></div>
+      <div class="proj"><div class="thumb">N</div><div class="body"><h3>Nassy</h3><p>AI Arabic copy studio. Flutter, Gemini, AES-256 BYOK.</p><div class="meta">Mobile · Google Play</div></div></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="kicker">03 · Experience</div>
+    <h2>Experience &amp; <span class="hl">Education</span></h2>
+    <div style="margin-top:20px">
+      <div class="rowline"><span class="when">2026 — Now</span><div><h3>Truck World — ERP React + Flutter</h3><p>Saudi Arabia · Full-time. ERP web apps, HR tools, Figma→responsive UI, REST.</p></div></div>
+      <div class="rowline"><span class="when">2025</span><div><h3>ITI — Cross-platform internship</h3><p>Bloc/Cubit/GetX, Firebase, React+Redux, Stripe/PayPal.</p></div></div>
+      <div class="rowline"><span class="when">2020–25</span><div><h3>BSc CS — Minya University</h3><p>Graduation project A+. Clean architecture, MVVM, animations.</p></div></div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <h2>Let's build something solid.</h2>
+    <p style="margin-top:14px"><a class="big" href="#p5">ahmed.shabaan.dev@gmail.com</a></p>
+    <div class="links"><a href="#p5">GitHub</a><a href="#p5">LinkedIn</a><a href="#p5">WhatsApp</a></div>
+    <div class="swatches" style="justify-content:center">
+      <span class="sw"><i style="background:var(--p-bg)"></i>bg</span><span class="sw"><i style="background:var(--p-fg)"></i>fg</span>
+      <span class="sw"><i style="background:var(--p-primary)"></i>primary</span><span class="sw"><i style="background:var(--p-accent)"></i>accent</span>
+      <span class="sw"><i style="background:var(--p-card)"></i>card</span><span class="sw"><i style="background:var(--p-border)"></i>border</span>
+    </div>
+  </div>
+  <div class="foot"><span>© 2026 Ahmed Shaban</span><span>Palette 05 · Vivid Joy</span></div>
+</section>
+
+<script>
+(function () {
+  var lightEl = document.getElementById('btn-light');
+  var darkEl = document.getElementById('btn-dark');
+  function set(mode) {
+    document.documentElement.classList.toggle('dark', mode === 'dark');
+    lightEl.classList.toggle('on', mode === 'light');
+    darkEl.classList.toggle('on', mode === 'dark');
+  }
+  lightEl.addEventListener('click', function () { set('light'); });
+  darkEl.addEventListener('click', function () { set('dark'); });
+  set('light');
+})();
+</script>
+</body>

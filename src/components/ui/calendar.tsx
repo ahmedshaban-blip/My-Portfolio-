@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 /**
- * DayPicker styled with the portfolio's emerald tokens.
+ * DayPicker styled with the portfolio's copper tokens.
  * Styled entirely through `classNames` (react-day-picker's own stylesheet is never
  * imported) so the theme tokens stay the single source of truth.
  * Range selection renders one continuous primary band: rounded on the outer edges,

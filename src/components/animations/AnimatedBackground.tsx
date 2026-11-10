@@ -39,15 +39,15 @@ const MESH_SCALE = 0.5;
 const START_DELAY_MS = 350;
 
 const GRADIENTS_DARK = [
-  { x: 0.2, y: 0.3, r: 0.35, color: "0.74 0.115 158" },
-  { x: 0.8, y: 0.6, r: 0.3, color: "0.76 0.11 72" },
-  { x: 0.5, y: 0.8, r: 0.25, color: "0.45 0.035 145" },
+  { x: 0.2, y: 0.3, r: 0.35, color: "0.758 0.159 55.9" },
+  { x: 0.8, y: 0.6, r: 0.3, color: "0.705 0.187 47.6" },
+  { x: 0.5, y: 0.8, r: 0.25, color: "0.295 0.018 294.4" },
 ];
 
 const GRADIENTS_LIGHT = [
-  { x: 0.2, y: 0.3, r: 0.35, color: "0.43 0.11 158" },
-  { x: 0.8, y: 0.6, r: 0.3, color: "0.48 0.105 68" },
-  { x: 0.5, y: 0.8, r: 0.25, color: "0.72 0.025 145" },
+  { x: 0.2, y: 0.3, r: 0.35, color: "0.553 0.174 38.4" },
+  { x: 0.8, y: 0.6, r: 0.3, color: "0.646 0.194 41.1" },
+  { x: 0.5, y: 0.8, r: 0.25, color: "0.913 0.009 84.6" },
 ];
 
 /**
@@ -205,8 +205,8 @@ export function AnimatedBackground() {
         const finalOpacity = p.opacity * fade * speedScale;
 
         ctx.fillStyle = isDark
-          ? `oklch(0.91 0.012 145 / ${finalOpacity})`
-          : `oklch(0.235 0.018 155 / ${finalOpacity})`;
+          ? `oklch(0.973 0.009 67.7 / ${finalOpacity})`
+          : `oklch(0.216 0.006 56 / ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
     };

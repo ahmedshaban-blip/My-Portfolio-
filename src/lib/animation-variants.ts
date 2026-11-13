@@ -161,6 +161,55 @@ export const revealOnScrollParallaxIntense: Variants = {
   },
 };
 
+// ─── Motion system: the plate and the index rule ─────────────────────
+// One authored moment, then quiet feedback.
+//
+// THE PLATE — a project's media leaves its index card and lands in the case
+// sheet as one shared element (`layoutId="plate-<slug>"`). It is the only
+// morph on the site: the index and the case are the same artefact seen twice.
+//
+// THE INDEX RULE — the copper fill that travels between the Mobile / Web
+// collections, and between navbar sections. Same material, same curve, so the
+// two read as one mechanism measuring the page.
+//
+// Everything else stays quiet: chips arrive as a list, a screenshot enters
+// from the side you asked for, sections fade in place.
+
+export const easeInk = easeProfessional;
+
+/** Shared-element travel: long enough to follow, short enough to stay snappy. */
+export const plateTransition: Transition = {
+  type: "tween",
+  duration: 0.28,
+  ease: easeInk,
+};
+
+/** The index rule gliding between two states of the same control. */
+export const indexRuleTransition: Transition = {
+  type: "tween",
+  duration: 0.24,
+  ease: easeInk,
+};
+
+/** Sheets and overlays: opacity only, so nothing fights the travelling plate. */
+export const sheetTransition: Transition = {
+  type: "tween",
+  duration: 0.16,
+  ease: "easeOut",
+};
+
+/** A screenshot entering from the direction of travel. */
+export const stepTransition: Transition = {
+  type: "tween",
+  duration: 0.2,
+  ease: easeInk,
+};
+
+/** Extra list items joining a visible list — capped so the tail never waits. */
+export function listEntryDelay(index: number, step = 0.02, cap = 0.12): number {
+  return Math.min(index * step, cap);
+}
+
 // ─── Magnetic Hover Offset ───────────────────────────────────────────
 
 // `magneticTransition` was removed: `Magnetic` uses plain CSS/inline transforms

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, memo, type PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, memo, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion, useMotionValue } from "framer-motion";
@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContentStatic, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   Github,
   ExternalLink,
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { HoverCard } from "@/components/animations/HoverCard";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
-import { staggerContainer, staggerItem } from "@/lib/animation-variants";
+import { staggerContainer, staggerItem, plateTransition, indexRuleTransition, sheetTransition, stepTransition } from "@/lib/animation-variants";
 import { flutterProjects, frontendProjects, type Project, type DemoKind } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +44,13 @@ function demoHost(demo: string): string {
     return demo;
   }
 }
+
+/**
+ * Shared-element id for a project's media plate. The same plate is mounted in
+ * the index card and in the case sheet, so opening a case reads as the plate
+ * leaving the index rather than as a new surface appearing.
+ */
+const plateId = (slug: string) => `plate-${slug}`;
 
 /** CLS-safe image with skeleton + graceful fallback. */
 const ProjectImage = memo(function ProjectImage({
@@ -158,12 +165,15 @@ const ProjectCard = memo(function ProjectCard({
   project,
   isFlutter,
   reducedMotion,
+  selected,
   onSelect,
   onFullscreen,
 }: {
   project: Project;
   isFlutter: boolean;
   reducedMotion: boolean;
+  /** True while this project's case sheet is open — see the plate handoff note. */
+  selected: boolean;
   onSelect: (p: Project) => void;
   onFullscreen: (p: Project) => void;
 }) {
@@ -180,11 +190,32 @@ const ProjectCard = memo(function ProjectCard({
             title="Open fullscreen gallery"
             className="group relative flex h-48 w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60 sm:h-56 md:h-64"
           >
-            <ProjectImage
-              src={project.coverImage}
-              alt={`${project.title} cover preview`}
-              className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
-            />
+            {/* PLATE HANDOFF — a `layoutId` must identify exactly one element at
+                a time. While this project's case sheet is open, the viewer's
+                plate is the leader; the card keeps a plain (unprojected) plate
+                so framer sees the element leave the index and land in the
+                sheet, rather than choosing between two live nodes. */}
+            {selected ? (
+              <div className="absolute inset-0">
+                <ProjectImage
+                  src={project.coverImage}
+                  alt={`${project.title} cover preview`}
+                  className="h-full w-full [&_img]:object-contain"
+                />
+              </div>
+            ) : (
+              <motion.div
+                layoutId={plateId(project.slug)}
+                transition={reducedMotion ? { duration: 0 } : plateTransition}
+                className="absolute inset-0"
+              >
+                <ProjectImage
+                  src={project.coverImage}
+                  alt={`${project.title} cover preview`}
+                  className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
+                />
+              </motion.div>
+            )}
             {/* Hover / focus hint — mirrors the inline viewer */}
             <span
               aria-hidden="true"
@@ -324,6 +355,19 @@ function InlineViewer({
   const step = (dir: 1 | -1) => onIndex((safeIndex + dir + images.length) % images.length);
   const touchX = useRef<number | null>(null);
 
+  // The screenshot enters from the side it was asked for, so the arrows read as
+  // a direction instead of an unrelated swap. Wrapping is resolved the short
+  // way round. Derived during render, applied in a layout effect: mutating a ref
+  // mid-render replays wrongly under StrictMode's double render.
+  const lastSafeIndex = useRef(safeIndex);
+  const direction = useRef(1);
+  useLayoutEffect(() => {
+    if (safeIndex === lastSafeIndex.current) return;
+    const forward = (safeIndex - lastSafeIndex.current + images.length) % images.length;
+    direction.current = forward === 0 || forward > images.length / 2 ? -1 : 1;
+    lastSafeIndex.current = safeIndex;
+  }, [safeIndex, images.length]);
+
   // Preload neighbours so arrow / thumbnail switching feels instant (no API — local files, just decode cost).
   useEffect(() => {
     if (images.length <= 1) return;
@@ -379,42 +423,48 @@ function InlineViewer({
               <ChevronLeft size={18} />
             </Button>
           )}
-          <button
-            type="button"
-            onClick={onExpand}
-            aria-label={`Open ${project.title} screenshot ${safeIndex + 1} fullscreen`}
-            title="Open fullscreen"
-            className="group relative block min-w-0 cursor-zoom-in rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          <motion.div
+            layoutId={plateId(project.slug)}
+            transition={reducedMotion ? { duration: 0 } : plateTransition}
+            className="relative min-w-0"
           >
-            <motion.img
-              key={src}
-              src={src}
-              alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              draggable={false}
-              initial={false}
-              animate={{ opacity: 1 }}
-              transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
-              className={
-                src.endsWith(".svg")
-                  ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
-                  : portrait
-                    ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
-                    : "aspect-video w-full object-cover object-top"
-              }
-            />
-            {/* Hover / focus hint — subtle, calm */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100"
+            <button
+              type="button"
+              onClick={onExpand}
+              aria-label={`Open ${project.title} screenshot ${safeIndex + 1} fullscreen`}
+              title="Open fullscreen"
+              className="group relative block min-w-0 cursor-zoom-in rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
             >
-              <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
-                <Expand size={14} /> Fullscreen
+              <motion.img
+                key={src}
+                src={src}
+                alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                draggable={false}
+                initial={reducedMotion ? false : { opacity: 0, x: direction.current * 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={reducedMotion ? { duration: 0 } : stepTransition}
+                className={
+                  src.endsWith(".svg")
+                    ? "mx-auto h-40 w-40 object-contain p-6 drop-shadow-lg"
+                    : portrait
+                      ? "max-h-[46vh] w-auto max-w-full rounded-lg border border-border/40 object-contain"
+                      : "aspect-video w-full object-cover object-top"
+                }
+              />
+              {/* Hover / focus hint — subtle, calm */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
+                  <Expand size={14} /> Fullscreen
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
+          </motion.div>
           {images.length > 1 && (
             <Button
               variant="outline"
@@ -1182,20 +1232,43 @@ const Projects = () => {
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <div className="mb-10 flex justify-center overflow-x-auto pb-2 md:mb-12">
+              {/* One copper rule travels between the collections — the same
+                  shared-element mechanism as the navbar indicator, so the two
+                  read as one instrument measuring the page. */}
               <TabsList className="inline-flex h-11 rounded-full border border-border/50 bg-secondary/50 p-1">
                 <TabsTrigger
                   value="flutter"
-                  className="rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="relative rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:text-primary-foreground"
                 >
-                  <Smartphone size={14} className="-ml-0.5 mr-1.5 inline" />
-                  Mobile <span className="ml-1 hidden sm:inline">({flutterProjects.length})</span>
+                  {tab === "flutter" && (
+                    <motion.span
+                      layoutId="projects-index-rule"
+                      className="absolute inset-0 rounded-full bg-primary"
+                      transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="relative z-10 inline-flex items-center gap-1.5">
+                    <Smartphone size={14} aria-hidden="true" />
+                    Mobile <span className="hidden sm:inline">({flutterProjects.length})</span>
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="frontend"
-                  className="rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="relative rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:text-primary-foreground"
                 >
-                  <Globe size={14} className="-ml-0.5 mr-1.5 inline" />
-                  Web <span className="ml-1 hidden sm:inline">({frontendProjects.length})</span>
+                  {tab === "frontend" && (
+                    <motion.span
+                      layoutId="projects-index-rule"
+                      className="absolute inset-0 rounded-full bg-primary"
+                      transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="relative z-10 inline-flex items-center gap-1.5">
+                    <Globe size={14} aria-hidden="true" />
+                    Web <span className="hidden sm:inline">({frontendProjects.length})</span>
+                  </span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -1216,6 +1289,7 @@ const Projects = () => {
                       project={project}
                       isFlutter={true}
                       reducedMotion={reducedMotion}
+                      selected={selected?.slug === project.slug}
                       onSelect={handleSelect}
                       onFullscreen={handleFullscreen}
                     />
@@ -1238,6 +1312,7 @@ const Projects = () => {
                       project={project}
                       isFlutter={false}
                       reducedMotion={reducedMotion}
+                      selected={selected?.slug === project.slug}
                       onSelect={handleSelect}
                       onFullscreen={handleFullscreen}
                     />
@@ -1250,7 +1325,7 @@ const Projects = () => {
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <AnimatePresence>
               {open && selected && (
-                <DialogContent
+                <DialogContentStatic
                   className="modern-card flex max-h-[90vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden border-border/50 bg-card p-0 shadow-2xl md:max-w-4xl"
                   onPointerDownOutside={(e) => {
                     // The fullscreen lightbox lives in a body portal, outside this
@@ -1272,10 +1347,10 @@ const Projects = () => {
                 >
                   <motion.div
                     key={selected.slug}
-                    initial={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={reducedMotion ? {} : { opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    initial={reducedMotion ? false : { opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={reducedMotion ? undefined : { opacity: 0 }}
+                    transition={reducedMotion ? { duration: 0 } : sheetTransition}
                     className="flex min-h-0 min-w-0 flex-1 flex-col"
                   >
                     <DialogHeader className="shrink-0 px-6 pt-6 text-left md:px-8 md:pt-7">
@@ -1350,7 +1425,7 @@ const Projects = () => {
                       </Button>
                     </div>
                   </motion.div>
-                </DialogContent>
+                </DialogContentStatic>
               )}
             </AnimatePresence>
           </Dialog>

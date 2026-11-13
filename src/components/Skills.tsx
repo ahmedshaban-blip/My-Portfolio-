@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Smartphone, Globe, Database, Code2, Terminal, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { HoverCard } from "@/components/animations/HoverCard";
+import { useAnimationContext } from "@/hooks/useAnimationContext";
+import { easeProfessional, listEntryDelay } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -75,6 +78,7 @@ const Skills = () => {
   ];
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const { reducedMotion } = useAnimationContext();
 
   const toggle = (title: string) =>
     setExpanded((prev) => ({ ...prev, [title]: !prev[title] }));
@@ -137,11 +141,28 @@ const Skills = () => {
                       </div>
                     </div>
                     <div id={listId} className="flex flex-wrap gap-2">
-                      {visibleSkills.map((skill) => (
-                        <Badge key={skill} variant="outline" className={chip}>
-                          {skill}
-                        </Badge>
-                      ))}
+                      {/* Extra skills arrive as a list, in reading order — the
+                          reveal says "these were already in the stack". */}
+                      <AnimatePresence initial={false}>
+                        {visibleSkills.map((skill, i) => (
+                          <motion.span
+                            key={skill}
+                            initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={reducedMotion ? undefined : { opacity: 0, transition: { duration: 0.08 } }}
+                            transition={
+                              reducedMotion
+                                ? { duration: 0 }
+                                : { duration: 0.2, ease: easeProfessional, delay: listEntryDelay(i) }
+                            }
+                            className="inline-flex"
+                          >
+                            <Badge variant="outline" className={chip}>
+                              {skill}
+                            </Badge>
+                          </motion.span>
+                        ))}
+                      </AnimatePresence>
                     </div>
                     {needsToggle && (
                       <button

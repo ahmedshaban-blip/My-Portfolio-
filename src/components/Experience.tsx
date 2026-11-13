@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { FlutterIcon } from "@/components/icons/FlutterIcon";
 
 /** Logo tile: every card accepts either an image logo or an icon. */
@@ -97,8 +98,10 @@ const Experience = () => {
             </div>
           </RevealOnScroll>
 
-          <div className="grid gap-8">
-            <RevealOnScroll delay={0.1}>
+          {/* The timeline is a sequence, so the cascade carries information:
+              latest role first, each card a step behind the one above it. */}
+          <SectionReveal className="grid gap-8">
+            <SectionItem>
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -138,9 +141,9 @@ const Experience = () => {
                   </div>
                 </div>
               </Card>
-            </RevealOnScroll>
+            </SectionItem>
 
-            <RevealOnScroll delay={0.15}>
+            <SectionItem>
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -180,9 +183,9 @@ const Experience = () => {
                   </div>
                 </div>
               </Card>
-            </RevealOnScroll>
+            </SectionItem>
 
-            <RevealOnScroll delay={0.2}>
+            <SectionItem>
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -225,9 +228,9 @@ const Experience = () => {
                   </div>
                 </div>
               </Card>
-            </RevealOnScroll>
+            </SectionItem>
 
-            <RevealOnScroll delay={0.25}>
+            <SectionItem>
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -265,9 +268,9 @@ const Experience = () => {
                   </div>
                 </div>
               </Card>
-            </RevealOnScroll>
+            </SectionItem>
 
-            <RevealOnScroll delay={0.35}>
+            <SectionItem>
               <Card className="modern-card border-border/50 rounded-2xl p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
@@ -289,8 +292,8 @@ const Experience = () => {
                   ))}
                 </div>
               </Card>
-            </RevealOnScroll>
-          </div>
+            </SectionItem>
+          </SectionReveal>
         </div>
       </div>
     </section>

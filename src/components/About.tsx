@@ -1,6 +1,7 @@
 import { Code2, Globe2, Smartphone, Terminal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { HoverCard } from "@/components/animations/HoverCard";
 import { playStoreApps } from "@/data/projects";
 
@@ -97,28 +98,32 @@ const About = () => {
               </RevealOnScroll>
             </div>
 
-            {/* Right Side: Highlights Grid */}
-            <RevealOnScroll delay={0.2}>
+            {/* Right Side: Highlights Grid — the four cards are a list, so they
+                arrive as one staggered group on the section rather than as one
+                block that snaps in. */}
+            <SectionReveal>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {highlights.map((item, index) => (
-                  <HoverCard key={index} scale={1.02}>
-                    <Card className="modern-card border-border/50 rounded-2xl group hover:border-primary/50 transition-colors duration-300 overflow-hidden">
-                      <CardContent className="p-6 space-y-4">
-                        <div className={`w-12 h-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
-                          {item.icon}
-                        </div>
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {item.description}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </HoverCard>
+                  <SectionItem key={index} className="h-full">
+                    <HoverCard scale={1.02} className="h-full">
+                      <Card className="modern-card border-border/50 rounded-2xl group hover:border-primary/50 transition-colors duration-300 overflow-hidden h-full">
+                        <CardContent className="p-6 space-y-4">
+                          <div className={`w-12 h-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+                            {item.icon}
+                          </div>
+                          <div className="space-y-2">
+                            <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {item.description}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </HoverCard>
+                  </SectionItem>
                 ))}
               </div>
-            </RevealOnScroll>
+            </SectionReveal>
 
           </div>
         </div>

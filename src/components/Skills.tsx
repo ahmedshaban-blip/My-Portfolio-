@@ -4,6 +4,7 @@ import { Smartphone, Globe, Database, Code2, Terminal, ChevronDown } from "lucid
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { HoverCard } from "@/components/animations/HoverCard";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { easeProfessional, listEntryDelay } from "@/lib/animation-variants";
@@ -114,8 +115,12 @@ const Skills = () => {
             </div>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {skillCategories.map((category, index) => {
+          {/* The five categories are one grid, so one trigger reveals it and the
+              cards land in reading order — previously each card ran its own
+              `whileInView` with an index-based delay, so they fired at
+              different scroll positions and read as unrelated pops. */}
+          <SectionReveal className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {skillCategories.map((category) => {
               const isExpanded = !!expanded[category.title];
               const needsToggle = category.skills.length > category.visibleCount;
               const visibleSkills = isExpanded
@@ -124,10 +129,9 @@ const Skills = () => {
               const hiddenCount = category.skills.length - category.visibleCount;
               const listId = `skills-${slug(category.title)}`;
               return (
-              <RevealOnScroll
+              <SectionItem
                 key={category.title}
-                delay={index * 0.05}
-                className={category.colSpan || ""}
+                className={cn("h-full", category.colSpan)}
               >
                 <HoverCard scale={1.01} className="h-full">
                   <Card className="modern-card border-border/50 rounded-2xl p-6 h-full">
@@ -186,10 +190,10 @@ const Skills = () => {
                     )}
                   </Card>
                 </HoverCard>
-              </RevealOnScroll>
+              </SectionItem>
               );
             })}
-          </div>
+          </SectionReveal>
         </div>
       </div>
     </section>

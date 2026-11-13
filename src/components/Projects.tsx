@@ -140,7 +140,7 @@ const ProjectImage = memo(function ProjectImage({
           alt={alt}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={eager ? "high" : "low"}
+          fetchpriority={eager ? "high" : "low"}
           sizes="(max-width:768px) 100vw, 33vw"
           draggable={false}
           onLoad={() => setLoaded(true)}
@@ -440,7 +440,7 @@ function InlineViewer({
                 src={src}
                 alt={`${project.title} screenshot ${safeIndex + 1} of ${images.length}`}
                 loading="eager"
-                fetchPriority="high"
+                fetchpriority="high"
                 decoding="async"
                 draggable={false}
                 initial={reducedMotion ? false : { opacity: 0, x: direction.current * 12 }}

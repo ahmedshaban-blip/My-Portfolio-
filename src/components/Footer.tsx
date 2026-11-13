@@ -1,5 +1,6 @@
 import { Github, Linkedin, Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -20,7 +21,10 @@ const Footer = () => {
     <footer className="bg-background/80 border-t border-border/50 py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {/* The closing beat: the quietest reveal on the page. One arrival for
+              the whole footer, no stagger — nothing here is a list. */}
+          <RevealOnScroll>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div className="space-y-4">
               <h3 className="text-2xl font-bold text-gradient">Ahmed Shaban</h3>
@@ -95,6 +99,7 @@ const Footer = () => {
               © {currentYear} Ahmed Shaban. All rights reserved.
             </p>
           </div>
+          </RevealOnScroll>
         </div>
       </div>
     </footer>

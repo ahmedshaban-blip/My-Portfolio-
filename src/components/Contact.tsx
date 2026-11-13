@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -171,8 +172,8 @@ const Contact = () => {
           </RevealOnScroll>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <RevealOnScroll delay={0.1}>
+            <SectionReveal className="space-y-4">
+              <SectionItem>
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
@@ -189,9 +190,9 @@ const Contact = () => {
                     </div>
                   </div>
                 </Card>
-              </RevealOnScroll>
+              </SectionItem>
 
-              <RevealOnScroll delay={0.2}>
+              <SectionItem>
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-accent/10 text-accent group-hover:scale-110 transition-transform duration-300">
@@ -208,9 +209,9 @@ const Contact = () => {
                     </div>
                   </div>
                 </Card>
-              </RevealOnScroll>
+              </SectionItem>
 
-              <RevealOnScroll delay={0.3}>
+              <SectionItem>
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-success/10 text-success group-hover:scale-110 transition-transform duration-300">
@@ -223,10 +224,10 @@ const Contact = () => {
                     </div>
                   </div>
                 </Card>
-              </RevealOnScroll>
-            </div>
+              </SectionItem>
+            </SectionReveal>
 
-            <RevealOnScroll delay={0.2}>
+            <RevealOnScroll delay={0.12}>
               <Card className="modern-card border-border/50 rounded-xl p-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                   <div>

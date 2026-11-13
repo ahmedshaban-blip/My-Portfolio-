@@ -1,7 +1,11 @@
 import { motion, type Variants } from "framer-motion";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { revealOnScroll, mobileVariants } from "@/lib/animation-variants";
+import {
+  revealOnScroll,
+  mobileVariants,
+  sectionViewport,
+} from "@/lib/animation-variants";
 
 interface RevealOnScrollProps {
   variants?: Variants;
@@ -48,7 +52,7 @@ export function RevealOnScroll({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.25, margin: "0px 0px -40px 0px" }}
+      viewport={sectionViewport}
       variants={customVariants}
       className={className}
     >

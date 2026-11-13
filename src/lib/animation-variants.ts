@@ -8,25 +8,6 @@ export const easeProfessional = [0.22, 1, 0.36, 1] as const;
 
 export const durationFast = 0.3;
 export const durationBase = 0.45;
-export const durationSlow = 0.6;
-
-export const springBouncy: Transition = {
-  type: "tween",
-  duration: durationBase,
-  ease: easeProfessional,
-};
-
-export const springGentle: Transition = {
-  type: "tween",
-  duration: durationBase,
-  ease: easeProfessional,
-};
-
-export const springSnappy: Transition = {
-  type: "tween",
-  duration: durationFast,
-  ease: easeProfessional,
-};
 
 export const springTransition: Transition = {
   type: "tween",
@@ -50,24 +31,6 @@ export const fadeIn: Variants = {
   visible: {
     opacity: 1,
     transition: { duration: durationFast, ease: "easeOut" },
-  },
-};
-
-export const slideFromLeft: Variants = {
-  hidden: { opacity: 0, x: -24 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: durationBase, ease: easeProfessional },
-  },
-};
-
-export const slideFromRight: Variants = {
-  hidden: { opacity: 0, x: 24 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: durationBase, ease: easeProfessional },
   },
 };
 
@@ -99,6 +62,57 @@ export const staggerItem: Variants = {
   },
 };
 
+// ─── Section arrival: the sheet, then the cards on it ────────────────
+// A section reveals as ONE arrival, not as N independent triggers: the
+// container is the scroll trigger, the cards are the list that lands on it.
+// That is why the cards are children rather than each owning `whileInView` —
+// sibling cards firing off their own viewport intersection is what made the
+// grids look like a slideshow instead of a section.
+//
+// The stagger is capped by `staggerCap` so a 12-card grid finishes behind the
+// fold rather than trailing a slow tail; `staggerChildren` stays small because
+// 6% per sibling is already ~0.4s across a 3-column row.
+
+/** Cards on a section: same 16px rise as a section, so the sheet stays one plane. */
+export const sectionStagger: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+/**
+ * A card inside a revealed section. Identical geometry to `revealOnScroll` —
+ * a card must not rise further than the section carrying it, or the plane
+ * visibly separates.
+ */
+export const sectionCard: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: durationBase, ease: easeProfessional },
+  },
+};
+
+/**
+ * Viewport contract for a section's arrival.
+ *
+ * `amount` is intentionally 0.01 rather than 0.25: on a 140vh section, 25%
+ * visible means the visitor is already a screen into it before the header
+ * moves. The section should start arriving as it crosses the fold.
+ * The negative bottom margin holds the trigger just below the fold so the
+ * visitor sees the motion rather than its aftermath.
+ */
+export const sectionViewport = {
+  once: true,
+  amount: 0.01,
+  margin: "0px 0px -12% 0px",
+} as const;
+
 // ─── Hero Stagger Variants ───────────────────────────────────────────
 
 export const heroStaggerContainer: Variants = {
@@ -120,40 +134,10 @@ export const heroWordReveal: Variants = {
   },
 };
 
-export const heroFadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: durationBase, ease: easeProfessional },
-  },
-};
-
 // ─── Scroll Reveal (subtle slide-up, once-only) ───────────────────────
 
 export const revealOnScroll: Variants = {
   hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: durationBase, ease: easeProfessional },
-  },
-};
-
-// ─── Parallax-Aware Scroll Reveal ─────────────────────────────────────
-// Kept for API compatibility. No scroll-linked motion — same subtle reveal.
-
-export const revealOnScrollParallax: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: durationBase, ease: easeProfessional },
-  },
-};
-
-export const revealOnScrollParallaxIntense: Variants = {
-  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
@@ -209,17 +193,6 @@ export const stepTransition: Transition = {
 export function listEntryDelay(index: number, step = 0.02, cap = 0.12): number {
   return Math.min(index * step, cap);
 }
-
-// ─── Magnetic Hover Offset ───────────────────────────────────────────
-
-// `magneticTransition` was removed: `Magnetic` uses plain CSS/inline transforms
-// now, so no framer-motion transition described this behaviour.
-// ─── Default Fallback ────────────────────────────────────────────────
-
-export const defaultTransition = {
-  duration: durationFast,
-  ease: easeProfessional,
-};
 
 // ─── Mobile-Specific (compressed, lighter) ───────────────────────────
 

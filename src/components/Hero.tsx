@@ -243,6 +243,9 @@ const Hero = () => {
                         srcSet="/images/personal-image-320.webp 320w, /images/personal-image-640.webp 640w, /images/personal-image-960.webp 960w"
                         sizes="(min-width: 1024px) 320px, (min-width: 768px) 288px, (min-width: 640px) 240px, 192px"
                       />
+                      {/* `fetchpriority` stays lowercase: React 18 exposes the
+                          DOM attribute that way and the camelCase alias only
+                          landed in React 19. Wrong casing warns and is dropped. */}
                       <img
                         src="/images/personal-image-640.webp"
                         alt="Ahmed Shaban"
@@ -251,7 +254,7 @@ const Hero = () => {
                         className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-105 select-none"
                         loading="eager"
                         decoding="async"
-                        fetchPriority="high"
+                        fetchpriority="high"
                       />
                     </picture>
                   </div>

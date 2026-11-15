@@ -210,9 +210,10 @@ export default function CVDashboard() {
   return (
     <main className="min-h-screen px-4 py-16 sm:py-24">
       <section className="container mx-auto max-w-6xl space-y-8">
-        <div className="space-y-4 text-center">
-          <Badge className="rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/10">Private Admin</Badge>
-          <h1 className="text-gradient text-4xl font-extrabold tracking-tight sm:text-5xl">Dashboard</h1>
+        <div className="space-y-3 text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+            Dashboard
+          </h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
             Traffic analysis, plus independent CV uploads. Public download buttons keep the same Cloudinary URLs.
           </p>

@@ -165,7 +165,7 @@ const Index = () => {
     typeof window !== "undefined" && new URLSearchParams(window.location.search).has("project");
 
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen">
       <Navbar />
       <Hero />
       <BelowFold id="about" minHeight="60vh">
@@ -187,7 +187,7 @@ const Index = () => {
         <Footer />
       </BelowFold>
       <BackToTop />
-    </div>
+    </main>
   );
 };
 

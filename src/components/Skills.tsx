@@ -16,8 +16,6 @@ type SkillCategory = {
   title: string;
   description: string;
   skills: string[];
-  color: string;
-  bg: string;
   colSpan?: string;
   /** Collapsed chip count — keeps initial scan within working-memory limits. */
   visibleCount: number;
@@ -30,8 +28,6 @@ const Skills = () => {
       title: "Mobile Development",
       description: "Flutter & React Native",
       skills: ["Flutter & Dart", "React Native", "Clean Architecture (MVVM)", "Bloc/Cubit", "GetX", "Provider", "Web Socket", "Flutter Animations"],
-      color: "text-primary",
-      bg: "bg-primary/10",
       visibleCount: 5
     },
     {
@@ -39,8 +35,6 @@ const Skills = () => {
       title: "Frontend Web",
       description: "React & Modern Web",
       skills: ["React 18", "Redux Toolkit", "JavaScript (ES6+)", "Tailwind CSS", "Vite", "React Router v6", "SPA Architecture"],
-      color: "text-accent",
-      bg: "bg-accent/10",
       visibleCount: 4
     },
     {
@@ -48,8 +42,6 @@ const Skills = () => {
       title: "Backend & APIs",
       description: "Services & Integration",
       skills: ["REST APIs", "Firebase Auth", "Firestore", "Supabase Storage", "Firebase Storage", "Push Notifications", "i18next"],
-      color: "text-success",
-      bg: "bg-success/10",
       visibleCount: 4
     },
     {
@@ -57,8 +49,6 @@ const Skills = () => {
       title: "Core Technologies",
       description: "Foundations & Tools",
       skills: ["HTML5", "CSS3", "TypeScript", "Git & GitHub", "JSON Parsing", "RESTful APIs", "Vercel"],
-      color: "text-warning",
-      bg: "bg-warning/10",
       visibleCount: 4
     },
     {
@@ -71,8 +61,6 @@ const Skills = () => {
         "Prompt Engineering & Workflow Automation",
         "AI-Driven Testing & Code Review"
       ],
-      color: "text-accent",
-      bg: "bg-accent/10",
       colSpan: "md:col-span-2",
       visibleCount: 4
     },
@@ -100,16 +88,11 @@ const Skills = () => {
             <div className="space-y-4">
               <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
                 <Code2 size={14} aria-hidden="true" />
-                <span className="font-mono text-sm tabular-nums tracking-[0.18em]">02</span>
-                <span aria-hidden="true" className="text-accent/40">·</span>
                 <span>My Expertise</span>
                 <span
                   className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
                   aria-hidden="true"
                 />
-                <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
-                  {skillCategories.reduce((n, c) => n + c.skills.length, 0)} skills
-                </span>
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-balance">
@@ -144,7 +127,7 @@ const Skills = () => {
                 <HoverCard scale={1.01} className="h-full">
                   <Card className="modern-card border-border/50 rounded-2xl p-6 h-full">
                     <div className="flex items-center gap-4 mb-5">
-                      <div className={`w-12 h-12 rounded-xl ${category.bg} ${category.color} flex items-center justify-center`}>
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                         {category.icon}
                       </div>
                       <div>

@@ -10,30 +10,22 @@ const About = () => {
     {
       icon: <Smartphone className="w-6 h-6" />,
       title: "Mobile Dev",
-      description: "Expert in Flutter & React Native with Clean Architecture patterns.",
-      color: "text-primary",
-      bg: "bg-primary/10"
+      description: "Expert in Flutter & React Native with Clean Architecture patterns."
     },
     {
       icon: <Code2 className="w-6 h-6" />,
       title: "Web Tech",
-      description: "Modern web apps using React, Redux Toolkit, and Tailwind CSS.",
-      color: "text-accent",
-      bg: "bg-accent/10"
+      description: "Modern web apps using React, Redux Toolkit, and Tailwind CSS."
     },
     {
       icon: <Terminal className="w-6 h-6" />,
       title: "Clean Code",
-      description: "Production-ready applications with maintainable and scalable code.",
-      color: "text-success",
-      bg: "bg-success/10"
+      description: "Production-ready applications with maintainable and scalable code."
     },
     {
       icon: <Globe2 className="w-6 h-6" />,
       title: "Integrations",
-      description: "Experienced in Firebase, Supabase, Stripe, and PayPal gateways.",
-      color: "text-warning",
-      bg: "bg-warning/10"
+      description: "Experienced in Firebase, Supabase, Stripe, and PayPal gateways."
     }
   ];
 
@@ -52,23 +44,18 @@ const About = () => {
               <RevealOnScroll direction="right">
                 <div className="space-y-6">
                   <p className="flex items-baseline gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                    <span className="font-mono text-sm tabular-nums tracking-[0.18em]">01</span>
-                    <span aria-hidden="true" className="text-primary/40">·</span>
                     <span>About me</span>
                     <span
                       className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
                       aria-hidden="true"
                     />
-                    <span className="font-mono tracking-normal text-[11px] text-muted-foreground">
-                      Flutter · React · Clean Architecture
-                    </span>
                   </p>
                   <div className="flex flex-col gap-4">
                     <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
                       Passionate developer solving problems through code.
                     </h2>
                     <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
-                      Full-time at Truck World · 10+ apps shipped · {playStoreApps.length} live on Google Play.
+                      Full-time at Truck World, building HR management systems and cross-platform apps.
                     </p>
                   </div>
                 </div>
@@ -115,7 +102,7 @@ const About = () => {
                     <HoverCard scale={1.02} className="h-full">
                       <Card className="modern-card border-border/50 rounded-2xl group hover:border-primary/50 transition-colors duration-300 overflow-hidden h-full">
                         <CardContent className="p-6 space-y-4">
-                          <div className={`w-12 h-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                             {item.icon}
                           </div>
                           <div className="space-y-2">

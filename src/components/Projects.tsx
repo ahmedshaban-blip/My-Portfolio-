@@ -1217,16 +1217,11 @@ const Projects = () => {
           <div className="mb-10 md:mb-14">
             <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Zap size={14} aria-hidden="true" />
-              <span className="font-mono text-sm tabular-nums tracking-[0.18em]">03</span>
-              <span aria-hidden="true" className="text-primary/40">·</span>
               <span>Selected work</span>
               <span
                 className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
                 aria-hidden="true"
               />
-              <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
-                {flutterProjects.length + frontendProjects.length} projects
-              </span>
             </div>
             <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <h2 className="text-4xl font-extrabold tracking-tight leading-[1.02] text-balance md:text-6xl xl:text-7xl">

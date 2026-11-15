@@ -20,16 +20,14 @@ type CVReadMenuProps = {
 };
 
 /** Per-track section identity inside the menu, and the trigger chips. */
-const TRACK_META: Record<CVTrack, { icon: typeof Globe; roleHint: string; chipTint: string; label: string }> = {
+const TRACK_META: Record<CVTrack, { icon: typeof Globe; chipTint: string; label: string }> = {
   flutter: {
     icon: Smartphone,
-    roleHint: "Mobile",
     chipTint: "bg-primary/10 text-primary border-primary/25",
     label: "Flutter",
   },
   frontend: {
     icon: Globe,
-    roleHint: "Web",
     chipTint: "bg-accent/10 text-accent border-accent/25",
     label: "Frontend",
   },
@@ -190,9 +188,9 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
                 aria-label={CV_CONFIG[track].label}
                 className={cn(groupIndex > 0 && "mt-1.5 border-t border-border/50 pt-1")}
               >
-                {/* Section header: an icon chip + role hint so the two CV
-                    sections are recognisable at a glance, not two look-alike
-                    muted labels. */}
+                {/* Section header: an icon chip + label so the two CV sections
+                    are recognisable at a glance, not two look-alike muted
+                    labels. */}
                 <div
                   aria-hidden="true"
                   className="flex items-center gap-2 px-2.5 pb-1.5 pt-1.5"
@@ -208,14 +206,6 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
                   <span className="text-[11px] font-bold uppercase tracking-wider text-foreground">
                     {CV_CONFIG[track].label}
                   </span>
-                  <span
-                    className={cn(
-                      "ml-auto rounded-full border px-1.5 py-0.5 text-[10px] font-semibold",
-                      meta.chipTint
-                    )}
-                  >
-                    {meta.roleHint}
-                  </span>
                 </div>
                 <button
                   ref={(node) => {
@@ -228,10 +218,7 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
                   className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors hover:bg-primary/10 focus-visible:bg-primary/10 focus-visible:outline-none"
                 >
                   <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  <span className="text-sm text-foreground">
-                    Read in a new tab
-                    <span className="ml-1.5 text-xs text-muted-foreground">no download</span>
-                  </span>
+                  <span className="text-sm text-foreground">Read in a new tab</span>
                 </button>
                 <button
                   ref={(node) => {

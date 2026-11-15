@@ -195,9 +195,6 @@ const Navbar = () => {
                       onAction={() => setIsOpen(false)}
                       chips
                     />
-                    <p className="text-xs text-muted-foreground text-center">
-                      Pick Flutter CV or Frontend CV — read it in a new tab, or download it.
-                    </p>
                   </div>
                </div>
             </motion.div>

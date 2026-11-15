@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Activity, Eye, FileDown, MousePointerClick, Timer, Trash2, Users } from "lucide-react";
+import { Activity, Bot, Eye, FileDown, Globe, ListTree, MousePointerClick, Radio, Timer, Trash2, UserRound, Users } from "lucide-react";
 import { ADMIN_PIN_SESSION_KEY } from "@/components/admin/AdminAuthGuard";
 import { DateRangePicker } from "@/components/admin/DateRangePicker";
 import { Badge } from "@/components/ui/badge";
@@ -126,13 +126,13 @@ export function AnalyticsSection() {
                   <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
                 </span>
                 {(data?.owner.today ?? 0) > 0 && (
-                  <span className="num rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-bold text-accent">
-                    👤 you: {data?.owner.today} excluded
+                  <span className="num inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-bold text-accent">
+                    <UserRound className="h-3 w-3" aria-hidden="true" /> You: {data?.owner.today} excluded
                   </span>
                 )}
                 {(data?.botsToday ?? 0) > 0 && (
-                  <span className="num rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
-                    🤖 {data?.botsToday} bot hits filtered
+                  <span className="num inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
+                    <Bot className="h-3 w-3" aria-hidden="true" /> {data?.botsToday} bot hits filtered
                   </span>
                 )}
               </>
@@ -152,7 +152,7 @@ export function AnalyticsSection() {
               setOwnerMarked(next);
             }}
           >
-            {ownerMarked ? "👤 This device is you ✓" : "Mark this device as me"}
+            {ownerMarked ? "This device is you" : "Mark this device as me"}
           </Button>
           <Badge variant="outline" className="shrink-0 rounded-full">
             {data?.source === "live" ? "● Live data" : "○ No data yet"}
@@ -338,7 +338,7 @@ export function AnalyticsSection() {
 
             <Card className="modern-card glass-effect">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">⚡ Live feed</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-lg"><Radio className="h-4 w-4 text-primary" /> Live feed</CardTitle>
                 <CardDescription>Latest visits as they happen</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -367,7 +367,7 @@ export function AnalyticsSection() {
 
             <Card className="modern-card glass-effect">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">📄 Top pages</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-lg"><ListTree className="h-4 w-4 text-primary" /> Top pages</CardTitle>
                 <CardDescription>Most visited routes</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
@@ -438,7 +438,7 @@ export function AnalyticsSection() {
                     const [a, b] = data.cv;
                     const lead = a.total >= b.total ? a : b;
                     const share = Math.round((lead.total / (a.total + b.total)) * 100);
-                    return `💡 ${lead.track} CV takes ${share}% of downloads — order it first on the site.`;
+                    return `${lead.track} CV takes ${share}% of downloads — order it first on the site.`;
                   })()}
                 </p>
               )}
@@ -447,7 +447,7 @@ export function AnalyticsSection() {
 
           <Card className="modern-card glass-effect">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">🌍 Top countries</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-lg"><Globe className="h-4 w-4 text-primary" /> Top countries</CardTitle>
               <CardDescription>Where visitors come from</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -509,11 +509,11 @@ export function AnalyticsSection() {
                     const views = (data.cvViews ?? []).reduce((s, c) => s + c.total, 0);
                     if (views === 0) {
                       return downloads > 0
-                        ? `💡 No in-browser reads yet — ${downloads.toLocaleString()} downloads so far.`
-                        : "💡 No CV activity recorded yet.";
+                        ? `No in-browser reads yet — ${downloads.toLocaleString()} downloads so far.`
+                        : "No CV activity recorded yet.";
                     }
                     const ratio = Math.round((downloads / views) * 100);
-                    return `💡 ${views.toLocaleString()} reads vs ${downloads.toLocaleString()} downloads (${ratio}% download rate).`;
+                    return `${views.toLocaleString()} reads vs ${downloads.toLocaleString()} downloads (${ratio}% download rate).`;
                   })()}
                 </p>
               )}

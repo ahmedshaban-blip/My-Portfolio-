@@ -11,7 +11,6 @@ import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { playStoreApps } from "@/data/projects";
 
 const CONTACT_EMAIL = "ahmed.shabaan.dev@gmail.com";
 const NAME_MAX = 100;
@@ -150,16 +149,11 @@ const Contact = () => {
             <div className="space-y-4">
               <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
                 <Mail size={14} aria-hidden="true" />
-                <span className="font-mono text-sm tabular-nums tracking-[0.18em]">05</span>
-                <span aria-hidden="true" className="text-accent/40">·</span>
                 <span>Get in touch</span>
                 <span
                   className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
                   aria-hidden="true"
                 />
-                <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
-                  replies within 24h
-                </span>
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
@@ -307,8 +301,8 @@ const Contact = () => {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Recommended: open your email app with the message pre-filled — nothing
-                    is sent until you press Send there. No email app? Use Copy address below.
+                    Opens your email app with the message pre-filled — nothing is sent until you
+                    press Send there.
                   </p>
 
                   {mailtoBlocked && (
@@ -367,9 +361,6 @@ const Contact = () => {
                       </>
                     )}
                   </Button>
-                  <p className="pt-1 text-center text-xs text-muted-foreground">
-                    Currently full-time at Truck World · Open to remote Flutter / React roles — {playStoreApps.length} apps live on Google Play.
-                  </p>
                 </form>
               </Card>
             </RevealOnScroll>

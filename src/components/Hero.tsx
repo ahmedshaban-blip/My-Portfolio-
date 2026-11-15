@@ -140,15 +140,15 @@ const Hero = () => {
                   Full-time · Truck World, Saudi Arabia
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
-                  Flutter · React · Clean Architecture
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">
                   Cairo, Egypt (GMT+2) · Open to remote & on-site
                 </span>
               </p>
             </motion.div>
 
-            {/* CTA: one primary + guided CV group */}
+            {/* CTA: one primary + one CV pill — every other CV action
+                (read/download per track) lives inside the dropdown, so the
+                hero stays uncluttered. The chips on the pill already name the
+                two tracks, so the row needs no helper sentence. */}
             <motion.div variants={heroElementFadeUp}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
                 <Magnetic strength={0.25}>
@@ -161,19 +161,9 @@ const Hero = () => {
                   </Button>
                 </Magnetic>
 
-                {/* CTA rows: one primary action + one CV pill — every other CV
-                    action (read/download per track) lives inside the dropdown,
-                    so the hero stays uncluttered. */}
-                <div className="flex flex-col gap-1.5">
-                  <Magnetic strength={0.2}>
-                    <CVReadMenu className="h-12 sm:h-14 px-6 sm:px-8" align="start" chips />
-                  </Magnetic>
-                  <p className="text-xs text-muted-foreground text-center lg:text-left">
-                    Pick <span className="font-semibold text-foreground">Flutter CV</span> or
-                    <span className="font-semibold text-foreground"> Frontend CV</span> — read it
-                    here in a new tab, or download it.
-                  </p>
-                </div>
+                <Magnetic strength={0.2}>
+                  <CVReadMenu className="h-12 sm:h-14 px-6 sm:px-8" align="start" chips />
+                </Magnetic>
               </div>
             </motion.div>
 
@@ -263,7 +253,7 @@ const Hero = () => {
                 {/* Floating Badge 1: Live on Google Play (differentiated proof; the 10+ stat lives in About) */}
                 <motion.div
                   variants={heroElementFadeUp}
-                  className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
+                  className="absolute -left-4 top-[22%] sm:-left-16 md:-left-20 lg:-left-24 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-success/10 text-success">
                     <Play className="w-4 h-4" />
@@ -274,10 +264,10 @@ const Hero = () => {
                   </div>
                 </motion.div>
 
-                {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only, static for 90Hz idle) */}
+                {/* Floating Badge 2: Cross-Platform Specialist (static, for 90Hz idle) */}
                 <motion.div
                   variants={heroElementFadeUp}
-                  className="hidden sm:flex absolute sm:bottom-4 sm:-right-6 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
+                  className="absolute -right-4 bottom-4 sm:-right-6 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent">
                     <Layers className="w-4 h-4" />
@@ -288,29 +278,6 @@ const Hero = () => {
                   </div>
                 </motion.div>
               </div>
-
-              {/* Mobile-Only Stats Cards (Clean row directly below the photo) */}
-              <motion.div variants={heroElementFadeUp} className="flex sm:hidden items-center justify-center gap-2.5 mt-5 w-full max-w-[290px]">
-                <div className="flex-1 bg-background/95 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-success/10 text-success shrink-0">
-                    <Play className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">{playAppsLabel}</p>
-                    <p className="text-[9px] text-muted-foreground truncate">Google Play</p>
-                  </div>
-                </div>
-
-                <div className="flex-1 bg-background/95 border border-border/60 shadow-lg rounded-2xl p-2.5 flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-accent/10 text-accent shrink-0">
-                    <Layers className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <p className="text-[11px] font-bold text-foreground leading-tight truncate">Flutter & React</p>
-                    <p className="text-[9px] text-muted-foreground truncate">Clean Architecture</p>
-                  </div>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </motion.div>

@@ -79,9 +79,6 @@ const CVView = () => {
                 <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                   {label}
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                  Read it right here, or download a copy for later.
-                </p>
               </div>
               <Button
                 onClick={() => downloadCV(track)}

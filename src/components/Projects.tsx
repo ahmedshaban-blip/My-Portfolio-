@@ -248,7 +248,7 @@ const ProjectCard = memo(function ProjectCard({
               </Badge>
             </div>
 
-            <CardTitle className="mb-2 line-clamp-2 text-lg font-bold leading-snug text-foreground transition-colors duration-200 group-hover:text-primary md:min-h-[2lh] md:text-xl">
+            <CardTitle className="mb-2 line-clamp-2 text-xl font-extrabold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary md:min-h-[2lh] md:text-2xl">
               {project.title}
             </CardTitle>
 
@@ -1209,19 +1209,27 @@ const Projects = () => {
   return (
     <section id="projects" className="section-padding relative">
       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-7xl">
+        {/* One content spine: every section shares the same 6xl width and
+            gutter so the page reads as a single column of bands, not five
+            differently-inset panels. */}
+        <div className="mx-auto max-w-6xl">
           {/* Editorial split header — deliberately breaks the centered pill + gradient formula shared with Skills. */}
           <div className="mb-10 md:mb-14">
-            <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Zap size={14} aria-hidden="true" />
-              <span>03 · Selected work</span>
-              <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
-              <span className="tabular-nums tracking-normal text-muted-foreground">
+              <span className="font-mono text-sm tabular-nums tracking-[0.18em]">03</span>
+              <span aria-hidden="true" className="text-primary/40">·</span>
+              <span>Selected work</span>
+              <span
+                className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
+                aria-hidden="true"
+              />
+              <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
                 {flutterProjects.length + frontendProjects.length} projects
               </span>
             </div>
             <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+              <h2 className="text-4xl font-extrabold tracking-tight leading-[1.02] text-balance md:text-6xl xl:text-7xl">
                 Featured <span className="text-gradient">Projects</span>
               </h2>
               <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-right md:text-lg">
@@ -1235,15 +1243,15 @@ const Projects = () => {
               {/* One copper rule travels between the collections — the same
                   shared-element mechanism as the navbar indicator, so the two
                   read as one instrument measuring the page. */}
-              <TabsList className="inline-flex h-11 rounded-full border border-border/50 bg-secondary/50 p-1">
+              <TabsList className="inline-flex h-12 rounded-full border border-primary/25 bg-secondary/50 p-1 shadow-lg shadow-primary/5">
                 <TabsTrigger
                   value="flutter"
-                  className="relative rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:text-primary-foreground"
+                  className="relative rounded-full px-6 text-sm font-semibold transition-colors data-[state=active]:text-primary-foreground md:px-8 md:text-base"
                 >
                   {tab === "flutter" && (
                     <motion.span
                       layoutId="projects-index-rule"
-                      className="absolute inset-0 rounded-full bg-primary"
+                      className="absolute inset-0 rounded-full bg-primary shadow-md shadow-primary/30"
                       transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
                       aria-hidden="true"
                     />
@@ -1255,12 +1263,12 @@ const Projects = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   value="frontend"
-                  className="relative rounded-full px-6 text-sm font-medium transition-colors data-[state=active]:text-primary-foreground"
+                  className="relative rounded-full px-6 text-sm font-semibold transition-colors data-[state=active]:text-primary-foreground md:px-8 md:text-base"
                 >
                   {tab === "frontend" && (
                     <motion.span
                       layoutId="projects-index-rule"
-                      className="absolute inset-0 rounded-full bg-primary"
+                      className="absolute inset-0 rounded-full bg-primary shadow-md shadow-primary/30"
                       transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
                       aria-hidden="true"
                     />

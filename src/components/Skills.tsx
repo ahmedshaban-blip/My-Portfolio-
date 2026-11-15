@@ -94,18 +94,25 @@ const Skills = () => {
     <section id="skills" className="section-padding relative">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12">
-          <RevealOnScroll>
+          {/* The heading band sits above the grid it introduces, so it drops
+              in from the top edge — the page's own reading order. */}
+          <RevealOnScroll direction="down">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
+              <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
                 <Code2 size={14} aria-hidden="true" />
-                <span>02 · My Expertise</span>
-                <span className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" aria-hidden="true" />
-                <span className="tabular-nums tracking-normal text-muted-foreground">
+                <span className="font-mono text-sm tabular-nums tracking-[0.18em]">02</span>
+                <span aria-hidden="true" className="text-accent/40">·</span>
+                <span>My Expertise</span>
+                <span
+                  className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
+                  aria-hidden="true"
+                />
+                <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
                   {skillCategories.reduce((n, c) => n + c.skills.length, 0)} skills
                 </span>
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-balance">
                   Technical <span className="text-gradient">Skills</span>
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
@@ -131,6 +138,7 @@ const Skills = () => {
               return (
               <SectionItem
                 key={category.title}
+                direction={category.colSpan ? "left" : "up"}
                 className={cn("h-full", category.colSpan)}
               >
                 <HoverCard scale={1.01} className="h-full">
@@ -140,7 +148,7 @@ const Skills = () => {
                         {category.icon}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg text-foreground">{category.title}</h3>
+                        <h3 className="text-lg font-bold tracking-tight text-foreground">{category.title}</h3>
                         <p className="text-sm text-muted-foreground">{category.description}</p>
                       </div>
                     </div>

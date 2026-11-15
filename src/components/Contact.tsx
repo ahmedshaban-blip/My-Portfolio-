@@ -145,19 +145,24 @@ const Contact = () => {
   return (
     <section id="contact" className="section-padding relative">
       <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto space-y-12">
-          <RevealOnScroll>
+        <div className="max-w-6xl mx-auto space-y-12">
+          <RevealOnScroll direction="down">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
+              <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
                 <Mail size={14} aria-hidden="true" />
-                <span>05 · Get in touch</span>
-                <span className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" aria-hidden="true" />
-                <span className="tabular-nums tracking-normal text-muted-foreground">
+                <span className="font-mono text-sm tabular-nums tracking-[0.18em]">05</span>
+                <span aria-hidden="true" className="text-accent/40">·</span>
+                <span>Get in touch</span>
+                <span
+                  className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
+                  aria-hidden="true"
+                />
+                <span className="font-mono text-[11px] tracking-normal text-muted-foreground">
                   replies within 24h
                 </span>
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
                   Have a mobile or web role? Let&apos;s talk.
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
@@ -172,8 +177,11 @@ const Contact = () => {
           </RevealOnScroll>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Info cards enter from their reading origin (the left gutter);
+                the form opposite them enters from the right — the two columns
+                close on the centre line. */}
             <SectionReveal className="space-y-4">
-              <SectionItem>
+              <SectionItem direction="right">
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
@@ -192,7 +200,7 @@ const Contact = () => {
                 </Card>
               </SectionItem>
 
-              <SectionItem>
+              <SectionItem direction="right">
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-accent/10 text-accent group-hover:scale-110 transition-transform duration-300">
@@ -211,7 +219,7 @@ const Contact = () => {
                 </Card>
               </SectionItem>
 
-              <SectionItem>
+              <SectionItem direction="right">
                 <Card className="modern-card border-border/50 rounded-xl p-5 group">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-xl bg-success/10 text-success group-hover:scale-110 transition-transform duration-300">
@@ -227,7 +235,9 @@ const Contact = () => {
               </SectionItem>
             </SectionReveal>
 
-            <RevealOnScroll delay={0.12}>
+            {/* The form is the opposing column: it enters from the right edge,
+                closing on the info cards arriving from the left. */}
+            <RevealOnScroll direction="left">
               <Card className="modern-card border-border/50 rounded-xl p-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                   <div>

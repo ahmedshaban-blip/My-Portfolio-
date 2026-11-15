@@ -5,7 +5,9 @@ import {
   sectionCard,
   sectionStagger,
   sectionViewport,
-  mobileVariants,
+  directionVariant,
+  directionVariantMobile,
+  type RevealDirection,
 } from "@/lib/animation-variants";
 
 /**
@@ -16,6 +18,9 @@ import {
  * moment. Cards are wrapped in `SectionItem` (or any element carrying
  * `sectionCard` variants) so they arrive as a list on the section rather than
  * each one running its own scroll listener.
+ *
+ * `SectionItem` faces each card: a split layout passes `left` or `right` so a
+ * column's cards enter from that column's own side of the page.
  *
  * The default state is already-visible content: `hidden` is applied only when
  * motion is on, so a failed script or a reduced-motion visitor gets the page.
@@ -33,6 +38,9 @@ export function SectionReveal({
     return <div className={className}>{children}</div>;
   }
 
+  // Direction lives on the children (see `SectionItem`), not here: the
+  // container must stay a pure stagger root, or its own transform would
+  // compound with each child's and double the travel.
   return (
     <motion.div
       initial="hidden"
@@ -52,10 +60,12 @@ export function SectionReveal({
  */
 export function SectionItem({
   variants,
+  direction = "up",
   className,
   children,
 }: {
   variants?: Variants;
+  direction?: RevealDirection;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -66,11 +76,24 @@ export function SectionItem({
     return <div className={className}>{children}</div>;
   }
 
+  // A card rises with its section by default; a split layout passes `left` or
+  // `right` so a column's cards enter from that column's side.
+  //
+  // Mobile must route through `directionVariantMobile` for EVERY direction,
+  // including `up`. Falling back to `mobileVariants.fadeUp` for `up` would
+  // give it a 10px throw while its siblings throw 8px — mixed tempo inside a
+  // single staggered grid. `directionVariantMobile("up")` already resolves to
+  // the same rise at the shared 8px mobile distance.
+  const resolved =
+    variants ??
+    (isMobile
+      ? directionVariantMobile(direction)
+      : direction === "up"
+        ? sectionCard
+        : directionVariant(direction));
+
   return (
-    <motion.div
-      variants={variants ?? (isMobile ? mobileVariants.fadeUp : sectionCard)}
-      className={className}
-    >
+    <motion.div variants={resolved} className={className}>
       {children}
     </motion.div>
   );

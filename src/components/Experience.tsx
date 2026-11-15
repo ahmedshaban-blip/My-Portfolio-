@@ -78,18 +78,23 @@ const Experience = () => {
       />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-12">
 
-          <RevealOnScroll>
+          <RevealOnScroll direction="down">
             <div className="space-y-4 max-w-none">
-              <div className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                <span>04 · Resume & journey</span>
-                <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
-                <span className="tabular-nums tracking-normal text-muted-foreground">2020 — Present</span>
+              <div className="flex items-baseline gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                <span className="font-mono text-sm tabular-nums tracking-[0.18em]">04</span>
+                <span aria-hidden="true" className="text-primary/40">·</span>
+                <span>Resume &amp; journey</span>
+                <span
+                  className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
+                  aria-hidden="true"
+                />
+                <span className="font-mono text-[11px] tracking-normal text-muted-foreground">2020 — Present</span>
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-                  Experience & <span className="text-gradient">Education</span>
+                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
+                  Experience &amp; <span className="text-gradient">Education</span>
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
                   A timeline of my professional growth, academic achievements, and continuous learning.
@@ -99,9 +104,11 @@ const Experience = () => {
           </RevealOnScroll>
 
           {/* The timeline is a sequence, so the cascade carries information:
-              latest role first, each card a step behind the one above it. */}
+              latest role first, each card a step behind the one above it. It
+              descends from the top edge, so the arrival matches the order the
+              dates already read in. */}
           <SectionReveal className="grid gap-8">
-            <SectionItem>
+            <SectionItem direction="down">
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -143,7 +150,7 @@ const Experience = () => {
               </Card>
             </SectionItem>
 
-            <SectionItem>
+            <SectionItem direction="down">
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -185,7 +192,7 @@ const Experience = () => {
               </Card>
             </SectionItem>
 
-            <SectionItem>
+            <SectionItem direction="down">
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -230,7 +237,7 @@ const Experience = () => {
               </Card>
             </SectionItem>
 
-            <SectionItem>
+            <SectionItem direction="down">
               <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
                 <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
                   <div className="flex-shrink-0">
@@ -270,7 +277,7 @@ const Experience = () => {
               </Card>
             </SectionItem>
 
-            <SectionItem>
+            <SectionItem direction="down">
               <Card className="modern-card border-border/50 rounded-2xl p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2.5 rounded-xl bg-accent/10 text-accent">

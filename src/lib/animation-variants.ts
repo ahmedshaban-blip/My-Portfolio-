@@ -145,6 +145,121 @@ export const revealOnScroll: Variants = {
   },
 };
 
+// ─── Directional arrival ─────────────────────────────────────────────
+// The same arrival as `revealOnScroll`, aimed from the side the content
+// actually lives on. Direction is information, not decoration:
+//
+//   RIGHT — a section's opening column enters from its reading origin.
+//   LEFT  — the opposing column of a split arrives from the other side, so
+//           the two halves read as one composition closing on the centre.
+//   DOWN  — a cascade in time order (a timeline) descends into place.
+//   UP    — the default rise; the sheet itself crossing the fold.
+//
+// Geometry is identical across all four (same 16px offset, same duration,
+// same curve), so the page keeps ONE arrival speed. Only the axis changes —
+// a mixed-direction page must not also be a mixed-tempo page.
+//
+// PERFORMANCE: `x`/`y` and `opacity` only — both composited, neither drives
+// layout. Distances stay at 16px so nothing travels far enough to expose a
+// repaint edge, and `once` viewports mean each element animates exactly one
+// time per page load.
+
+/** Travel distance for a directional arrival. Shared so all axes match. */
+const revealOffset = 16;
+
+/** Content entering from its reading origin (the left gutter) — moves right. */
+export const revealFromRight: Variants = {
+  hidden: { opacity: 0, x: -revealOffset },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: durationBase, ease: easeProfessional },
+  },
+};
+
+/** The opposing column — enters from the right edge, closing on the centre. */
+export const revealFromLeft: Variants = {
+  hidden: { opacity: 0, x: revealOffset },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: durationBase, ease: easeProfessional },
+  },
+};
+
+/** A descending cascade: time-ordered content settles downward. */
+export const revealFromTop: Variants = {
+  hidden: { opacity: 0, y: -revealOffset },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: durationBase, ease: easeProfessional },
+  },
+};
+
+/**
+ * The default rise. Named explicitly for call sites that pick a direction
+ * from data, so `revealFromDown` and `revealOnScroll` stay one concept.
+ */
+export const revealFromDown: Variants = revealOnScroll;
+
+/**
+ * Mobile directional arrivals: shorter throw, tighter curve.
+ *
+ * PERFORMANCE: a 16px horizontal travel on a 360px viewport is ~4.5% of the
+ * width and re-rasterizes a wider band than the vertical equivalent. Halving
+ * it keeps the direction legible while roughly halving the moved area.
+ */
+export const mobileDirectional: Record<"right" | "left" | "top" | "down", Variants> = {
+  right: {
+    hidden: { opacity: 0, x: -8 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  },
+  left: {
+    hidden: { opacity: 0, x: 8 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  },
+  top: {
+    hidden: { opacity: 0, y: -8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  },
+  down: {
+    hidden: { opacity: 0, y: 8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  },
+};
+
+/** A direction name, used by reveal wrappers and section variants. */
+export type RevealDirection = "up" | "down" | "left" | "right";
+
+/** Resolve a direction to its desktop variant, defaulting to the rise. */
+export function directionVariant(direction: RevealDirection = "up"): Variants {
+  switch (direction) {
+    case "down":
+      return revealFromTop;
+    case "left":
+      return revealFromLeft;
+    case "right":
+      return revealFromRight;
+    default:
+      return revealFromDown;
+  }
+}
+
+/** Resolve a direction to its compressed mobile variant. */
+export function directionVariantMobile(direction: RevealDirection = "up"): Variants {
+  switch (direction) {
+    case "down":
+      return mobileDirectional.top;
+    case "left":
+      return mobileDirectional.left;
+    case "right":
+      return mobileDirectional.right;
+    default:
+      return mobileDirectional.down;
+  }
+}
+
 // ─── Motion system: the plate and the index rule ─────────────────────
 // One authored moment, then quiet feedback.
 //

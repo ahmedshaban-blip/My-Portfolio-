@@ -46,19 +46,25 @@ const About = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
-            {/* Left Side: Content */}
+            {/* Left Side: Content — enters from its reading origin (the left
+                gutter), so the column arrives the way it is read. */}
             <div className="space-y-8">
-              <RevealOnScroll>
+              <RevealOnScroll direction="right">
                 <div className="space-y-6">
-                  <p className="flex items-center gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                    <span>01 · About me</span>
-                    <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" aria-hidden="true" />
-                    <span className="tabular-nums tracking-normal text-muted-foreground">
+                  <p className="flex items-baseline gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
+                    <span className="font-mono text-sm tabular-nums tracking-[0.18em]">01</span>
+                    <span aria-hidden="true" className="text-primary/40">·</span>
+                    <span>About me</span>
+                    <span
+                      className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
+                      aria-hidden="true"
+                    />
+                    <span className="font-mono tracking-normal text-[11px] text-muted-foreground">
                       Flutter · React · Clean Architecture
                     </span>
                   </p>
                   <div className="flex flex-col gap-4">
-                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
+                    <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
                       Passionate developer solving problems through code.
                     </h2>
                     <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
@@ -68,7 +74,7 @@ const About = () => {
                 </div>
               </RevealOnScroll>
 
-              <RevealOnScroll delay={0.1}>
+              <RevealOnScroll direction="right" delay={0.1}>
                 <div className="space-y-5 text-base md:text-lg text-muted-foreground leading-relaxed">
                   <p>
                     I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>.
@@ -82,16 +88,16 @@ const About = () => {
                 </div>
               </RevealOnScroll>
 
-              <RevealOnScroll delay={0.2}>
+              <RevealOnScroll direction="right" delay={0.2}>
                 {/* Single home for the 10+ fact — ITI + A+ live in Experience. */}
-                <div className="pt-4 flex flex-wrap gap-6">
+                <div className="pt-4 flex flex-wrap items-center gap-8">
                   <div className="text-center sm:text-left">
-                    <p className="text-3xl font-bold text-primary">10+</p>
+                    <p className="text-4xl md:text-5xl font-extrabold tracking-tight text-primary tabular-nums">10+</p>
                     <p className="text-sm text-muted-foreground mt-1">Projects Completed</p>
                   </div>
-                  <div className="w-px h-16 bg-border/50 hidden sm:block" />
+                  <div className="w-px h-14 bg-gradient-to-b from-transparent via-primary/40 to-transparent hidden sm:block" aria-hidden="true" />
                   <div className="text-center sm:text-left">
-                    <p className="text-3xl font-bold text-success">{playStoreApps.length}</p>
+                    <p className="text-4xl md:text-5xl font-extrabold tracking-tight text-success tabular-nums">{playStoreApps.length}</p>
                     <p className="text-sm text-muted-foreground mt-1">App{playStoreApps.length === 1 ? "" : "s"} Live on Google Play</p>
                   </div>
                 </div>
@@ -100,11 +106,12 @@ const About = () => {
 
             {/* Right Side: Highlights Grid — the four cards are a list, so they
                 arrive as one staggered group on the section rather than as one
-                block that snaps in. */}
+                block that snaps in. The opposing column enters from the other
+                edge, so the two halves close on the centre line. */}
             <SectionReveal>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {highlights.map((item, index) => (
-                  <SectionItem key={index} className="h-full">
+                  <SectionItem key={index} direction="left" className="h-full">
                     <HoverCard scale={1.02} className="h-full">
                       <Card className="modern-card border-border/50 rounded-2xl group hover:border-primary/50 transition-colors duration-300 overflow-hidden h-full">
                         <CardContent className="p-6 space-y-4">
@@ -112,7 +119,7 @@ const About = () => {
                             {item.icon}
                           </div>
                           <div className="space-y-2">
-                            <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
+                            <h3 className="text-lg font-bold tracking-tight text-foreground">{item.title}</h3>
                             <p className="text-sm text-muted-foreground leading-relaxed">
                               {item.description}
                             </p>

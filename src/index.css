@@ -20,7 +20,6 @@
     --muted-foreground: 0.537 0.012 58.1;
     --accent: 0.54 0.194 41.1;
     --accent-foreground: 0.983 0.002 67.8;
-    --accent-glow: 0.705 0.187 47.6;
     /* Accent used as TEXT on a fill tinted with the same accent
        (`bg-accent/10`–`/20`). A self-tint lifts the background toward the text,
        so at the base accent lightness those chips measured 3.96–4.47:1. This is
@@ -65,7 +64,6 @@
     --muted-foreground: 0.716 0.009 56.3;
     --accent: 0.705 0.187 47.6;
     --accent-foreground: 0.166 0.006 300.9;
-    --accent-glow: 0.758 0.159 55.9;
     /* Dark mode already clears 4.5:1 on every accent tint density (worst 4.76),
        so the "strong" variant tracks the base accent rather than darkening. */
     --accent-strong: 0.705 0.187 47.6;
@@ -119,16 +117,8 @@
     color: oklch(var(--primary));
   }
 
-  .text-gradient-subtle {
-    color: oklch(var(--foreground));
-  }
-
   .glow-primary {
     box-shadow: 0 18px 50px -28px oklch(var(--primary-glow) / 0.42);
-  }
-
-  .glow-accent {
-    box-shadow: 0 18px 50px -28px oklch(var(--accent-glow) / 0.38);
   }
 
   .modern-card {
@@ -144,10 +134,6 @@
 
   .section-padding {
     @apply py-20 md:py-32;
-  }
-
-  .section-padding-sm {
-    @apply py-16 md:py-24;
   }
 }
 
@@ -236,5 +222,12 @@ a {
 
 .tabular-nums,
 table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Used across the admin data surfaces (stat values, timestamps, counts) to hold
+   columns steady as digits change. It was applied in ~23 places but never
+   defined, so it did nothing; this is the rule it was named for. */
+.num {
   font-variant-numeric: tabular-nums;
 }

@@ -30,6 +30,19 @@ const heroElementFadeUp = {
 };
 
 /**
+ * The floating badges ride on the portrait's rim, and below `lg` the
+ * "Available for new opportunities" pill sits directly under that rim. Because
+ * the two are separate `heroElementFadeUp` children they close on each other by
+ * the full 32px of their opposing y-offsets, so the falling badge crossed the
+ * rising pill at the start of every entrance. Fading without a y-offset keeps
+ * the same reveal rhythm and removes the crossing.
+ */
+const heroBadgeFadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.45, ease: heroEntranceEase } },
+};
+
+/**
  * PERFORMANCE: the <h1> is the LCP element. Fading it in from `opacity: 0`
  * kept it invisible for ~1.1s (delay + 9-word stagger), so the page looked
  * stalled and the browser could not record LCP. Transform-only reveal paints
@@ -250,10 +263,14 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: Live on Google Play (differentiated proof; the 10+ stat lives in About) */}
+                {/* Floating Badge 1: Live on Google Play (differentiated proof; the 10+ stat lives in About)
+                    Hidden below `sm`: at 192px the photo is narrower than either
+                    badge, so the pair covered the subject's face and overlapped
+                    each other. The proof they carry is already in the About
+                    metrics and the Play strip below. */}
                 <motion.div
-                  variants={heroElementFadeUp}
-                  className="absolute -left-4 top-[22%] sm:-left-16 md:-left-20 lg:-left-24 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20 whitespace-nowrap"
+                  variants={heroBadgeFadeIn}
+                  className="hidden sm:flex absolute sm:top-[22%] sm:-left-16 md:-left-20 lg:-left-24 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-success/10 text-success">
                     <Play className="w-4 h-4" />
@@ -264,10 +281,21 @@ const Hero = () => {
                   </div>
                 </motion.div>
 
-                {/* Floating Badge 2: Cross-Platform Specialist (static, for 90Hz idle) */}
+                {/* Floating Badge 2: Cross-Platform Specialist (Desktop & Tablet only, static for 90Hz idle)
+                    Anchored to hang under the lower-right rim. `bottom-4` kept the
+                    whole badge inside the circle, where it sat across the subject's
+                    chin at every width >= 640px.
+                    Below `lg` the layout is one column, so the text column (and the
+                    "Available for new opportunities" pill) sits directly beneath the
+                    photo and the hanging badge covered it. The pill's row is only
+                    ~46px below the rim, less than this badge is tall, so no offset
+                    clears both: -bottom-5 keeps a 20px gap to the pill and confines
+                    the remaining overlap to the circle's bottom rim, clear of the
+                    face. At `lg` the text moves beside the photo, so the badge hangs
+                    the full -bottom-11 again with nothing to collide with. */}
                 <motion.div
-                  variants={heroElementFadeUp}
-                  className="absolute -right-4 bottom-4 sm:-right-6 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 flex items-center gap-3 z-20 whitespace-nowrap"
+                  variants={heroBadgeFadeIn}
+                  className="hidden sm:flex absolute -bottom-5 -right-6 lg:-bottom-11 bg-background/95 border border-border/60 shadow-xl rounded-2xl px-3.5 py-2.5 items-center gap-3 z-20 whitespace-nowrap"
                 >
                   <div className="p-1.5 rounded-lg bg-accent/10 text-accent">
                     <Layers className="w-4 h-4" />

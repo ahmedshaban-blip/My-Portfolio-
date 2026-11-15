@@ -18,6 +18,26 @@
         var dark = stored === "dark" || ((stored === null || stored === "system") && systemDark);
         document.documentElement.classList.toggle("dark", dark);
         document.documentElement.style.colorScheme = dark ? "dark" : "light";
+        // Browser surface: tint the mobile address bar with the page background
+        // (the --background token per theme) so it joins the page instead of
+        // banding against it. Set here, pre-paint, so it never flashes, and
+        // re-synced on the `dark` class swap that next-themes performs.
+        var themeColor = document.createElement("meta");
+        themeColor.setAttribute("name", "theme-color");
+        var syncThemeColor = function () {
+          themeColor.setAttribute(
+            "content",
+            document.documentElement.classList.contains("dark")
+              ? "oklch(0.166 0.006 300.9)"
+              : "oklch(0.983 0.002 67.8)"
+          );
+        };
+        syncThemeColor();
+        document.head.appendChild(themeColor);
+        new MutationObserver(syncThemeColor).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
       } catch (e) { }
     })();
   </script>

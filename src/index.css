@@ -11,19 +11,19 @@
     --card-foreground: 0.216 0.006 56;
     --popover: 1 0 89.9;
     --popover-foreground: 0.216 0.006 56;
-    --primary: 0.553 0.174 38.4;
+    --primary: 0.53 0.174 38.4;
     --primary-foreground: 0.983 0.002 67.8;
     --primary-glow: 0.646 0.194 41.1;
     --secondary: 0.953 0.006 84.6;
     --secondary-foreground: 0.216 0.006 56;
     --muted: 0.953 0.006 84.6;
-    --muted-foreground: 0.553 0.012 58.1;
-    --accent: 0.646 0.194 41.1;
+    --muted-foreground: 0.537 0.012 58.1;
+    --accent: 0.54 0.194 41.1;
     --accent-foreground: 0.983 0.002 67.8;
     --accent-glow: 0.705 0.187 47.6;
     --border: 0.913 0.009 84.6;
     --input: 0.913 0.009 84.6;
-    --ring: 0.553 0.174 38.4;
+    --ring: 0.53 0.174 38.4;
     --radius: 1rem;
     --success: 0.43 0.1 150;
     --warning: 0.5 0.115 75;
@@ -31,12 +31,12 @@
     --destructive-foreground: 0.983 0.002 67.8;
     --sidebar-background: 1 0 89.9;
     --sidebar-foreground: 0.216 0.006 56;
-    --sidebar-primary: 0.553 0.174 38.4;
+    --sidebar-primary: 0.53 0.174 38.4;
     --sidebar-primary-foreground: 0.983 0.002 67.8;
     --sidebar-accent: 0.953 0.006 84.6;
     --sidebar-accent-foreground: 0.216 0.006 56;
     --sidebar-border: 0.913 0.009 84.6;
-    --sidebar-ring: 0.553 0.174 38.4;
+    --sidebar-ring: 0.53 0.174 38.4;
 
     --mesh-bg: oklch(var(--background));
     --mesh-color-1: oklch(var(--primary) / 0.045);

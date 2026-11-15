@@ -40,7 +40,9 @@ export default {
 			accent: {
 				DEFAULT: 'oklch(var(--accent) / <alpha-value>)',
 				foreground: 'oklch(var(--accent-foreground) / <alpha-value>)',
-				glow: 'oklch(var(--accent-glow) / <alpha-value>)'
+				glow: 'oklch(var(--accent-glow) / <alpha-value>)',
+				// Text on a fill tinted with `accent` itself — see index.css.
+				strong: 'oklch(var(--accent-strong) / <alpha-value>)'
 			},
 			popover: {
 				DEFAULT: 'oklch(var(--popover) / <alpha-value>)',

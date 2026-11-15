@@ -28,7 +28,7 @@ const TRACK_META: Record<CVTrack, { icon: typeof Globe; chipTint: string; label:
   },
   frontend: {
     icon: Globe,
-    chipTint: "bg-accent/10 text-accent border-accent/25",
+    chipTint: "bg-accent/10 text-accent-strong border-accent/25",
     label: "Frontend",
   },
 };

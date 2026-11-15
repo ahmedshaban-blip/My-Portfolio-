@@ -126,7 +126,7 @@ export function AnalyticsSection() {
                   <span className="num font-extrabold">{data?.today.toLocaleString()}</span> visits today
                 </span>
                 {(data?.owner.today ?? 0) > 0 && (
-                  <span className="num inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-bold text-accent">
+                  <span className="num inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-bold text-accent-strong">
                     <UserRound className="h-3 w-3" aria-hidden="true" /> You: {data?.owner.today} excluded
                   </span>
                 )}
@@ -347,7 +347,7 @@ export function AnalyticsSection() {
                 {feed.map((f, i) => (
                   <div key={`${f.place}-${i}`} className={cn("flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm", f.you ? "border border-accent/40 bg-accent/10" : "bg-muted/50")}>
                     <span className="truncate font-semibold">
-                      {f.you && <span className="me-1 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-extrabold text-accent">YOU</span>}
+                      {f.you && <span className="me-1 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-extrabold text-accent-strong">YOU</span>}
                       {f.place} · <span className="num font-mono text-xs">{f.path}</span>
                     </span>
                     <span className="num shrink-0 text-xs text-muted-foreground">{f.when}</span>

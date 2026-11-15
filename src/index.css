@@ -21,6 +21,11 @@
     --accent: 0.54 0.194 41.1;
     --accent-foreground: 0.983 0.002 67.8;
     --accent-glow: 0.705 0.187 47.6;
+    /* Accent used as TEXT on a fill tinted with the same accent
+       (`bg-accent/10`–`/20`). A self-tint lifts the background toward the text,
+       so at the base accent lightness those chips measured 3.96–4.47:1. This is
+       the lightness that clears 4.5:1 at every density the UI uses. */
+    --accent-strong: 0.48 0.194 41.1;
     --border: 0.913 0.009 84.6;
     --input: 0.913 0.009 84.6;
     --ring: 0.53 0.174 38.4;
@@ -61,6 +66,9 @@
     --accent: 0.705 0.187 47.6;
     --accent-foreground: 0.166 0.006 300.9;
     --accent-glow: 0.758 0.159 55.9;
+    /* Dark mode already clears 4.5:1 on every accent tint density (worst 4.76),
+       so the "strong" variant tracks the base accent rather than darkening. */
+    --accent-strong: 0.705 0.187 47.6;
     --border: 0.295 0.018 294.4;
     --input: 0.295 0.018 294.4;
     --ring: 0.758 0.159 55.9;

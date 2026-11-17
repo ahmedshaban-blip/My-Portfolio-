@@ -139,7 +139,7 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        aria-label={`${label} — read or download the Flutter or Frontend CV`}
+        aria-label={chips ? `${label} Flutter Frontend — read or download` : `${label} — read or download`}
         onClick={() => setOpen((value) => !value)}
       >
         <FileText className="mr-2 h-4 w-4" aria-hidden="true" />

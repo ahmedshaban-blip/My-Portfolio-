@@ -51,10 +51,10 @@ const ReducedMotionToggle = () => {
         reducedMotion && "bg-accent/10 border-accent/30"
       )}
       onClick={toggleReducedMotion}
-      title={reducedMotion ? "Enable animations" : "Reduce motion"}
+      title={reducedMotion ? "Enable animations" : "Toggle reduced motion"}
     >
       <Eye className={cn("h-[1.2rem] w-[1.2rem]", reducedMotion ? "text-accent" : "text-foreground")} />
-      <span className="sr-only">Toggle reduced motion</span>
+      <span className="sr-only">{reducedMotion ? "Enable animations" : "Toggle reduced motion"}</span>
     </Button>
   );
 };

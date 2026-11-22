@@ -28,8 +28,8 @@
           themeColor.setAttribute(
             "content",
             document.documentElement.classList.contains("dark")
-              ? "oklch(0.16 0.008 310)"
-              : "oklch(0.982 0.003 350)"
+              ? "oklch(0 0 0)"
+              : "oklch(1 0 0)"
           );
         };
         syncThemeColor();
@@ -45,12 +45,15 @@
   <!-- Preconnect + one render-blocking font stylesheet.
        PERFORMANCE: the previous `media="print" onload` swap started the
        @font-face request after `load`, so the font swap reflowed the hero <h1>
-       in the middle of its entrance animation. -->
+       in the middle of its entrance animation.
+       Two faces, two jobs: Poppins carries the hero name and the wordmark, Inter
+       carries all prose, labels and section headings. One request so the swap is
+       a single reflow. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
   />
   <link
     rel="preload"

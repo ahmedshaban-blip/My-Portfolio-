@@ -1,307 +1,163 @@
-import type { ReactNode } from "react";
-import { GraduationCap, Award, CheckCircle2, Calendar, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { Award } from "lucide-react";
 import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
-import { FlutterIcon } from "@/components/icons/FlutterIcon";
+import { SectionHeading } from "@/components/SectionHeading";
 
-/** Logo tile: every card accepts either an image logo or an icon. */
-function LogoTile({
-  src,
-  alt,
-  white,
-  children,
-}: {
-  src?: string;
-  alt?: string;
-  white?: boolean;
-  children?: ReactNode;
-}) {
-  if (src || white) {
-    return (
-      <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
-        {src ? (
-          <img
-            src={src}
-            alt={alt ?? "Company logo"}
-            loading="lazy"
-            decoding="async"
-            width={64}
-            height={64}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          children
-        )}
-      </div>
-    );
-  }
-  return (
-    <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-      {children}
+/** One dated row: role on the left, the date on the right, prose under both. */
+type Role = {
+  company: string;
+  title: string;
+  date: string;
+  /** Responsibilities, written as sentences so the block reads as prose. */
+  summary?: string[];
+  tech: string[];
+  /** Extra note rendered under the prose (e.g. the graduation grade). */
+  note?: string;
+};
+
+const ROLES: Role[] = [
+  {
+    company: "Truck World",
+    title: "Front-end (ERP Next, React.js) and Flutter Developer",
+    date: "Jan 2026 – Present, Saudi Arabia",
+    summary: [
+      "Develop and maintain web applications using React.js.",
+      "Build responsive, user-friendly interfaces from Figma and Adobe XD.",
+      "Integrate RESTful APIs and handle data flow across the app.",
+      "Collaborate with designers and backend developers for seamless integration.",
+      "Use Git for version control and effective team collaboration.",
+      "Build and maintain HR management applications.",
+    ],
+    tech: ["React.js", "Redux", "Tailwind CSS", "Flutter", "REST APIs", "Git"],
+  },
+  {
+    company: "Sawa",
+    title: "Flutter Developer",
+    date: "Feb 2026 – Present, Alexandria, Egypt",
+    summary: [
+      "Develop and maintain mobile applications using Flutter and Dart.",
+      "Build responsive and user-friendly UI from Figma and Adobe XD.",
+      "Integrate RESTful APIs and handle data flow.",
+      "Assist in app deployment on Google Play and the Apple App Store.",
+    ],
+    tech: ["Flutter", "Dart", "REST APIs", "Google Play", "App Store"],
+  },
+  {
+    company: "Information Technology Institute (ITI)",
+    title: "Front-end and Cross-Platform Developer",
+    date: "Jul 2025 – Nov 2025, Egypt",
+    summary: [
+      "Developed production-ready mobile screens using Flutter.",
+      "Implemented state management with Bloc, Cubit, and GetX.",
+      "Integrated REST APIs and handled JSON parsing.",
+      "Worked with Firebase Auth, Firestore, and push notifications.",
+      "Built engaging web UIs using React and Redux.",
+      "Integrated Stripe and PayPal payments.",
+      "Followed Clean Architecture principles and Git/GitHub workflows.",
+    ],
+    tech: ["Flutter", "Bloc/Cubit", "GetX", "Firebase", "React", "Stripe", "PayPal"],
+  },
+  {
+    company: "Faculty of Computer and Information, Minya University",
+    title: "Bachelor's Degree in Computer Science",
+    date: "Sep 2020 – Jan 2025, Egypt",
+    summary: [
+      "Solid coursework in software engineering, algorithms, and problem-solving, applied to the architecture of the projects above.",
+    ],
+    tech: ["Software Engineering", "Algorithms", "Clean Architecture"],
+    note: "Graduation Project Grade: A+",
+  },
+];
+
+const COURSES = [
+  "Deep Dive into Clean Architecture in Flutter",
+  "Flutter Advanced – Clean Architecture & MVVM",
+  "Flutter – Animations from Zero to Hero",
+  "Mastering Flutter: Responsive & Adaptive UI Design",
+  "Complete Flutter & Dart Development Course",
+  "HTML, CSS, and JavaScript (ITI)",
+  "React Native Web Application (ITI)",
+  "Payment Integration: Stripe, PayPal & More (ITI)",
+];
+
+const chip =
+  "px-3 py-1 text-[0.6875rem] font-medium rounded-full border border-border/70 text-muted-foreground transition-colors duration-200 hover:border-primary/50 hover:text-accent-strong cursor-default";
+
+const Experience = () => (
+  <section id="experience" className="section-padding relative">
+    {/* Decorative layer: two low-strength blooms, one per flank, contained. */}
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div className="uv-orb -right-[6%] top-[12%] h-72 w-64" />
+      <div className="uv-orb -left-[6%] bottom-[12%] h-72 w-64" />
     </div>
-  );
-}
 
+    <div className="container relative z-10 mx-auto px-4">
+      <div className="mx-auto max-w-4xl">
+        <SectionHeading
+          eyebrow="Explore Now"
+          title="Experience"
+          description="Roles and degree, most recent first."
+          className="mb-14"
+        />
 
-const Experience = () => {
-  const courses = [
-    "Deep Dive into Clean Architecture in Flutter",
-    "Flutter Advanced – Clean Architecture & MVVM",
-    "Flutter – Animations from Zero to Hero",
-    "Mastering Flutter: Responsive & Adaptive UI Design",
-    "Complete Flutter & Dart Development Course",
-    "HTML, CSS, and JavaScript (ITI)",
-    "React Native Web Application (ITI)",
-    "Payment Integration: Stripe, PayPal & More (ITI)",
-  ];
-
-  return (
-    <section id="experience" className="section-padding relative">
-      <div
-        aria-hidden="true"
-        className="absolute top-1/4 right-0 w-64 h-64 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at center, oklch(var(--primary) / 0.06) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-1/4 left-0 w-64 h-64 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at center, oklch(var(--accent) / 0.06) 0%, transparent 70%)",
-        }}
-      />
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-6xl mx-auto space-y-12">
-
-          <RevealOnScroll direction="down">
-            <div className="space-y-4 max-w-none">
-              <div className="flex items-baseline gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                <span>Resume &amp; journey</span>
-                <span
-                  className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
-                  Experience &amp; <span className="text-gradient">Education</span>
-                </h2>
-                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  Roles and degree, most recent first.
-                </p>
-              </div>
-            </div>
-          </RevealOnScroll>
-
-          {/* The timeline is a sequence, so the cascade carries information:
-              latest role first, each card a step behind the one above it. It
-              descends from the top edge, so the arrival matches the order the
-              dates already read in. */}
-          <SectionReveal className="grid gap-8">
-            <SectionItem direction="down">
-              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
-                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
-                  <div className="flex-shrink-0">
-                    <LogoTile src="/images/truck-world-256.webp" alt="Truck World logo" />
-                  </div>
-                  <div className="flex-1 space-y-5">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                          Front-end (ERP Next, React.js) and Flutter Developer
-                        </h3>
-                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">Present</Badge>
-                      </div>
-                      <p className="text-lg text-primary font-semibold">
-                        Truck World | Saudi Arabia - Full Time
-                      </p>
-                      <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                        <span className="flex items-center gap-1.5"><Calendar size={14} /> Jan 2026 – Present</span>
-                      </div>
-                    </div>
-
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
-                      {[
-                        "Develop and maintain web applications using React.js",
-                        "Build responsive and user-friendly UI from Figma and Adobe XD",
-                        "Integrate RESTful APIs and handle data flow",
-                        "Collaborate with designers and backend developers for seamless integration",
-                        "Use Git for version control and effective team collaboration",
-                        "Build HR management applications"
-                      ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
-                          <span className="text-sm leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-            </SectionItem>
-
-            <SectionItem direction="down">
-              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
-                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
-                  <div className="flex-shrink-0">
-                    <LogoTile white>
-                      <FlutterIcon className="h-9 w-9" />
-                    </LogoTile>
-                  </div>
-                  <div className="flex-1 space-y-5">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                          Flutter Developer
-                        </h3>
-                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">Present</Badge>
-                      </div>
-                      <p className="text-lg text-primary font-semibold">
-                        Sawa | Alexandria - Part Time
-                      </p>
-                      <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                        <span className="flex items-center gap-1.5"><Calendar size={14} /> Feb 2026 – Present</span>
-                      </div>
-                    </div>
-
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
-                      {[
-                        "Develop and maintain mobile applications using Flutter and Dart",
-                        "Build responsive and user-friendly UI from Figma and Adobe XD",
-                        "Integrate RESTful APIs and handle data flow",
-                        "Assist in app deployment on Google Play and Apple App Store"
-                      ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
-                          <span className="text-sm leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-            </SectionItem>
-
-            <SectionItem direction="down">
-              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
-                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
-                  <div className="flex-shrink-0">
-                    <LogoTile src="/images/iti-256.webp" alt="ITI logo" />
-                  </div>
-                  <div className="flex-1 space-y-5">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                          Front-end and Cross-Platform Developer
-                        </h3>
-                        <Badge className="bg-primary/10 text-primary border-none px-3 py-1 text-sm font-medium">2025</Badge>
-                      </div>
-                      <p className="text-lg text-primary font-semibold">
-                        Information Technology Institute (ITI)
-                      </p>
-                      <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                        <span className="flex items-center gap-1.5"><Calendar size={14} /> July 2025 – Nov 2025</span>
-                        <span className="flex items-center gap-1.5"><MapPin size={14} /> Egypt</span>
-                      </div>
-                    </div>
-
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
-                      {[
-                        "Developed production-ready mobile screens using Flutter",
-                        "Implemented state management (Bloc, Cubit, GetX)",
-                        "Integrated REST APIs & handled JSON parsing",
-                        "Firebase Auth, Firestore & Push Notifications",
-                        "Built engaging web UIs using React & Redux",
-                        "Worked with Stripe & PayPal integrations",
-                        "Collaborated via Git & GitHub workflows",
-                        "Followed Clean Architecture principles"
-                      ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <CheckCircle2 className="text-primary mt-0.5 shrink-0 w-4 h-4" />
-                          <span className="text-sm leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-            </SectionItem>
-
-            <SectionItem direction="down">
-              <Card className="modern-card border-border/50 rounded-2xl overflow-hidden group">
-                <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center border border-border/50 group-hover:scale-105 transition-transform duration-300">
-                      <GraduationCap className="h-8 w-8 text-foreground" />
-                    </div>
-                  </div>
-                  <div className="flex-1 space-y-5">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                          Bachelor's Degree in Computer Science
-                        </h3>
-                        <Badge variant="outline" className="border-border/50 text-muted-foreground px-3 py-1 text-sm">Class of 2025</Badge>
-                      </div>
-                      <p className="text-lg text-primary font-semibold">
-                        Faculty of Computer and Information, Minya University
-                      </p>
-                      <div className="flex items-center gap-4 text-muted-foreground text-sm pt-1">
-                        <span className="flex items-center gap-1.5"><Calendar size={14} /> Sept 2020 – Jan 2025</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-success/5 border border-success/10">
-                      <Award className="h-5 w-5 text-success" />
-                      <span className="font-medium text-foreground">
-                        Graduation Project Grade:{" "}
-                        <span className="text-success font-bold text-lg">A+</span>
-                      </span>
-                    </div>
-
-                    <p className="text-muted-foreground leading-relaxed">
-                      Solid coursework in software engineering, algorithms, and problem-solving, applied to the architecture of the projects above.
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </SectionItem>
-
-            <SectionItem direction="down">
-              <Card className="modern-card border-border/50 rounded-2xl p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
-                    <Award className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                    Selected Courses & Certifications
+        {/* A timeline is a sequence, so the rows descend from the top edge in
+            the order their dates already read. */}
+        <SectionReveal>
+          {ROLES.map((role) => (
+            <SectionItem key={role.company} direction="down">
+              <article className="border-t border-border/60 py-10 first:border-t-0 first:pt-0">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                  <h3 className="text-pretty text-lg font-bold leading-snug text-foreground md:text-xl">
+                    {role.company}{" "}
+                    <span className="font-normal text-muted-foreground">/ {role.title}</span>
                   </h3>
+                  <p className="shrink-0 text-[0.6875rem] font-medium uppercase leading-relaxed tracking-[0.18em] text-muted-foreground">
+                    {role.date}
+                  </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {courses.map((course, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="px-4 py-2 text-sm rounded-full border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors cursor-default"
-                    >
-                      {course}
-                    </Badge>
+
+                {role.summary && (
+                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-[0.9375rem]">
+                    {role.summary.join(" ")}
+                  </p>
+                )}
+
+                {role.note && (
+                  <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Award className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+                    {role.note.replace("A+", "")}
+                    <span className="font-bold text-success">A+</span>
+                  </p>
+                )}
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {role.tech.map((item) => (
+                    <span key={item} className={chip}>
+                      {item}
+                    </span>
                   ))}
                 </div>
-              </Card>
+              </article>
             </SectionItem>
-          </SectionReveal>
-        </div>
+          ))}
+
+          <SectionItem direction="down">
+            <article className="border-t border-border/60 py-10">
+              <h3 className="text-lg font-bold text-foreground md:text-xl">
+                Selected Courses &amp; Certifications
+              </h3>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {COURSES.map((course) => (
+                  <span key={course} className={chip}>
+                    {course}
+                  </span>
+                ))}
+              </div>
+            </article>
+          </SectionItem>
+        </SectionReveal>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default Experience;

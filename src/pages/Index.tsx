@@ -2,6 +2,7 @@ import { Suspense, lazy, memo, useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import { ConcentricRings } from "@/components/decor/ConcentricRings";
 
 // OPTIMIZE: below-fold sections ship in deferred chunks so the initial bundle
 // stays Navbar + Hero (LCP). Min-height placeholders reserve space to keep CLS < 0.1.
@@ -166,6 +167,13 @@ const Index = () => {
 
   return (
     <main className="min-h-screen">
+      {/* The reference's fan: one fixed layer behind every band, so the hairline
+          arcs run edge to edge and continue as the page scrolls. Sections stay
+          in flow above it; the navbar and footer paint over it. */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <ConcentricRings className="absolute inset-0 h-full w-full opacity-90" />
+      </div>
+
       <Navbar />
       <Hero />
       <BelowFold id="about" minHeight="60vh">

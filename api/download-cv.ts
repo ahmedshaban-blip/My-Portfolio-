@@ -1,13 +1,27 @@
 import { createHash } from "crypto";
 
+/**
+ * SINGLE SOURCE OF TRUTH.
+ *
+ * The front end reads these tracks from `src/data/profile/cv.json` via
+ * `@/config/cv`. This route reads the SAME file so a rename cannot drift: if you
+ * change `cloudinaryPublicId` there, both the download route and the browser
+ * follow. (`fallbackUrls` is front-end only — this route never serves local
+ * files, it proxies Cloudinary.)
+ *
+ * Imported as JSON on purpose: the front-end facade in `@/config/cv` reads
+ * `import.meta.env`, which does not exist in a Node function.
+ */
+import cvProfile from "../src/data/profile/cv.json";
+
 const CV_FILES = {
   flutter: {
-    publicId: "flutter_cv.pdf",
-    fileName: "Ahmed_Shaban_Flutter_CV.pdf",
+    publicId: cvProfile.tracks.flutter.cloudinaryPublicId,
+    fileName: cvProfile.tracks.flutter.fileName,
   },
   frontend: {
-    publicId: "frontend_cv.pdf",
-    fileName: "Ahmed_Shaban_Frontend_CV.pdf",
+    publicId: cvProfile.tracks.frontend.cloudinaryPublicId,
+    fileName: cvProfile.tracks.frontend.fileName,
   },
 } as const;
 

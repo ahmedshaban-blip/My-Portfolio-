@@ -6,6 +6,15 @@ import { Magnetic } from "@/components/animations/Magnetic";
 import { CVReadMenu } from "@/components/cv/CVReadMenu";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Segments } from "@/components/Segments";
+import {
+  contact,
+  identity,
+  location,
+  locationLine,
+  social,
+  whatsappUrl,
+} from "@/data/profile";
 import { playStoreApps } from "@/data/projects";
 
 const heroEntranceEase = [0.22, 1, 0.36, 1] as const;
@@ -55,15 +64,16 @@ const Hero = () => {
     }
   };
 
-  const whatsappUrl = `https://wa.me/201114975104?text=${encodeURIComponent(
-    "Hello Ahmed, I saw your portfolio and would like to connect"
-  )}`;
+  const photo = identity.hero.photo;
+  const photoSrcSet = photo.widths
+    .map((width) => `${photo.base}-${width}.webp ${width}w`)
+    .join(", ");
 
   const socials = [
-    { icon: Github, href: "https://github.com/ahmedshaban-blip", label: "GitHub", hoverClass: "hover:text-accent-strong" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/ahmed-shaban-front-cross", label: "LinkedIn", hoverClass: "hover:text-accent-strong" },
+    { icon: Github, href: social.github, label: "GitHub", hoverClass: "hover:text-accent-strong" },
+    { icon: Linkedin, href: social.linkedin, label: "LinkedIn", hoverClass: "hover:text-accent-strong" },
     { icon: WhatsAppIcon, href: whatsappUrl, label: "WhatsApp", hoverClass: "hover:text-success" },
-    { icon: Mail, href: "mailto:ahmed.shabaan.dev@gmail.com", label: "Email", hoverClass: "hover:text-accent-strong" },
+    { icon: Mail, href: `mailto:${contact.email}`, label: "Email", hoverClass: "hover:text-accent-strong" },
   ];
 
   // The one pill the reference leads with: a quiet outline, not a fill.
@@ -90,17 +100,17 @@ const Hero = () => {
                 <picture>
                   <source
                     type="image/webp"
-                    srcSet="/images/personal-image-320.webp 320w, /images/personal-image-640.webp 640w, /images/personal-image-960.webp 960w"
+                    srcSet={photoSrcSet}
                     sizes="(min-width: 1024px) 231px, (min-width: 640px) 196px, 168px"
                   />
                   {/* `fetchpriority` stays lowercase: React 18 exposes the DOM
                       attribute that way and the camelCase alias only landed in
                       React 19. Wrong casing warns and is dropped. */}
                   <img
-                    src="/images/personal-image-640.webp"
-                    alt="Ahmed Shaban"
-                    width={640}
-                    height={640}
+                    src={`${photo.base}-${photo.width}.webp`}
+                    alt={identity.name.display}
+                    width={photo.width}
+                    height={photo.height}
                     className="h-full w-full select-none rounded-full object-cover"
                     loading="eager"
                     decoding="async"
@@ -120,7 +130,7 @@ const Hero = () => {
               childVariants={heroWordRise}
               className="font-display text-[clamp(2.5rem,7.2vw,4rem)] font-bold leading-[1.05] tracking-tight text-foreground"
             >
-              Ahmed Shaban!
+              {identity.hero.greeting}
             </StaggerReveal>
           </motion.div>
 
@@ -128,16 +138,14 @@ const Hero = () => {
             variants={heroElementFadeUp}
             className="mt-4 text-[clamp(1.2rem,3.2vw,1.7rem)] font-semibold leading-tight text-muted-foreground"
           >
-            I do Code &amp; <span className="text-accent-strong">Chill</span>{" "}
-            <span aria-hidden="true">🍿</span>
+            <Segments items={identity.hero.tagline} />
           </motion.p>
 
           <motion.p
             variants={heroElementFadeUp}
             className="mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-[1.0625rem]"
           >
-            Passionate Software Engineer with a focus on Flutter and front-end development,
-            dedicated to crafting elegant and user-friendly applications.
+            {identity.hero.intro}
           </motion.p>
 
           <motion.div variants={heroElementFadeUp} className="mt-7">
@@ -147,7 +155,7 @@ const Hero = () => {
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
               </span>
               <span className="text-xs font-semibold tracking-wide text-muted-foreground sm:text-sm">
-                Available for new opportunities
+                {identity.hero.availabilityBadge}
               </span>
             </div>
           </motion.div>
@@ -190,10 +198,9 @@ const Hero = () => {
             className="mt-7 text-sm leading-relaxed text-muted-foreground sm:text-base"
           >
             Currently, I&apos;m a{" "}
-            <span className="text-foreground">
-              Front-end (ERP Next, React.js) and Flutter Developer
-            </span>{" "}
-            at <span className="text-accent-strong">Truck World</span>, Saudi Arabia.
+            <span className="text-foreground">{identity.role.title}</span>{" "}
+            at <span className="text-accent-strong">{identity.role.company}</span>,{" "}
+            {identity.role.companyCountry}.
           </motion.p>
 
           <motion.p
@@ -201,10 +208,10 @@ const Hero = () => {
             className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground"
           >
             <span className="rounded-full border border-border/60 px-3 py-1">
-              Full-time · Truck World, Saudi Arabia
+              {identity.role.employment} · {identity.role.company}, {identity.role.companyCountry}
             </span>
             <span className="rounded-full border border-border/60 px-3 py-1">
-              Cairo, Egypt (GMT+2) · Open to remote &amp; on-site
+              {locationLine} · {location.workModes}
             </span>
           </motion.p>
 

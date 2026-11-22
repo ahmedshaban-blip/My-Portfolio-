@@ -1,0 +1,13 @@
+{
+  "degree": {
+    "company": "Faculty of Computer and Information, Minya University",
+    "title": "Bachelor's Degree in Computer Science",
+    "date": "Sep 2020 – Jan 2025, Egypt",
+    "summary": [
+      "Solid coursework in software engineering, algorithms, and problem-solving, applied to the architecture of the projects above."
+    ],
+    "tech": ["Software Engineering", "Algorithms", "Clean Architecture"],
+    "note": "Graduation Project Grade:",
+    "grade": "A+"
+  }
+}

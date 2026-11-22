@@ -8,6 +8,7 @@ import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollSpy } from "@/hooks/use-scrollspy";
 import { springTransition } from "@/lib/animation-variants";
+import { identity } from "@/data/profile";
 
 const ModeToggle = () => {
   const { theme, setTheme } = useTheme();
@@ -113,13 +114,13 @@ const Navbar = () => {
             <a
               href="#home"
               className="flex flex-col leading-none transition-opacity hover:opacity-80"
-              aria-label="Ahmed Shaban — home"
+              aria-label={`${identity.name.display} — home`}
             >
               <span className="font-display text-xl font-bold tracking-tight text-foreground">
-                Ahmed
+                {identity.name.first}
               </span>
               <span className="mt-1 text-[0.5rem] font-medium uppercase tracking-[0.45em] text-muted-foreground">
-                Shaban
+                {identity.name.last}
               </span>
             </a>
 

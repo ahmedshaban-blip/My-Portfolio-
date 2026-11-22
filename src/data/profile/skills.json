@@ -1,0 +1,70 @@
+{
+  "categories": [
+    {
+      "icon": "smartphone",
+      "title": "Mobile Development",
+      "description": "Flutter & React Native",
+      "skills": [
+        "Flutter & Dart",
+        "React Native",
+        "Clean Architecture (MVVM)",
+        "Bloc/Cubit",
+        "GetX",
+        "Provider",
+        "Web Socket",
+        "Flutter Animations"
+      ],
+      "visibleCount": 5
+    },
+    {
+      "icon": "globe",
+      "title": "Frontend Web",
+      "description": "React & Modern Web",
+      "skills": [
+        "React 18",
+        "Redux Toolkit",
+        "JavaScript (ES6+)",
+        "Tailwind CSS",
+        "Vite",
+        "React Router v6",
+        "SPA Architecture"
+      ],
+      "visibleCount": 4
+    },
+    {
+      "icon": "database",
+      "title": "Backend & APIs",
+      "description": "Services & Integration",
+      "skills": [
+        "REST APIs",
+        "Firebase Auth",
+        "Firestore",
+        "Supabase Storage",
+        "Firebase Storage",
+        "Push Notifications",
+        "i18next"
+      ],
+      "visibleCount": 4
+    },
+    {
+      "icon": "code2",
+      "title": "Core Technologies",
+      "description": "Foundations & Tools",
+      "skills": ["HTML5", "CSS3", "TypeScript", "Git & GitHub", "JSON Parsing", "RESTful APIs", "Vercel"],
+      "visibleCount": 4
+    },
+    {
+      "icon": "terminal",
+      "title": "AI-Assisted Development",
+      "description": "My daily tooling",
+      "skills": [
+        "Claude (Claude Code)",
+        "OpenAI Codex / ChatGPT",
+        "Prompt Engineering & Workflow Automation",
+        "AI-Driven Testing & Code Review"
+      ],
+      "colSpan": "md:col-span-2",
+      "visibleCount": 4
+    }
+  ]
+}

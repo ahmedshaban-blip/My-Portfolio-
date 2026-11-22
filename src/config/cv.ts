@@ -1,3 +1,5 @@
+import { cv } from "@/data/profile";
+
 export type CVTrack = "flutter" | "frontend";
 
 type CVConfig = {
@@ -6,30 +8,30 @@ type CVConfig = {
   cloudinaryPublicId: string;
   uploadPreset: string;
   fileName: string;
-  fallbackUrl: string;
+  /**
+   * Local files inside `public/`, tried in order when Cloudinary is
+   * unreachable. Add/remove paths in `src/data/profile/cv.json` — every path
+   * listed there must exist on disk or that fallback is skipped.
+   */
+  fallbackUrls: string[];
 };
 
 export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ?? "";
 
 const sharedUploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ?? "";
 
+/**
+ * Upload presets are credentials, so they stay in env vars — everything else
+ * about a CV track is authored in `src/data/profile/cv.json`.
+ */
+const UPLOAD_PRESETS: Record<CVTrack, string> = {
+  flutter: import.meta.env.VITE_CLOUDINARY_FLUTTER_UPLOAD_PRESET ?? sharedUploadPreset,
+  frontend: import.meta.env.VITE_CLOUDINARY_FRONTEND_UPLOAD_PRESET ?? sharedUploadPreset,
+};
+
 export const CV_CONFIG: Record<CVTrack, CVConfig> = {
-  flutter: {
-    label: "Flutter Developer CV",
-    description: "Overwrite the public Flutter developer PDF.",
-    cloudinaryPublicId: "flutter_cv.pdf",
-    uploadPreset: import.meta.env.VITE_CLOUDINARY_FLUTTER_UPLOAD_PRESET ?? sharedUploadPreset,
-    fileName: "Ahmed_Shaban_Flutter_CV.pdf",
-    fallbackUrl: "/Ahmed Shaban--Flutter Developer.pdf",
-  },
-  frontend: {
-    label: "Frontend Developer CV",
-    description: "Overwrite the public frontend developer PDF.",
-    cloudinaryPublicId: "frontend_cv.pdf",
-    uploadPreset: import.meta.env.VITE_CLOUDINARY_FRONTEND_UPLOAD_PRESET ?? sharedUploadPreset,
-    fileName: "Ahmed_Shaban_Frontend_CV.pdf",
-    fallbackUrl: "/Ahmed Shaban Front--End Web Developer.pdf",
-  },
+  flutter: { ...cv.tracks.flutter, uploadPreset: UPLOAD_PRESETS.flutter },
+  frontend: { ...cv.tracks.frontend, uploadPreset: UPLOAD_PRESETS.frontend },
 };
 
 export const getCloudinaryRawUrl = (track: CVTrack) => {

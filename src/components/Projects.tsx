@@ -171,14 +171,41 @@ const ProjectCard = memo(function ProjectCard({
 }) {
   const open = () => onSelect(project);
 
-  // Web work gets a browser-framed banner above the copy; mobile work keeps the
-  // tall phone tile beside it. The shape follows the artwork's aspect.
+  // Web work gets a browser-framed banner above the copy; mobile work keeps a
+  // device tile beside it once there is room for one.
   const isWeb = project.kind === "web";
-  // Both kinds fill their media box edge to edge. A contained image sat in the
-  // middle of the tile with empty bands above and below it, which read as a
-  // half-finished card. Cover + top bias shows the top of the screen, which is
-  // where a phone app or a website puts its identity.
-  const imageFit = "[&_img]:object-cover [&_img]:object-top";
+
+  /**
+   * The media box, and the one place the two collections finally diverge.
+   *
+   * Web covers its banner at every size — a website screenshot is landscape, so
+   * a landscape frame is already the right shape. Mobile does not: on a phone
+   * viewport the tile is ~356x176, and cropping a portrait screenshot into that
+   * box showed only the top ~28% of it, cutting the device off mid-frame. There
+   * the artwork sits whole inside a device body on a 4:5 panel; only once the
+   * tile moves beside the copy (sm+) does it go back to filling the box.
+   */
+  const plateBox = cn(
+    "absolute overflow-hidden",
+    isWeb
+      ? "inset-0"
+      : "inset-x-[22%] inset-y-7 rounded-[1.75rem] border border-border/80 bg-card/50 p-1.5 shadow-[0_18px_50px_-26px_rgb(0_0_0/0.95)] sm:inset-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none",
+  );
+
+  const plateImage = cn(
+    "h-full w-full",
+    isWeb
+      ? "[&_img]:object-cover [&_img]:object-top"
+      : "rounded-[1.35rem] sm:rounded-none [&_img]:object-contain sm:[&_img]:object-cover sm:[&_img]:object-top",
+  );
+
+  // A hairline cut-out, so the frame reads as a device rather than as a border.
+  const plateNotch = isWeb ? null : (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-3 z-10 h-1.5 w-12 -translate-x-1/2 rounded-full bg-foreground/25 sm:hidden"
+    />
+  );
 
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
@@ -194,9 +221,18 @@ const ProjectCard = memo(function ProjectCard({
               "relative flex shrink-0 flex-col overflow-hidden border-border/50 bg-secondary/20",
               isWeb
                 ? "w-full border-b"
-                : "h-44 w-full border-b sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
+                : "aspect-[4/5] w-full border-b sm:aspect-auto sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
             )}
           >
+            {/* A soft bloom behind the device — phone viewport only, so the panel
+                reads as lit rather than as an empty grey box. */}
+            {!isWeb && (
+              <span
+                aria-hidden="true"
+                className="uv-orb left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 sm:hidden"
+              />
+            )}
+
             {/* Browser chrome, the same frame the case sheet uses — it says
                 "this is a website" before the crop says anything. */}
             {isWeb && (
@@ -220,7 +256,11 @@ const ProjectCard = memo(function ProjectCard({
               title="Open fullscreen gallery"
               className={cn(
                 "group relative flex w-full cursor-zoom-in items-center justify-center overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60",
-                isWeb ? "aspect-video" : "h-full",
+                // Web sets its own height from the banner's aspect. Mobile fills
+                // the panel through flex rather than `h-full`, so it does not
+                // depend on percentage height resolving against an
+                // aspect-ratio-derived box.
+                isWeb ? "aspect-video" : "min-h-0 flex-1",
               )}
             >
               {/* PLATE HANDOFF — a `layoutId` must identify exactly one element at
@@ -229,27 +269,29 @@ const ProjectCard = memo(function ProjectCard({
                   so framer sees the element leave the index and land in the
                   sheet, rather than choosing between two live nodes. */}
               {selected ? (
-                <div className="absolute inset-0">
+                <div className={plateBox}>
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
-                    className={cn("h-full w-full", imageFit)}
+                    className={plateImage}
                   />
+                  {plateNotch}
                 </div>
               ) : (
                 <motion.div
                   layoutId={plateId(project.slug)}
                   transition={reducedMotion ? { duration: 0 } : plateTransition}
-                  className="absolute inset-0"
+                  className={plateBox}
                 >
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
                     className={cn(
-                      "h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:transition-transform [&_img]:duration-300",
-                      imageFit,
+                      plateImage,
+                      "group-hover:[&_img]:scale-[1.03] [&_img]:transition-transform [&_img]:duration-300",
                     )}
                   />
+                  {plateNotch}
                 </motion.div>
               )}
               {/* Hover / focus hint — mirrors the inline viewer */}

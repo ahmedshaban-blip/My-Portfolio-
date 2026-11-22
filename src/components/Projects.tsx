@@ -37,6 +37,19 @@ const DEMO_META: Record<DemoKind, { label: string; Icon: typeof ExternalLink }> 
   source: { label: "Source Code", Icon: Github },
 };
 
+/**
+ * The card's primary action is a verb, the case sheet's is a destination, so
+ * they carry different words on purpose: a card button says what pressing it
+ * does ("Open in Play Store"), while the sheet's button names where it goes
+ * ("Google Play"). Same icon either way.
+ */
+const CARD_ACTION: Record<DemoKind, { label: string; Icon: typeof ExternalLink }> = {
+  play: { label: "Open in Play Store", Icon: Play },
+  live: { label: "Open Website", Icon: ExternalLink },
+  video: { label: "Watch Video", Icon: Clapperboard },
+  source: { label: "View Source", Icon: Github },
+};
+
 function demoHost(demo: string): string {
   try {
     return new URL(demo).hostname.replace(/^www\./, "");
@@ -367,28 +380,56 @@ const ProjectCard = memo(function ProjectCard({
               )}
             </div>
 
-            <div className="mt-auto flex items-center gap-2 border-t border-border/40 pt-4">
-              <Button
-                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                onClick={open}
-              >
-                View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/60 transition-colors duration-200 hover:border-primary/50 hover:bg-primary/15 hover:text-accent-strong"
-                asChild
-              >
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Source code for ${project.title} on GitHub`}
+            <div className="mt-auto space-y-2 border-t border-border/40 pt-4">
+              {/* Primary action: leave for the real thing — the store listing, the
+                  live site, the video. Naming it as a verb rather than a
+                  destination ("Open in Play Store", not "Google Play") keeps it
+                  distinct from the sheet's own button, which does the same job
+                  with different words. */}
+              {(() => {
+                const meta = CARD_ACTION[project.demoKind];
+                return (
+                  <Button
+                    className="h-11 min-h-[44px] w-full rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                    asChild
+                  >
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${meta.label} — ${project.title}`}
+                    >
+                      <meta.Icon size={14} className="mr-2 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{meta.label}</span>
+                    </a>
+                  </Button>
+                );
+              })()}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-11 min-h-[44px] flex-1 rounded-full border-border/60 px-4 text-xs font-semibold transition-colors hover:border-primary/50 hover:bg-primary/15 hover:text-accent-strong"
+                  onClick={open}
                 >
-                  <Github size={14} />
-                </a>
-              </Button>
+                  View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/60 transition-colors duration-200 hover:border-primary/50 hover:bg-primary/15 hover:text-accent-strong"
+                  asChild
+                >
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Source code for ${project.title} on GitHub`}
+                  >
+                    <Github size={14} />
+                  </a>
+                </Button>
+              </div>
             </div>
           </CardHeader>
         </Card>

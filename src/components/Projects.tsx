@@ -52,17 +52,31 @@ function demoHost(demo: string): string {
  */
 const plateId = (slug: string) => `plate-${slug}`;
 
+/**
+ * What the card is allowed to tell the browser about the media box, so it picks
+ * the right candidate from `srcset` instead of assuming the old layout.
+ *
+ * `ProjectImage` gets no `srcset` today (one file per screenshot), so this only
+ * sets the width the browser reserves. It was `(max-width:768px) 100vw, 33vw` —
+ * left over from the three-column grid, where the card was really ~176px wide.
+ * Keep it in step with the tile in `ProjectCard`.
+ */
+const MEDIA_SIZES =
+  "(max-width: 640px) calc(100vw - 2rem), (min-width: 1024px) 176px, 45vw";
+
 /** CLS-safe image with skeleton + graceful fallback. */
 const ProjectImage = memo(function ProjectImage({
   src,
   alt,
   className,
   eager = false,
+  sizes = MEDIA_SIZES,
 }: {
   src: string;
   alt: string;
   className?: string;
   eager?: boolean;
+  sizes?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -133,7 +147,7 @@ const ProjectImage = memo(function ProjectImage({
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           fetchpriority={eager ? "high" : "low"}
-          sizes="(max-width:768px) 100vw, 33vw"
+          sizes={sizes}
           draggable={false}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
@@ -171,21 +185,27 @@ const ProjectCard = memo(function ProjectCard({
 }) {
   const open = () => onSelect(project);
 
-  // Web work gets a browser-framed banner above the copy; mobile work gets a
-  // panel above it, and a tile beside it once there is room.
+  /**
+   * Web work gets a browser-framed banner above the copy; mobile work gets a
+   * panel above it, and a tile beside it once there is room.
+   */
   const isWeb = project.kind === "web";
 
   /**
-   * Both collections fill their media box.
+   * The media panel's ratio is the source's, not a fixed 9/16 — but only while
+   * the card stacks (phone widths), where the panel is its own row and needs a
+   * height of its own. From `sm` up the card is a row: the panel takes the
+   * card's full height and the cover fills it, exactly like every other card.
    *
-   * A device frame around the mobile screenshots was tried and reverted: those
-   * sources are Google Play feature graphics — a headline over a *drawn* phone —
-   * so framing one nested a drawn phone inside a drawn phone, and showing the
-   * whole banner inside the screen shrank it to ~186px wide where none of it was
-   * legible. Covering the panel shows the banner's headline at full size instead.
+   * The square `enjez-mobile` cover is why this matters. Pinned to its own 1:1
+   * ratio at `sm:w-56` it was 224 tall inside a 400 tall card, leaving a 176px
+   * dead band under it — the one card that did not reach the card's height.
    */
-  const plateClass = "absolute inset-0 overflow-hidden";
-  const plateImageClass = "h-full w-full [&_img]:object-cover [&_img]:object-top";
+  const [coverW, coverH] = project.coverAspect;
+
+  // `object-cover` on `sm+`: the cover fills the panel at every source ratio, so
+  // a square source crops to the tall panel instead of letterboxing inside it.
+  const plateImageClass = "h-full w-full [&_img]:object-contain sm:[&_img]:object-cover";
 
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
@@ -198,11 +218,19 @@ const ProjectCard = memo(function ProjectCard({
         >
           <div
             className={cn(
-              "relative flex shrink-0 flex-col overflow-hidden border-border/50 bg-secondary/20",
+              "relative flex shrink-0 flex-col overflow-hidden border-border/50",
+              // Below `sm` the panel is its own row, so it needs a height of its
+              // own: the CSS var carries the source's ratio, and `aspect-[var(--media-aspect)]`
+              // resolves it. From `sm` up the card is a row, so the panel takes
+              // the card's full height instead (`sm:h-auto` + `sm:self-stretch`
+              // drop the ratio) and the cover fills it — the square
+              // `enjez-mobile` cover included, which otherwise sat 224 tall in a
+              // 400 tall card and left a 176px dead band beneath it.
               isWeb
-                ? "w-full border-b"
-                : "aspect-[3/4] w-full border-b sm:aspect-auto sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
+                ? "w-full border-b bg-secondary/20"
+                : "aspect-[var(--media-aspect)] w-full self-start border-b bg-secondary/20 sm:aspect-auto sm:h-auto sm:w-56 sm:self-stretch sm:border-b-0 sm:border-r",
             )}
+            style={isWeb ? undefined : ({ "--media-aspect": `${coverW} / ${coverH}` } as React.CSSProperties)}
           >
             {/* Browser chrome, the same frame the case sheet uses — it says
                 "this is a website" before the crop says anything. */}
@@ -226,12 +254,14 @@ const ProjectCard = memo(function ProjectCard({
               aria-label={`Open ${project.title} screenshots in fullscreen`}
               title="Open fullscreen gallery"
               className={cn(
-                "group relative flex w-full cursor-zoom-in items-center justify-center overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60",
-                // Web sets its own height from the banner's aspect. Mobile fills
-                // the panel through flex rather than `h-full`, so it does not
-                // depend on percentage height resolving against an
-                // aspect-ratio-derived box.
-                isWeb ? "aspect-video" : "min-h-0 flex-1",
+                // `flex-1` claims the panel's leftover height (the panel is a
+                // column), and `items-stretch` keeps the plate full-height on
+                // the row layout — together the plate is the panel's full box,
+                // so `object-cover` fills it. The old `items-center` with no
+                // grow pinned a shorter source to the middle, leaving the band.
+                "group relative flex w-full flex-1 cursor-zoom-in items-stretch overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60",
+                // Web sets its own height from the banner's aspect.
+                isWeb && "aspect-video",
               )}
             >
               {/* PLATE HANDOFF — a `layoutId` must identify exactly one element at
@@ -240,10 +270,15 @@ const ProjectCard = memo(function ProjectCard({
                   so framer sees the element leave the index and land in the
                   sheet, rather than choosing between two live nodes. */}
               {selected ? (
-                <div className={plateClass}>
+                // `contents` keeps the plate's own box (and the image's aspect
+                // with it) in flow — a wrapper with `absolute inset-0` collapsed
+                // the tile to 1px, because an absolutely positioned child adds
+                // no height to its parent.
+                <div className="contents">
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
+                    sizes={MEDIA_SIZES}
                     className={plateImageClass}
                   />
                 </div>
@@ -251,13 +286,18 @@ const ProjectCard = memo(function ProjectCard({
                 <motion.div
                   layoutId={plateId(project.slug)}
                   transition={reducedMotion ? { duration: 0 } : plateTransition}
-                  className={plateClass}
+                  className={plateImageClass}
                 >
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
+                    sizes={MEDIA_SIZES}
                     className={cn(
-                      plateImageClass,
+                      // Match the plate: `contain` while stacked, `cover` on the
+                      // row layout. Without the `sm:` half this inner rule sat
+                      // closer to the <img> than the plate's and won, so a square
+                      // cover stayed 1:1 inside a full-height panel.
+                      "h-full w-full [&_img]:object-contain sm:[&_img]:object-cover",
                       "group-hover:[&_img]:scale-[1.03] [&_img]:transition-transform [&_img]:duration-300",
                     )}
                   />

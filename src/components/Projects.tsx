@@ -171,41 +171,21 @@ const ProjectCard = memo(function ProjectCard({
 }) {
   const open = () => onSelect(project);
 
-  // Web work gets a browser-framed banner above the copy; mobile work keeps a
-  // device tile beside it once there is room for one.
+  // Web work gets a browser-framed banner above the copy; mobile work gets a
+  // panel above it, and a tile beside it once there is room.
   const isWeb = project.kind === "web";
 
   /**
-   * The media box, and the one place the two collections finally diverge.
+   * Both collections fill their media box.
    *
-   * Web covers its banner at every size — a website screenshot is landscape, so
-   * a landscape frame is already the right shape. Mobile does not: on a phone
-   * viewport the tile is ~356x176, and cropping a portrait screenshot into that
-   * box showed only the top ~28% of it, cutting the device off mid-frame. There
-   * the artwork sits whole inside a device body on a 4:5 panel; only once the
-   * tile moves beside the copy (sm+) does it go back to filling the box.
+   * A device frame around the mobile screenshots was tried and reverted: those
+   * sources are Google Play feature graphics — a headline over a *drawn* phone —
+   * so framing one nested a drawn phone inside a drawn phone, and showing the
+   * whole banner inside the screen shrank it to ~186px wide where none of it was
+   * legible. Covering the panel shows the banner's headline at full size instead.
    */
-  const plateBox = cn(
-    "absolute overflow-hidden",
-    isWeb
-      ? "inset-0"
-      : "inset-x-[22%] inset-y-7 rounded-[1.75rem] border border-border/80 bg-card/50 p-1.5 shadow-[0_18px_50px_-26px_rgb(0_0_0/0.95)] sm:inset-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none",
-  );
-
-  const plateImage = cn(
-    "h-full w-full",
-    isWeb
-      ? "[&_img]:object-cover [&_img]:object-top"
-      : "rounded-[1.35rem] sm:rounded-none [&_img]:object-contain sm:[&_img]:object-cover sm:[&_img]:object-top",
-  );
-
-  // A hairline cut-out, so the frame reads as a device rather than as a border.
-  const plateNotch = isWeb ? null : (
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute left-1/2 top-3 z-10 h-1.5 w-12 -translate-x-1/2 rounded-full bg-foreground/25 sm:hidden"
-    />
-  );
+  const plateClass = "absolute inset-0 overflow-hidden";
+  const plateImageClass = "h-full w-full [&_img]:object-cover [&_img]:object-top";
 
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
@@ -221,18 +201,9 @@ const ProjectCard = memo(function ProjectCard({
               "relative flex shrink-0 flex-col overflow-hidden border-border/50 bg-secondary/20",
               isWeb
                 ? "w-full border-b"
-                : "aspect-[4/5] w-full border-b sm:aspect-auto sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
+                : "aspect-[3/4] w-full border-b sm:aspect-auto sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
             )}
           >
-            {/* A soft bloom behind the device — phone viewport only, so the panel
-                reads as lit rather than as an empty grey box. */}
-            {!isWeb && (
-              <span
-                aria-hidden="true"
-                className="uv-orb left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 sm:hidden"
-              />
-            )}
-
             {/* Browser chrome, the same frame the case sheet uses — it says
                 "this is a website" before the crop says anything. */}
             {isWeb && (
@@ -269,29 +240,27 @@ const ProjectCard = memo(function ProjectCard({
                   so framer sees the element leave the index and land in the
                   sheet, rather than choosing between two live nodes. */}
               {selected ? (
-                <div className={plateBox}>
+                <div className={plateClass}>
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
-                    className={plateImage}
+                    className={plateImageClass}
                   />
-                  {plateNotch}
                 </div>
               ) : (
                 <motion.div
                   layoutId={plateId(project.slug)}
                   transition={reducedMotion ? { duration: 0 } : plateTransition}
-                  className={plateBox}
+                  className={plateClass}
                 >
                   <ProjectImage
                     src={project.coverImage}
                     alt={`${project.title} cover preview`}
                     className={cn(
-                      plateImage,
+                      plateImageClass,
                       "group-hover:[&_img]:scale-[1.03] [&_img]:transition-transform [&_img]:duration-300",
                     )}
                   />
-                  {plateNotch}
                 </motion.div>
               )}
               {/* Hover / focus hint — mirrors the inline viewer */}

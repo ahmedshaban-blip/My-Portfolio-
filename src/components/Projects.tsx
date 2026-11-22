@@ -1235,7 +1235,7 @@ const Projects = () => {
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <div className="mb-10 flex justify-center overflow-x-auto pb-2 md:mb-12">
-              {/* One copper rule travels between the collections — the same
+              {/* One bordeaux rule travels between the collections. The same
                   shared-element mechanism as the navbar indicator, so the two
                   read as one instrument measuring the page. */}
               <TabsList className="inline-flex h-12 rounded-full border border-primary/25 bg-secondary/50 p-1 shadow-lg shadow-primary/5">

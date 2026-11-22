@@ -38,17 +38,25 @@ const MESH_SCALE = 0.5;
 // PERFORMANCE: keep the very first mesh build out of the LCP / hero entrance window.
 const START_DELAY_MS = 350;
 
-const GRADIENTS_DARK = [
-  { x: 0.2, y: 0.3, r: 0.35, color: "0.758 0.159 55.9" },
-  { x: 0.8, y: 0.6, r: 0.3, color: "0.705 0.187 47.6" },
-  { x: 0.5, y: 0.8, r: 0.25, color: "0.295 0.018 294.4" },
+// The mesh and the floating snippets carry the palette, so they read the live
+// tokens instead of restating them: a palette change reaches the canvas with
+// the CSS, and there is no second copy to drift. Fallbacks are the current
+// token values. Read once per mesh rebuild — see snippetColorRef.
+const GRADIENT_STOPS = [
+  { x: 0.2, y: 0.3, r: 0.35, token: "--primary" },
+  { x: 0.8, y: 0.6, r: 0.3, token: "--accent" },
+  { x: 0.5, y: 0.8, r: 0.25, token: "--border" },
 ];
+const GRADIENT_FALLBACK = {
+  dark: ["0.64 0.165 355", "0.67 0.17 358", "0.29 0.015 310"],
+  light: ["0.415 0.145 352", "0.47 0.155 355", "0.912 0.006 330"],
+};
+const SNIPPET_FALLBACK = { dark: "0.968 0.006 340", light: "0.215 0.008 320" };
 
-const GRADIENTS_LIGHT = [
-  { x: 0.2, y: 0.3, r: 0.35, color: "0.553 0.174 38.4" },
-  { x: 0.8, y: 0.6, r: 0.3, color: "0.646 0.194 41.1" },
-  { x: 0.5, y: 0.8, r: 0.25, color: "0.913 0.009 84.6" },
-];
+function readToken(name: string, fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
 
 /**
  * PERFORMANCE: the mesh gradient is static — it never drifts between frames.
@@ -65,14 +73,16 @@ function renderMesh(w: number, h: number, isDark: boolean, reducedMotion: boolea
   const lctx = layer.getContext("2d");
   if (!lctx) return null;
 
-  for (const g of isDark ? GRADIENTS_DARK : GRADIENTS_LIGHT) {
+  const fallbacks = isDark ? GRADIENT_FALLBACK.dark : GRADIENT_FALLBACK.light;
+  for (const [i, g] of GRADIENT_STOPS.entries()) {
+    const color = readToken(g.token, fallbacks[i]);
     const px = mw * g.x;
     const py = mh * g.y;
 
     const grad = lctx.createRadialGradient(px, py, 0, px, py, mw * g.r);
-    grad.addColorStop(0, `oklch(${g.color} / ${reducedMotion ? 0.025 : 0.05})`);
-    grad.addColorStop(0.5, `oklch(${g.color} / 0.012)`);
-    grad.addColorStop(1, `oklch(${g.color} / 0)`);
+    grad.addColorStop(0, `oklch(${color} / ${reducedMotion ? 0.025 : 0.05})`);
+    grad.addColorStop(0.5, `oklch(${color} / 0.012)`);
+    grad.addColorStop(1, `oklch(${color} / 0)`);
 
     lctx.fillStyle = grad;
     lctx.fillRect(0, 0, mw, mh);
@@ -105,6 +115,10 @@ export function AnimatedBackground() {
 
   // PERFORMANCE: Pre-compute font string to avoid recreation every frame
   const fontRef = useRef<string>("");
+
+  // Snippet fill colour, refreshed with the mesh. Reading it inside the draw
+  // loop would call getComputedStyle 20×/s and force a style recalc each time.
+  const snippetColorRef = useRef<string>(SNIPPET_FALLBACK.dark);
 
   // Cached mesh layer: rebuilt only when the theme or the canvas size changes.
   const meshRef = useRef<{
@@ -187,6 +201,11 @@ export function AnimatedBackground() {
         meshRef.current = layer
           ? { layer, isDark, w, h, reduced: reducedMotionRef.current }
           : null;
+        // Same cadence as the mesh: the theme just changed, so re-read the token.
+        snippetColorRef.current = readToken(
+          "--foreground",
+          isDark ? SNIPPET_FALLBACK.dark : SNIPPET_FALLBACK.light,
+        );
       }
 
       ctx.clearRect(0, 0, w, h);
@@ -204,9 +223,7 @@ export function AnimatedBackground() {
         const fade = Math.sin(time * 0.5 + p.offset) * 0.5 + 0.5;
         const finalOpacity = p.opacity * fade * speedScale;
 
-        ctx.fillStyle = isDark
-          ? `oklch(0.973 0.009 67.7 / ${finalOpacity})`
-          : `oklch(0.216 0.006 56 / ${finalOpacity})`;
+        ctx.fillStyle = `oklch(${snippetColorRef.current} / ${finalOpacity})`;
         ctx.fillText(p.text, x, moveY);
       }
     };

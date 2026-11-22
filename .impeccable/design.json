@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T10:35:59.855Z",
+  "title": "Design System: Ahmed Shaban — Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "bordeaux-deep": {
+        "role": "primary",
+        "displayName": "Deep Bordeaux",
+        "canonical": "oklch(0.415 0.145 352)",
+        "tonalRamp": [
+          "#2e0016 (oklch(0.18 0.104 352))",
+          "#560030 (oklch(0.28 0.145 352))",
+          "#760f4a (oklch(0.38 0.145 352))",
+          "#973266 (oklch(0.48 0.145 352))",
+          "#b85083 (oklch(0.58 0.145 352))",
+          "#e175a8 (oklch(0.7 0.145 352))",
+          "#f9a8cb (oklch(0.82 0.104 352))",
+          "#ffddeb (oklch(0.93 0.041 352))"
+        ]
+      },
+      "bordeaux-bright": {
+        "role": "primary",
+        "displayName": "Bright Bordeaux",
+        "canonical": "oklch(0.64 0.165 355)",
+        "tonalRamp": [
+          "#320014 (oklch(0.18 0.119 355))",
+          "#5c002d (oklch(0.28 0.165 355))",
+          "#7d0047 (oklch(0.38 0.165 355))",
+          "#9f2662 (oklch(0.48 0.165 355))",
+          "#c1477f (oklch(0.58 0.165 355))",
+          "#eb6da4 (oklch(0.7 0.165 355))",
+          "#ffa3c8 (oklch(0.82 0.119 355))",
+          "#ffdce9 (oklch(0.93 0.046 355))"
+        ]
+      },
+      "bordeaux": {
+        "role": "secondary",
+        "displayName": "Bordeaux",
+        "canonical": "oklch(0.47 0.155 355)",
+        "tonalRamp": [
+          "#300014 (oklch(0.18 0.112 355))",
+          "#5a002d (oklch(0.28 0.155 355))",
+          "#7a0146 (oklch(0.38 0.155 355))",
+          "#9c2c62 (oklch(0.48 0.155 355))",
+          "#bd4c7f (oklch(0.58 0.155 355))",
+          "#e771a3 (oklch(0.7 0.155 355))",
+          "#fea6c8 (oklch(0.82 0.112 355))",
+          "#ffdde9 (oklch(0.93 0.043 355))"
+        ]
+      },
+      "rose-paper": {
+        "role": "neutral",
+        "displayName": "Faint Rose Paper",
+        "canonical": "oklch(0.982 0.003 350)",
+        "tonalRamp": [
+          "#170f12 (oklch(0.18 0.014 350))",
+          "#31252a (oklch(0.28 0.020 350))",
+          "#4b3e44 (oklch(0.38 0.020 350))",
+          "#67595f (oklch(0.48 0.020 350))",
+          "#84767c (oklch(0.58 0.020 350))",
+          "#a99aa0 (oklch(0.7 0.020 350))",
+          "#ccc0c5 (oklch(0.82 0.014 350))",
+          "#ebe6e8 (oklch(0.93 0.006 350))"
+        ]
+      },
+      "zinc-ink": {
+        "role": "neutral",
+        "displayName": "Cool Zinc Ink",
+        "canonical": "oklch(0.215 0.008 320)",
+        "tonalRamp": [
+          "#131014 (oklch(0.18 0.009 320))",
+          "#2c272d (oklch(0.28 0.012 320))",
+          "#454046 (oklch(0.38 0.012 320))",
+          "#615b62 (oklch(0.48 0.012 320))",
+          "#7e787f (oklch(0.58 0.012 320))",
+          "#a29ca3 (oklch(0.7 0.012 320))",
+          "#c7c2c8 (oklch(0.82 0.009 320))",
+          "#e9e7e9 (oklch(0.93 0.003 320))"
+        ]
+      },
+      "violet-zinc": {
+        "role": "neutral",
+        "displayName": "Violet-Cast Zinc",
+        "canonical": "oklch(0.16 0.008 310)",
+        "tonalRamp": [
+          "#131015 (oklch(0.18 0.010 310))",
+          "#2b272e (oklch(0.28 0.014 310))",
+          "#454048 (oklch(0.38 0.014 310))",
+          "#605c64 (oklch(0.48 0.014 310))",
+          "#7d7881 (oklch(0.58 0.014 310))",
+          "#a19ca5 (oklch(0.7 0.014 310))",
+          "#c6c2c9 (oklch(0.82 0.010 310))",
+          "#e9e7ea (oklch(0.93 0.004 310))"
+        ]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone White",
+        "canonical": "oklch(0.968 0.006 340)",
+        "tonalRamp": [
+          "#131112 (oklch(0.18 0.006 340))",
+          "#2c272a (oklch(0.28 0.008 340))",
+          "#454144 (oklch(0.38 0.008 340))",
+          "#615c5f (oklch(0.48 0.008 340))",
+          "#7e787c (oklch(0.58 0.008 340))",
+          "#a29ca0 (oklch(0.7 0.008 340))",
+          "#c7c3c5 (oklch(0.82 0.006 340))",
+          "#e9e7e8 (oklch(0.93 0.002 340))"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display-and-body": {
+        "displayName": "Plus Jakarta Sans",
+        "purpose": "One face carries headings and body. Tracking floor -0.04em. Note: the detector flags this face as overused — see the finish-review finding."
+      }
+    },
+    "shadows": [
+      {
+        "name": "accent-glow",
+        "value": "0 18px 50px -28px oklch(var(--primary-glow) / 0.42)",
+        "purpose": "Lift under primary actions."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 18px 44px -30px oklch(var(--primary) / 0.32)",
+        "purpose": "Cards on hover, alongside border-primary/45."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-colors",
+        "value": "color, background-color, border-color, text-decoration-color, fill, stroke — 300ms",
+        "purpose": "Theme and hover colour swaps. Paint-only, never filter or backdrop-filter."
+      },
+      {
+        "name": "transition-interaction",
+        "value": "color, background-color, border-color, box-shadow, transform, opacity — 200ms",
+        "purpose": "Buttons, social links, card affordances."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration / transition-duration: 0.01ms",
+        "purpose": "OS query, the in-app ReducedMotionToggle, and useAnimationContext all land here."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1400px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action per screen. Bordeaux fill, paper text.",
+      "html": "<button class=\"ds-btn-primary\">Get in touch</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:8px 16px;border:none;border-radius:calc(var(--radius) - 2px);background:oklch(var(--primary));color:oklch(var(--primary-foreground));font-family:inherit;font-size:14px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .2s}.ds-btn-primary:hover{background:oklch(var(--primary) / .9)}.ds-btn-primary:focus-visible{outline:2px solid oklch(var(--ring) / .7);outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action. Quiet border, bordeaux on hover.",
+      "html": "<button class=\"ds-btn-outline\">View CV</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:8px 16px;border:1px solid oklch(var(--input));border-radius:calc(var(--radius) - 2px);background:oklch(var(--background));color:oklch(var(--foreground));font-family:inherit;font-size:14px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .2s,color .2s}.ds-btn-outline:hover{background:oklch(var(--accent));color:oklch(var(--accent-foreground))}.ds-btn-outline:focus-visible{outline:2px solid oklch(var(--ring) / .7);outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "No chrome at rest; bordeaux wash on hover.",
+      "html": "<button class=\"ds-btn-ghost\">Skip</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:8px 16px;border:none;border-radius:calc(var(--radius) - 2px);background:transparent;color:oklch(var(--foreground));font-family:inherit;font-size:14px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .2s,color .2s}.ds-btn-ghost:hover{background:oklch(var(--accent));color:oklch(var(--accent-foreground))}.ds-btn-ghost:focus-visible{outline:2px solid oklch(var(--ring) / .7);outline-offset:2px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Flat quiet field; focus is a ring in the primary hue.",
+      "html": "<input class=\"ds-input\" placeholder=\"you@company.com\" />",
+      "css": ".ds-input{display:flex;height:40px;width:100%;padding:8px 12px;border:1px solid oklch(var(--input));border-radius:calc(var(--radius) - 2px);background:oklch(var(--background));color:oklch(var(--foreground));font-family:inherit;font-size:14px;transition:box-shadow .2s}.ds-input::placeholder{color:oklch(var(--muted-foreground))}.ds-input:focus-visible{outline:none;box-shadow:0 0 0 2px oklch(var(--ring))}.ds-input:disabled{cursor:not-allowed;opacity:.5}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "description": "Availability pill. Accent tint fill carries accent-strong text, never accent text on an accent tint.",
+      "html": "<span class=\"ds-chip\"><span class=\"ds-chip-dot\"></span>Available for new opportunities</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid oklch(var(--accent) / .25);border-radius:999px;background:oklch(var(--accent) / .1);color:oklch(var(--accent-strong));font-family:inherit;font-size:13px;font-weight:600}.ds-chip-dot{width:8px;height:8px;border-radius:999px;background:oklch(var(--success))}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Opaque tinted surface, quiet border, no blur. Hover moves the border, not the geometry.",
+      "html": "<div class=\"ds-card\"><strong>Clean Code</strong><p>Production-ready applications with maintainable and scalable code.</p></div>",
+      "css": ".ds-card{padding:24px;border:1px solid oklch(var(--border) / .7);border-radius:16px;background:oklch(var(--card));color:oklch(var(--card-foreground));font-family:inherit;transition:border-color .3s,box-shadow .3s}.ds-card strong{display:block;margin-bottom:8px;font-size:17px;font-weight:700}.ds-card p{margin:0;color:oklch(var(--muted-foreground));font-size:14px;line-height:1.6}.ds-card:hover{border-color:oklch(var(--primary) / .45);box-shadow:0 18px 44px -30px oklch(var(--primary) / .32)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Bordeaux & Bone",
+    "overview": "We reject generic blue-slate templates, neon gradients, gradient text, and decorative glassmorphism. The palette takes its cues from a wine-cellar ledger, oxblood ink, and near-black zinc: tinted neutrals, a deliberate bordeaux primary, and a bordeaux accent one step lighter. Tokens use OKLCH for predictable perceptual contrast across themes. The two hues are deliberately close — primary sits at hue 352 and accent at 355. They are not a two-color scheme. Primary carries structure (buttons, links, focus, active state); accent marks secondary emphasis (the CV menu's Frontend track, section eyebrows, ambient glows). Neutrals are tinted toward the zinc hue in dark mode and toward rose paper in light, so nothing reads as a pure gray.",
+    "keyCharacteristics": [
+      "One hue family 3° apart, on purpose — primary carries structure, accent carries secondary emphasis.",
+      "Light mode is faint rose paper with cool zinc ink; dark mode is near-black violet-cast zinc with bone text.",
+      "Cards are opaque tinted surfaces with quiet borders; blur is reserved for functional overlays and sticky navigation.",
+      "WCAG AA is a hard floor; every token pair is measured, not eyeballed.",
+      "No token value is restated in TypeScript — the canvas, snippets, and charts read the live custom properties."
+    ],
+    "rules": [
+      {
+        "name": "The Two-Job Primary Rule",
+        "section": "colors",
+        "body": "In dark mode `--primary` is a button fill *and* a link/text colour at once, so its lightness stays at or above 0.62. Depth in this world lives in the grounds, the neutrals, and the light theme — never darken the dark-theme primary to chase \"deep\", because it breaks link contrast at the same time."
+      },
+      {
+        "name": "The One Copy Rule",
+        "section": "colors",
+        "body": "No token value is restated in TypeScript. The canvas mesh, the floating snippets, and the chart series all read the live custom properties. A second copy drifts silently, and the drift is invisible until someone opens the theme that the copy was not written for."
+      }
+    ],
+    "dos": [
+      "Do use `text-accent-strong` on any `bg-accent/*` fill.",
+      "Do keep body and small text at 4.5:1 or better, and re-check both themes after any token change.",
+      "Do read tokens at runtime (custom properties) instead of restating them in TypeScript.",
+      "Do keep ambient colour low-opacity so it never competes with text."
+    ],
+    "donts": [
+      "Don't place accent text on a fill tinted with that same accent.",
+      "Don't use gradient fills for text emphasis.",
+      "Don't restate a token value in TypeScript. Apply token colours as inline declarations rather than as SVG presentation attributes: a declaration is the unambiguous path for `var()` substitution, and support for `var()` in presentation attributes is not something this project has verified beyond Chromium.",
+      "Don't use blur as decoration.",
+      "Don't darken the dark-theme primary below 0.62 lightness."
+    ]
+  }
+}

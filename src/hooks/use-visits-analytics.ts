@@ -53,15 +53,17 @@ type StatsResponse = {
   peakDay: string;
 };
 
+// Theme-aware: these used to be literal dark-theme values, so the light theme
+// charted dark colours. The tokens follow whichever theme is live.
 const SOURCE_COLORS: Record<string, string> = {
-  Google: "oklch(0.646 0.194 41.1)",
-  Social: "oklch(0.758 0.159 55.9)",
-  Direct: "oklch(0.553 0.012 58.1)",
+  Google: "oklch(var(--chart-1))",
+  Social: "oklch(var(--chart-2))",
+  Direct: "oklch(var(--chart-3))",
 };
 const DEVICE_COLORS: Record<string, string> = {
-  Mobile: "oklch(0.553 0.174 38.4)",
-  Desktop: "oklch(0.705 0.187 47.6)",
-  Tablet: "oklch(0.716 0.009 56.3)",
+  Mobile: "oklch(var(--chart-1))",
+  Desktop: "oklch(var(--chart-2))",
+  Tablet: "oklch(var(--chart-3))",
 };
 
 function toPercentMap(record: Record<string, number>, colors: Record<string, string>, fallback: string) {
@@ -117,8 +119,8 @@ function mapStatsResponse(json: StatsResponse): AnalyticsData {
     deltaWeek: 0,
     daily: json.daily,
     hourly: json.hourly,
-    sources: toPercentMap(json.sources, SOURCE_COLORS, "oklch(0.716 0.009 56.3)"),
-    devices: toPercentMap(json.devices, DEVICE_COLORS, "oklch(0.716 0.009 56.3)").map((d) => ({
+    sources: toPercentMap(json.sources, SOURCE_COLORS, "oklch(var(--chart-3))"),
+    devices: toPercentMap(json.devices, DEVICE_COLORS, "oklch(var(--chart-3))").map((d) => ({
       label: (d.label[0] ?? "").toUpperCase() + d.label.slice(1),
       value: d.value,
       color: d.color,

@@ -267,7 +267,7 @@ export function directionVariantMobile(direction: RevealDirection = "up"): Varia
 // sheet as one shared element (`layoutId="plate-<slug>"`). It is the only
 // morph on the site: the index and the case are the same artefact seen twice.
 //
-// THE INDEX RULE — the copper fill that travels between the Mobile / Web
+// THE INDEX RULE — the bordeaux fill that travels between the Mobile / Web
 // collections, and between navbar sections. Same material, same curve, so the
 // two read as one mechanism measuring the page.
 //

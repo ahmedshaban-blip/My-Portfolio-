@@ -44,7 +44,10 @@ function Donut({ slices }: { slices: { label: string; value: number; color: stri
               cy="60"
               r={R}
               fill="none"
-              stroke={s.color}
+              // Inline declaration, not the presentation attribute: the slice
+              // colour is a `var(--chart-N)` reference, and a declaration is the
+              // unambiguous path for custom-property substitution.
+              style={{ stroke: s.color }}
               strokeWidth="16"
               strokeLinecap="round"
               strokeDasharray={`${Math.max(len - 3, 1)} ${C}`}
@@ -98,7 +101,7 @@ export function AnalyticsSection() {
       });
       const json = (await res.json()) as { ok?: boolean; deleted?: number; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Reset failed.");
-      setResetMsg(`Cleared ${json.deleted ?? 0} keys — starting fresh.`);
+      setResetMsg(`Cleared ${json.deleted ?? 0} keys. Starting fresh.`);
       await queryClient.invalidateQueries({ queryKey: ["visits-analytics"] });
     } catch (error) {
       setResetMsg(error instanceof Error ? error.message : "Reset failed.");
@@ -131,7 +134,7 @@ export function AnalyticsSection() {
                   </span>
                 )}
                 {(data?.botsToday ?? 0) > 0 && (
-                  <span className="num inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools — excluded from visitor stats">
+                  <span className="num inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground" title="Crawlers and speed-test tools, excluded from visitor stats">
                     <Bot className="h-3 w-3" aria-hidden="true" /> {data?.botsToday} bot hits filtered
                   </span>
                 )}
@@ -197,7 +200,7 @@ export function AnalyticsSection() {
         <>
           {data.source === "live" && !data.hasData && (
             <p className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
-              Tracking is active — real numbers will appear here with the first visits.
+              Tracking is active. Real numbers will appear here with the first visits.
               Until then the layout below shows zeros.
             </p>
           )}
@@ -239,7 +242,7 @@ export function AnalyticsSection() {
               <CardHeader className="pb-2">
                 <div className="flex items-baseline justify-between gap-2">
                   <div>
-                    <CardTitle className="text-lg">Visits — {rangeTitle(range)}</CardTitle>
+                    <CardTitle className="text-lg">Visits: {rangeTitle(range)}</CardTitle>
                     <CardDescription className="num">{data.rangeLabel} · Peak: {data.peakDay}</CardDescription>
                   </div>
                   <Badge variant="outline" className="num rounded-full">{data.daily.reduce((s, d) => s + d.visits, 0).toLocaleString()} total</Badge>
@@ -293,7 +296,7 @@ export function AnalyticsSection() {
             <Card className="modern-card glass-effect">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg"><Activity className="h-4 w-4 text-primary" /> Activity by hour</CardTitle>
-                <CardDescription>Today · peak 8–10 PM</CardDescription>
+                <CardDescription>Today · peak 8 to 10 PM</CardDescription>
               </CardHeader>
               <CardContent>
                 {data.hourly.length === 0 ? (
@@ -359,7 +362,7 @@ export function AnalyticsSection() {
                 )}
                 {data.source === "empty" && (
                 <p className="rounded-xl border border-border/60 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
-                  Tracking isn't storing data — check Upstash Redis env vars and redeploy.
+                  Tracking isn't storing data. Check the Upstash Redis env vars and redeploy.
                 </p>
                 )}
               </CardContent>
@@ -438,7 +441,7 @@ export function AnalyticsSection() {
                     const [a, b] = data.cv;
                     const lead = a.total >= b.total ? a : b;
                     const share = Math.round((lead.total / (a.total + b.total)) * 100);
-                    return `${lead.track} CV takes ${share}% of downloads — order it first on the site.`;
+                    return `${lead.track} CV takes ${share}% of downloads, so order it first on the site.`;
                   })()}
                 </p>
               )}
@@ -509,7 +512,7 @@ export function AnalyticsSection() {
                     const views = (data.cvViews ?? []).reduce((s, c) => s + c.total, 0);
                     if (views === 0) {
                       return downloads > 0
-                        ? `No in-browser reads yet — ${downloads.toLocaleString()} downloads so far.`
+                        ? `No in-browser reads yet. ${downloads.toLocaleString()} downloads so far.`
                         : "No CV activity recorded yet.";
                     }
                     const ratio = Math.round((downloads / views) * 100);

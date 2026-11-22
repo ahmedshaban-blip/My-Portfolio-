@@ -1,6 +1,7 @@
 import { Github, Linkedin, Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
+import { contact, identity, social, whatsappUrl } from "@/data/profile";
 
 const QUICK_LINKS = [
   { label: "Home", href: "#home" },
@@ -13,15 +14,12 @@ const QUICK_LINKS = [
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const whatsappUrl = `https://wa.me/201114975104?text=${encodeURIComponent(
-    "Hello Ahmed, I saw your portfolio and would like to connect"
-  )}`;
 
   const socials = [
-    { icon: Github, href: "https://github.com/ahmedshaban-blip", label: "GitHub" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/ahmed-shaban-front-cross", label: "LinkedIn" },
+    { icon: Github, href: social.github, label: "GitHub" },
+    { icon: Linkedin, href: social.linkedin, label: "LinkedIn" },
     { icon: WhatsAppIcon, href: whatsappUrl, label: "WhatsApp" },
-    { icon: Mail, href: "mailto:ahmed.shabaan.dev@gmail.com", label: "Email" },
+    { icon: Mail, href: `mailto:${contact.email}`, label: "Email" },
   ];
 
   return (
@@ -32,7 +30,7 @@ const Footer = () => {
             {/* The closing beat: the quietest arrival on the page, one arrival for
                 the whole footer — nothing here is a list. */}
             <p className="font-display text-lg font-bold tracking-tight text-foreground">
-              Ahmed Shaban
+              {identity.name.display}
             </p>
 
             <nav aria-label="Footer" className="mt-6">
@@ -67,7 +65,7 @@ const Footer = () => {
 
             <div className="mt-8 space-y-1.5">
               <p className="text-xs text-muted-foreground">
-                © {currentYear} Ahmed Shaban. All rights reserved.
+                © {currentYear} {identity.name.display}. All rights reserved.
               </p>
               <p className="text-xs text-muted-foreground">
                 Built with React, Vite, and Tailwind CSS.

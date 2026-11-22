@@ -34,5 +34,19 @@ export async function downloadCV(type: CVTrack) {
     return;
   }
 
-  triggerDownload(config.fallbackUrl, config.fileName);
+  // Cloudinary is unreachable. Walk the local fallbacks from `cv.json` in order
+  // and use the first one that actually answers — a listed file that is missing
+  // from `public/` is skipped instead of stranding the visitor.
+  for (const fallbackUrl of config.fallbackUrls) {
+    if (await canReachRemoteCV(fallbackUrl)) {
+      triggerDownload(fallbackUrl, config.fileName);
+      return;
+    }
+  }
+
+  // Nothing answered a HEAD request. Hand over the first candidate anyway so the
+  // click still does something (the browser shows its own 404) rather than
+  // failing silently.
+  const [firstFallback] = config.fallbackUrls;
+  if (firstFallback) triggerDownload(firstFallback, config.fileName);
 }

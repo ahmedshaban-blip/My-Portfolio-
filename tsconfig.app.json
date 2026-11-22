@@ -9,6 +9,8 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
+    /* src/data/profile ships the personal data as .json files */
+    "resolveJsonModule": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

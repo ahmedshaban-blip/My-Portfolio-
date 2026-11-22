@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Smartphone, Globe, Database, Code2, Terminal, ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  Code2,
+  Database,
+  Globe,
+  Smartphone,
+  Terminal,
+  type LucideIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { HoverCard } from "@/components/animations/HoverCard";
@@ -8,63 +16,24 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { easeProfessional, listEntryDelay } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { skills } from "@/data/profile";
 
-type SkillCategory = {
-  icon: ReactNode;
-  title: string;
-  description: string;
-  skills: string[];
-  colSpan?: string;
-  /** Collapsed chip count — keeps initial scan within working-memory limits. */
-  visibleCount: number;
+/**
+ * Categories, skills, chip counts and column spans all come from
+ * `src/data/profile/skills.json`. The JSON stores each icon as a KEY rather
+ * than a component — the valid keys are listed in `src/data/profile/README.txt`
+ * and mapped here. An unknown key falls back to `terminal`.
+ */
+const ICONS: Record<string, LucideIcon> = {
+  smartphone: Smartphone,
+  globe: Globe,
+  globe2: Globe,
+  database: Database,
+  code2: Code2,
+  terminal: Terminal,
 };
 
 const Skills = () => {
-  const skillCategories: SkillCategory[] = [
-    {
-      icon: <Smartphone className="w-5 h-5" />,
-      title: "Mobile Development",
-      description: "Flutter & React Native",
-      skills: ["Flutter & Dart", "React Native", "Clean Architecture (MVVM)", "Bloc/Cubit", "GetX", "Provider", "Web Socket", "Flutter Animations"],
-      visibleCount: 5
-    },
-    {
-      icon: <Globe className="w-5 h-5" />,
-      title: "Frontend Web",
-      description: "React & Modern Web",
-      skills: ["React 18", "Redux Toolkit", "JavaScript (ES6+)", "Tailwind CSS", "Vite", "React Router v6", "SPA Architecture"],
-      visibleCount: 4
-    },
-    {
-      icon: <Database className="w-5 h-5" />,
-      title: "Backend & APIs",
-      description: "Services & Integration",
-      skills: ["REST APIs", "Firebase Auth", "Firestore", "Supabase Storage", "Firebase Storage", "Push Notifications", "i18next"],
-      visibleCount: 4
-    },
-    {
-      icon: <Code2 className="w-5 h-5" />,
-      title: "Core Technologies",
-      description: "Foundations & Tools",
-      skills: ["HTML5", "CSS3", "TypeScript", "Git & GitHub", "JSON Parsing", "RESTful APIs", "Vercel"],
-      visibleCount: 4
-    },
-    {
-      icon: <Terminal className="w-5 h-5" />,
-      title: "AI-Assisted Development",
-      description: "My daily tooling",
-      skills: [
-        "Claude (Claude Code)",
-        "OpenAI Codex / ChatGPT",
-        "Prompt Engineering & Workflow Automation",
-        "AI-Driven Testing & Code Review"
-      ],
-      colSpan: "md:col-span-2",
-      visibleCount: 4
-    },
-  ];
-
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const { reducedMotion } = useAnimationContext();
 
@@ -101,12 +70,13 @@ const Skills = () => {
             className="mb-12"
           />
 
-          {/* The five categories are one grid, so one trigger reveals it and the
+          {/* The categories are one grid, so one trigger reveals it and the
               cards land in reading order — previously each card ran its own
               `whileInView` with an index-based delay, so they fired at
               different scroll positions and read as unrelated pops. */}
           <SectionReveal className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {skillCategories.map((category) => {
+            {skills.categories.map((category) => {
+              const Icon = ICONS[category.icon] ?? Terminal;
               const isExpanded = !!expanded[category.title];
               const needsToggle = category.skills.length > category.visibleCount;
               const visibleSkills = isExpanded
@@ -124,7 +94,7 @@ const Skills = () => {
                   <div className="uv-panel h-full p-6">
                     <div className="flex items-center gap-4 mb-5">
                       <div className="w-12 h-12 rounded-xl bg-primary/15 text-accent-strong flex items-center justify-center">
-                        {category.icon}
+                        <Icon className="w-5 h-5" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold tracking-tight text-foreground">{category.title}</h3>

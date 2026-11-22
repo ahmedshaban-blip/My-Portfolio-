@@ -1,0 +1,56 @@
+{
+  "heading": {
+    "eyebrow": "Explore Now",
+    "title": "About Me"
+  },
+  "bio": [
+    [
+      {
+        "text": "As a passionate software engineer, I thrive on the intricate dance between logic and creativity. Currently immersed in the dynamic world of mobile and web development, my expertise centers around "
+      },
+      { "text": "Flutter", "strong": true },
+      { "text": ", where I seamlessly blend technology with innovation." }
+    ],
+    [
+      {
+        "text": "With a fervor for crafting elegant solutions, I navigate the ever-evolving landscape of software development. My journey involves translating concepts into code, creating seamless user experiences, and constantly pushing the boundaries of what's possible."
+      }
+    ],
+    [
+      { "text": "I hold a " },
+      { "text": "Bachelor's Degree in Computer Science", "strong": true },
+      {
+        "text": " from the Faculty of Computer and Information, Minya University, and trained as a Front-end and Cross-Platform Developer at the "
+      },
+      { "text": "Information Technology Institute (ITI)", "strong": true },
+      {
+        "text": ". Most of my mobile work is Flutter and React Native with Clean Architecture and API integrations; on the web I use React and Redux Toolkit."
+      }
+    ]
+  ],
+  "highlights": [
+    {
+      "icon": "smartphone",
+      "title": "Mobile Dev",
+      "description": "Flutter and React Native, structured with Clean Architecture."
+    },
+    {
+      "icon": "code2",
+      "title": "Web Tech",
+      "description": "React, Redux Toolkit, and Tailwind CSS."
+    },
+    {
+      "icon": "terminal",
+      "title": "Clean Code",
+      "description": "Production code that stays maintainable after launch."
+    },
+    {
+      "icon": "globe2",
+      "title": "Integrations",
+      "description": "Firebase, Supabase, Stripe, and PayPal integrations."
+    }
+  ],
+  "stats": [
+    { "value": "10+", "label": "Projects Completed" }
+  ]
+}

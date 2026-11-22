@@ -1,0 +1,56 @@
+{
+  "roles": [
+    {
+      "company": "Truck World",
+      "title": "Front-end (ERP Next, React.js) and Flutter Developer",
+      "date": "Jan 2026 – Present, Saudi Arabia",
+      "summary": [
+        "Develop and maintain web applications using React.js.",
+        "Build responsive, user-friendly interfaces from Figma and Adobe XD.",
+        "Integrate RESTful APIs and handle data flow across the app.",
+        "Collaborate with designers and backend developers for seamless integration.",
+        "Use Git for version control and effective team collaboration.",
+        "Build and maintain HR management applications."
+      ],
+      "tech": ["React.js", "Redux", "Tailwind CSS", "Flutter", "REST APIs", "Git"]
+    },
+    {
+      "company": "Sawa",
+      "title": "Flutter Developer",
+      "date": "Feb 2026 – Present, Alexandria, Egypt",
+      "summary": [
+        "Develop and maintain mobile applications using Flutter and Dart.",
+        "Build responsive and user-friendly UI from Figma and Adobe XD.",
+        "Integrate RESTful APIs and handle data flow.",
+        "Assist in app deployment on Google Play and the Apple App Store."
+      ],
+      "tech": ["Flutter", "Dart", "REST APIs", "Google Play", "App Store"]
+    },
+    {
+      "company": "Information Technology Institute (ITI)",
+      "title": "Front-end and Cross-Platform Developer",
+      "date": "Jul 2025 – Nov 2025, Egypt",
+      "summary": [
+        "Developed production-ready mobile screens using Flutter.",
+        "Implemented state management with Bloc, Cubit, and GetX.",
+        "Integrated REST APIs and handled JSON parsing.",
+        "Worked with Firebase Auth, Firestore, and push notifications.",
+        "Built engaging web UIs using React and Redux.",
+        "Integrated Stripe and PayPal payments.",
+        "Followed Clean Architecture principles and Git/GitHub workflows."
+      ],
+      "tech": ["Flutter", "Bloc/Cubit", "GetX", "Firebase", "React", "Stripe", "PayPal"]
+    }
+  ],
+  "coursesHeading": "Selected Courses & Certifications",
+  "courses": [
+    "Deep Dive into Clean Architecture in Flutter",
+    "Flutter Advanced – Clean Architecture & MVVM",
+    "Flutter – Animations from Zero to Hero",
+    "Mastering Flutter: Responsive & Adaptive UI Design",
+    "Complete Flutter & Dart Development Course",
+    "HTML, CSS, and JavaScript (ITI)",
+    "React Native Web Application (ITI)",
+    "Payment Integration: Stripe, PayPal & More (ITI)"
+  ]
+}

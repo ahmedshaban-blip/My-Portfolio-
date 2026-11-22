@@ -1,0 +1,32 @@
+{
+  "name": {
+    "first": "Ahmed",
+    "last": "Shaban",
+    "display": "Ahmed Shaban",
+    "legal": "AHMED SHABAN HASSAN"
+  },
+  "jobTitle": "Flutter & Front-end Developer",
+  "role": {
+    "title": "Front-end (ERP Next, React.js) and Flutter Developer",
+    "company": "Truck World",
+    "companyCountry": "Saudi Arabia",
+    "employment": "Full-time"
+  },
+  "hero": {
+    "greeting": "Ahmed Shaban!",
+    "tagline": [
+      { "text": "I do Code & " },
+      { "text": "Chill", "accent": true },
+      { "text": " " },
+      { "text": "🍿", "ariaHidden": true }
+    ],
+    "intro": "Passionate Software Engineer with a focus on Flutter and front-end development, dedicated to crafting elegant and user-friendly applications.",
+    "availabilityBadge": "Available for new opportunities",
+    "photo": {
+      "base": "/images/personal-image",
+      "width": 640,
+      "height": 640,
+      "widths": [320, 640, 960]
+    }
+  }
+}

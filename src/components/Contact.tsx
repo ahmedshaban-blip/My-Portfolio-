@@ -11,8 +11,10 @@ import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { contact, location, locationShort } from "@/data/profile";
 
-const CONTACT_EMAIL = "ahmed.shabaan.dev@gmail.com";
+/** Local alias so the copy-to-clipboard helpers below read cleanly. */
+const CONTACT_EMAIL = contact.email;
 const NAME_MAX = 100;
 const EMAIL_MAX = 254;
 const MESSAGE_MAX = 2000;
@@ -168,10 +170,10 @@ const Contact = () => {
                     <div>
                       <h3 className="font-semibold text-base mb-1 text-foreground">Email</h3>
                       <a
-                        href="mailto:ahmed.shabaan.dev@gmail.com"
+                        href={`mailto:${contact.email}`}
                         className="text-muted-foreground hover:text-accent-strong transition-colors text-sm"
                       >
-                        ahmed.shabaan.dev@gmail.com
+                        {contact.email}
                       </a>
                     </div>
                   </div>
@@ -187,10 +189,10 @@ const Contact = () => {
                     <div>
                       <h3 className="font-semibold text-base mb-1 text-foreground">Phone / WhatsApp</h3>
                       <a
-                        href="tel:+201114975104"
+                        href={`tel:${contact.phone.e164}`}
                         className="text-muted-foreground hover:text-accent-strong transition-colors text-sm"
                       >
-                        (+20) 1114975104
+                        {contact.phone.display}
                       </a>
                     </div>
                   </div>
@@ -205,8 +207,10 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base mb-1 text-foreground">Location</h3>
-                      <p className="text-muted-foreground text-sm">Minya, Egypt</p>
-                      <p className="text-xs text-muted-foreground mt-1">Available to relocate</p>
+                      <p className="text-muted-foreground text-sm">{locationShort}</p>
+                      {location.availableToRelocate && (
+                        <p className="text-xs text-muted-foreground mt-1">Available to relocate</p>
+                      )}
                     </div>
                   </div>
                 </div>

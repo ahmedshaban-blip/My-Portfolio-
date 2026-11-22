@@ -1,0 +1,18 @@
+{
+  "tracks": {
+    "flutter": {
+      "label": "Flutter Developer CV",
+      "description": "Overwrite the public Flutter developer PDF.",
+      "cloudinaryPublicId": "flutter_cv.pdf",
+      "fileName": "Ahmed_Shaban_Flutter_CV.pdf",
+      "fallbackUrls": ["/ahmed-shaban-flutter-cv.pdf"]
+    },
+    "frontend": {
+      "label": "Frontend Developer CV",
+      "description": "Overwrite the public frontend developer PDF.",
+      "cloudinaryPublicId": "frontend_cv.pdf",
+      "fileName": "Ahmed_Shaban_Frontend_CV.pdf",
+      "fallbackUrls": ["/ahmed-shaban-frontend-cv.pdf"]
+    }
+  }
+}

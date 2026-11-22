@@ -1,8 +1,18 @@
 import { createHash } from "crypto";
 
+/**
+ * SINGLE SOURCE OF TRUTH — the same `cv.json` the download route and the front
+ * end read.
+ *
+ * This endpoint signs an `overwrite` upload to `public_id`, so if these ids ever
+ * drifted from `api/download-cv.ts` the dashboard would overwrite one asset
+ * while the site served another.
+ */
+import cvProfile from "../src/data/profile/cv.json";
+
 const CV_PUBLIC_IDS = {
-  flutter: "flutter_cv.pdf",
-  frontend: "frontend_cv.pdf",
+  flutter: cvProfile.tracks.flutter.cloudinaryPublicId,
+  frontend: cvProfile.tracks.frontend.cloudinaryPublicId,
 } as const;
 
 type CVTrack = keyof typeof CV_PUBLIC_IDS;

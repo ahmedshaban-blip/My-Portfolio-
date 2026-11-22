@@ -3,6 +3,10 @@
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
     "baseUrl": ".",
+    /* `api/download-cv.ts` imports src/data/profile/cv.json so the CV asset
+       names have one source of truth. Vercel transpiles these files with
+       esbuild; this flag lets an editor resolve the import too. */
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"]
     },

@@ -10,22 +10,22 @@ const About = () => {
     {
       icon: <Smartphone className="w-6 h-6" />,
       title: "Mobile Dev",
-      description: "Expert in Flutter & React Native with Clean Architecture patterns."
+      description: "Flutter and React Native, structured with Clean Architecture."
     },
     {
       icon: <Code2 className="w-6 h-6" />,
       title: "Web Tech",
-      description: "Modern web apps using React, Redux Toolkit, and Tailwind CSS."
+      description: "React, Redux Toolkit, and Tailwind CSS."
     },
     {
       icon: <Terminal className="w-6 h-6" />,
       title: "Clean Code",
-      description: "Production-ready applications with maintainable and scalable code."
+      description: "Production code that stays maintainable after launch."
     },
     {
       icon: <Globe2 className="w-6 h-6" />,
       title: "Integrations",
-      description: "Experienced in Firebase, Supabase, Stripe, and PayPal gateways."
+      description: "Firebase, Supabase, Stripe, and PayPal integrations."
     }
   ];
 
@@ -52,10 +52,10 @@ const About = () => {
                   </p>
                   <div className="flex flex-col gap-4">
                     <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
-                      Passionate developer solving problems through code.
+                      I build cross-platform apps in Flutter and React.
                     </h2>
                     <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
-                      Full-time at Truck World, building HR management systems and cross-platform apps.
+                      Full-time at Truck World in Saudi Arabia, building HR management systems.
                     </p>
                   </div>
                 </div>
@@ -64,13 +64,10 @@ const About = () => {
               <RevealOnScroll direction="right" delay={0.1}>
                 <div className="space-y-5 text-base md:text-lg text-muted-foreground leading-relaxed">
                   <p>
-                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, a passionate developer with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>.
+                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>. At the <span className="text-foreground font-semibold">Information Technology Institute (ITI)</span> I worked as a Front-end and Cross-Platform Developer, building in <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>.
                   </p>
                   <p>
-                    During my internship at the <span className="text-foreground font-semibold">Information Technology Institute (ITI)</span>, I worked as a Front-end and Cross-Platform Developer, gaining hands-on experience with <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>.
-                  </p>
-                  <p>
-                    I specialize in creating <span className="text-foreground font-semibold">cross-platform mobile applications</span> using <span className="text-primary font-semibold">Flutter</span> and <span className="text-primary font-semibold">React Native</span> with Clean Architecture and seamless API integrations. On the web side, I build responsive web applications using <span className="text-primary font-semibold">React</span> and Redux Toolkit.
+                    Most of my mobile work is <span className="text-primary font-semibold">Flutter</span> and <span className="text-primary font-semibold">React Native</span> with Clean Architecture and API integrations. On the web I use <span className="text-primary font-semibold">React</span> and Redux Toolkit.
                   </p>
                 </div>
               </RevealOnScroll>

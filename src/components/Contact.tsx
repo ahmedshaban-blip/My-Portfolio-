@@ -113,7 +113,7 @@ const Contact = () => {
       setMailtoBlocked(true);
       toast.error("Message is too long for an email link.", {
         description:
-          "Shorten your message, or copy the email address below and send it from your email app instead.",
+          "Shorten it, or copy the address below and send from your own email app.",
       });
       return;
     }
@@ -136,7 +136,7 @@ const Contact = () => {
       setMailtoBlocked(true);
       toast.error("Could not open your email app.", {
         description:
-          "Copy the email address below and send your message manually — your text is preserved.",
+          "Copy the email address below and send your message manually. Your text is preserved.",
       });
     }
   };
@@ -160,7 +160,7 @@ const Contact = () => {
                   Have a mobile or web role? Let&apos;s talk.
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  Available for Flutter mobile apps, front-end web projects, and remote opportunities.
+                  Available for Flutter and front-end work, on-site or remote.
                 </p>
               </div>
               <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ const Contact = () => {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Opens your email app with the message pre-filled — nothing is sent until you
+                    Opens your email app with the message pre-filled. Nothing is sent until you
                     press Send there.
                   </p>
 
@@ -314,8 +314,8 @@ const Contact = () => {
                         Your email app could not be opened automatically.
                       </p>
                       <p className="mt-1 text-muted-foreground break-words">
-                        Copy {CONTACT_EMAIL} and paste your message into a new email —
-                        your text above is preserved.
+                        Copy {CONTACT_EMAIL} and paste your message into a new email. Your text
+                        above is preserved.
                       </p>
                     </div>
                   )}

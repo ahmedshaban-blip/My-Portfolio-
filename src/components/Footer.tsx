@@ -30,8 +30,8 @@ const Footer = () => {
             <div className="space-y-4">
               <h3 className="text-2xl font-bold text-gradient">Ahmed Shaban</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Flutter Developer & Front-end Web Developer building cross-platform mobile apps and
-                modern web experiences.
+                Flutter Developer and Front-end Web Developer. Cross-platform mobile apps and
+                web front ends.
               </p>
             </div>
 

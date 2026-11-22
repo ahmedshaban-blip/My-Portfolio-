@@ -29,13 +29,13 @@ export const flutterProjects: Project[] = [
     title: "CV Builder App",
     shortTitle: "CV Builder",
     role: "Flutter Developer",
-    description: "Built a cross-platform Flutter application to create, edit, and export ATS-friendly resumes with secure, real-time sync across devices.",
+    description: "A cross-platform Flutter app for creating, editing, and exporting ATS-friendly resumes, with real-time sync across devices.",
     techStack: ["Flutter", "Dart", "Firebase", "Google Sign-In", "Firebase Auth", "Provider State Management"],
     features: [
       "Create, edit, and export ATS-friendly resumes",
       "Secure authentication using Firebase Auth and Google Sign-In",
       "Real-time data sync across devices with Firebase",
-      "Seamless cross-platform experience"
+      "Runs on Android and iOS from one codebase"
     ],
     github: "https://github.com/ahmedshaban-blip/Cv_Builder",
     demo: "https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder",
@@ -58,13 +58,13 @@ export const flutterProjects: Project[] = [
     title: "Nassy – AI Arabic Copywriting Studio",
     shortTitle: "Nassy",
     role: "Flutter Developer",
-    description: "AI-powered Arabic editorial studio built with Flutter and Supabase that turns raw ideas into eloquent, platform-optimized copy for X, LinkedIn, Instagram, and Facebook with enterprise-grade client-side encryption.",
+    description: "An Arabic editorial studio built with Flutter and Supabase that turns rough ideas into copy tuned for X, LinkedIn, Instagram, and Facebook, with client-side encryption.",
     techStack: ["Flutter", "Dart", "Supabase", "Bloc/Cubit", "Clean Architecture", "Gemini API", "AES-256-GCM BYOK"],
     features: [
       "Platform-tailored Arabic copy for X, LinkedIn, Instagram, and Facebook",
       "Multi-draft tone variations: persuasive, concise, storytelling, inspiring",
       "Dual quota engine: managed free tier with atomic claims + BYOK (Gemini/OpenAI)",
-      "PIN-derived AES-256-GCM key vault — keys never stored in plain text",
+      "PIN-derived AES-256-GCM key vault; keys are never stored in plain text",
       "Cloud history with live search and platform filters",
       "RTL-first Obsidian Amber editorial UI with forced/optional update gate"
     ],
@@ -89,7 +89,7 @@ export const flutterProjects: Project[] = [
     title: "RSS Reader Pro",
     shortTitle: "RSS Reader Pro",
     role: "Flutter Developer",
-    description: "Modern RSS reader with article parsing, clean architecture, and smooth UI.",
+    description: "RSS reader with article parsing, Clean Architecture, and a simple reading UI.",
     techStack: ["Flutter", "Dart", "XML Parsing", "Url Launcher", "Share Plus"],
     features: ["Fetch RSS feeds", "Article pagination", "Image extraction", "Social sharing"],
     github: "https://github.com/ahmedshaban-blip/rss-reader",
@@ -108,12 +108,12 @@ export const flutterProjects: Project[] = [
     kind: "mobile",
     title: "Enjez Mobile Application",
     role: "Cross-Platform Developer",
-    description: "Connects users with trusted home service providers, allowing booking and payment management.",
+    description: "Connects clients with home service providers, including booking and payment management.",
     techStack: ["React Native", "Expo", "Firebase", "PayPal", "RAG Technique"],
     features: [
       "Role-based access (Client / Provider)",
-      "Advanced Recommendation System for personalized services",
-      "Intelligent AI Chatbot integrated with RAG technique",
+      "Recommendation system for personalized services",
+      "AI chatbot with RAG support",
       "Secure PayPal payment integration",
       "Real-time service discovery and tracking"
     ],
@@ -275,7 +275,7 @@ export const frontendProjects: Project[] = [
     kind: "web",
     title: "Melano – Luxury Cosmetics E-Commerce Platform",
     role: "Frontend Web Developer",
-    description: "A modern, luxurious e-commerce platform for high-end cosmetics built with React 19, Vite 8, and Supabase. Melano combines a refined customer storefront with a streamlined admin dashboard, delivering an elegant shopping and store management experience.",
+    description: "A cosmetics e-commerce platform built with React 19, Vite 8, and Supabase. It pairs a customer storefront with an admin dashboard for products, orders, and inventory.",
     techStack: ["React 19", "Redux Toolkit", "Tailwind CSS", "Supabase", "AI Integration"],
     features: [
       "Product discovery by collections, categories, brands, offers, and detailed product pages",
@@ -321,11 +321,11 @@ export const frontendProjects: Project[] = [
     kind: "web",
     title: "Enjez Services Website",
     role: "Frontend Web Developer",
-    description: "Service booking platform connecting users with professional agencies.",
+    description: "Service booking platform connecting clients with service agencies.",
     techStack: ["React 18", "Redux Toolkit", "Tailwind CSS", "Stripe", "AI Integration"],
     features: [
       "Agency and Client dashboards",
-      "Smart Recommendation System for users",
+      "Recommendation system for users",
       "AI Chatbot with RAG support for automated assistance",
       "Secure Stripe payment integration",
       "Real-time agency messaging system"
@@ -346,7 +346,7 @@ export const frontendProjects: Project[] = [
     kind: "web",
     title: "E-Commerce Website",
     role: "Frontend Web Developer",
-    description: "Comprehensive store with auth, wishlist, and admin analytics dashboard.",
+    description: "Store with auth, wishlist, and an admin analytics dashboard.",
     techStack: ["JavaScript", "Firebase Auth", "Firestore", "PayPal SDK"],
     features: ["Admin Dashboard", "Inventory tracking", "Order management", "PayPal integration"],
     github: "https://github.com/ahmedshaban-blip/E-Commerce-WebSite",

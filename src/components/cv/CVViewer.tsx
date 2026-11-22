@@ -40,7 +40,7 @@ export function CVViewer({ track, className, onError }: CVViewerProps) {
       <iframe
         key={src}
         src={src}
-        title={`${label} — inline PDF viewer`}
+        title={`${label}, inline PDF viewer`}
         className="h-full w-full"
         referrerPolicy="no-referrer"
         onLoad={() => setLoading(false)}

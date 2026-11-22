@@ -146,7 +146,7 @@ const Hero = () => {
                 <span className="text-foreground font-semibold"> Flutter</span>,
                 <span className="text-foreground font-semibold"> React Native</span>, and
                 <span className="text-foreground font-semibold"> React</span>.
-                I build high-performance, cross-platform experiences with clean code.
+                I build and ship cross-platform apps.
               </p>
               <p className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/40 px-3 py-1">

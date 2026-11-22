@@ -139,7 +139,7 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        aria-label={chips ? `${label} Flutter Frontend — read or download` : `${label} — read or download`}
+        aria-label={chips ? `${label} Flutter Frontend: read or download` : `${label}: read or download`}
         onClick={() => setOpen((value) => !value)}
       >
         <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -168,7 +168,7 @@ export function CVReadMenu({ label = "CV", chips = false, className, onAction, a
             ref={panelRef}
             id={menuId}
             role="menu"
-            aria-label="CV options — choose a track, then read or download"
+            aria-label="CV options: choose a track, then read or download"
             initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: dropUp ? 6 : -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: dropUp ? 6 : -6, scale: 0.98 }}

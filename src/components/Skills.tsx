@@ -54,7 +54,7 @@ const Skills = () => {
     {
       icon: <Terminal className="w-5 h-5" />,
       title: "AI-Assisted Development",
-      description: "Accelerated Velocity & Clean Code",
+      description: "My daily tooling",
       skills: [
         "Claude (Claude Code)",
         "OpenAI Codex / ChatGPT",
@@ -99,7 +99,7 @@ const Skills = () => {
                   Technical <span className="text-gradient">Skills</span>
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  Focused stack for building production-ready mobile and web apps.
+                  The stack I use for mobile and web apps.
                 </p>
               </div>
             </div>

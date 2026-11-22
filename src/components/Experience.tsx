@@ -94,7 +94,7 @@ const Experience = () => {
                   Experience &amp; <span className="text-gradient">Education</span>
                 </h2>
                 <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  A timeline of my professional growth, academic achievements, and continuous learning.
+                  Roles and degree, most recent first.
                 </p>
               </div>
             </div>
@@ -131,7 +131,7 @@ const Experience = () => {
                       {[
                         "Develop and maintain web applications using React.js",
                         "Build responsive and user-friendly UI from Figma and Adobe XD",
-                        "Integrate RESTful APIs and handle data flow efficiently",
+                        "Integrate RESTful APIs and handle data flow",
                         "Collaborate with designers and backend developers for seamless integration",
                         "Use Git for version control and effective team collaboration",
                         "Build HR management applications"
@@ -175,7 +175,7 @@ const Experience = () => {
                       {[
                         "Develop and maintain mobile applications using Flutter and Dart",
                         "Build responsive and user-friendly UI from Figma and Adobe XD",
-                        "Integrate RESTful APIs and handle data flow efficiently",
+                        "Integrate RESTful APIs and handle data flow",
                         "Assist in app deployment on Google Play and Apple App Store"
                       ].map((item, i) => (
                         <li key={i} className="flex items-start gap-2.5">
@@ -267,7 +267,7 @@ const Experience = () => {
                     </div>
 
                     <p className="text-muted-foreground leading-relaxed">
-                      Solid foundation in software engineering, algorithms, and problem-solving, with a focus on delivering high-quality architectural solutions.
+                      Solid coursework in software engineering, algorithms, and problem-solving, applied to the architecture of the projects above.
                     </p>
                   </div>
                 </div>

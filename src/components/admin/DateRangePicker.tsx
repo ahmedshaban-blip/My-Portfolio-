@@ -148,7 +148,7 @@ export function DateRangePicker({ value, active, onApply, onClear }: DateRangePi
               );
             })}
             <p className="mt-auto hidden px-2 pb-1 pt-4 text-[11px] font-medium leading-relaxed text-muted-foreground sm:block">
-              Or pick any start and end date on the calendar — spans over 180 days are grouped by month.
+              Or pick any start and end date on the calendar. Spans over 180 days are grouped by month.
             </p>
           </aside>
 

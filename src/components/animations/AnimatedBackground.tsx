@@ -341,7 +341,7 @@ export function AnimatedBackground() {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       aria-hidden="true"
-      style={{ opacity: 0.55 }}
+      style={{ opacity: 0.32 }}
     />
   );
 }

@@ -100,8 +100,8 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Plus Jakarta Sans',
   				'Inter',
+  				'Poppins',
   				'ui-sans-serif',
   				'system-ui',
   				'-apple-system',
@@ -111,6 +111,13 @@ export default {
   				'Helvetica Neue',
   				'Arial',
   				'Noto Sans',
+  				'sans-serif'
+  			],
+  			display: [
+  				'Poppins',
+  				'Inter',
+  				'ui-sans-serif',
+  				'system-ui',
   				'sans-serif'
   			],
   			serif: [

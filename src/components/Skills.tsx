@@ -2,10 +2,9 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Smartphone, Globe, Database, Code2, Terminal, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { HoverCard } from "@/components/animations/HoverCard";
+import { SectionHeading } from "@/components/SectionHeading";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { easeProfessional, listEntryDelay } from "@/lib/animation-variants";
 import { cn } from "@/lib/utils";
@@ -75,35 +74,32 @@ const Skills = () => {
   const slug = (title: string) =>
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
+  // The reference's outlined chip, tinted rather than filled: muted at rest,
+  // the accent step on hover. `text-accent-strong` is the token solved for
+  // text that sits on an accent-tinted fill.
   const chip =
-    "px-3 py-1.5 text-xs font-medium rounded-full border border-border/40 bg-secondary/30 text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-200 cursor-default";
+    "px-3 py-1.5 text-xs font-medium rounded-full border border-border/45 bg-secondary/40 text-muted-foreground hover:bg-primary/15 hover:text-accent-strong hover:border-primary/40 transition-colors duration-200 cursor-default";
 
   return (
     <section id="skills" className="section-padding relative">
-      <div className="container mx-auto px-4">
+      {/* Decorative layer: one low-strength bloom for the section, contained.
+          The reference reads as lit, never hazy. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="uv-orb -left-[6%] top-[6%] h-80 w-72" />
+      </div>
+
+      <div className="container relative z-10 mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12">
-          {/* The heading band sits above the grid it introduces, so it drops
-              in from the top edge — the page's own reading order. */}
-          <RevealOnScroll direction="down">
-            <div className="space-y-4">
-              <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
-                <Code2 size={14} aria-hidden="true" />
-                <span>My Expertise</span>
-                <span
-                  className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-balance">
-                  Technical <span className="text-gradient">Skills</span>
-                </h2>
-                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  The stack I use for mobile and web apps.
-                </p>
-              </div>
-            </div>
-          </RevealOnScroll>
+          <SectionHeading
+            eyebrow="Explore Now"
+            title={
+              <>
+                Technical <span className="text-gradient">Skills</span>
+              </>
+            }
+            description="The stack I use for mobile and web apps."
+            className="mb-12"
+          />
 
           {/* The five categories are one grid, so one trigger reveals it and the
               cards land in reading order — previously each card ran its own
@@ -125,9 +121,9 @@ const Skills = () => {
                 className={cn("h-full", category.colSpan)}
               >
                 <HoverCard scale={1.01} className="h-full">
-                  <Card className="modern-card border-border/50 rounded-2xl p-6 h-full">
+                  <div className="uv-panel h-full p-6">
                     <div className="flex items-center gap-4 mb-5">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-primary/15 text-accent-strong flex items-center justify-center">
                         {category.icon}
                       </div>
                       <div>
@@ -165,7 +161,7 @@ const Skills = () => {
                         aria-expanded={isExpanded}
                         aria-controls={listId}
                         onClick={() => toggle(category.title)}
-                        className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors rounded-md px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-strong hover:text-primary transition-colors rounded-md px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                       >
                         {isExpanded
                           ? "Show less"
@@ -179,7 +175,7 @@ const Skills = () => {
                         />
                       </button>
                     )}
-                  </Card>
+                  </div>
                 </HoverCard>
               </SectionItem>
               );

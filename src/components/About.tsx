@@ -1,134 +1,129 @@
 import { Code2, Globe2, Smartphone, Terminal } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
 import { HoverCard } from "@/components/animations/HoverCard";
+import { SectionHeading } from "@/components/SectionHeading";
 import { playStoreApps } from "@/data/projects";
 
 const About = () => {
   const highlights = [
     {
-      icon: <Smartphone className="w-6 h-6" />,
+      icon: <Smartphone className="w-5 h-5" />,
       title: "Mobile Dev",
-      description: "Flutter and React Native, structured with Clean Architecture."
+      description: "Flutter and React Native, structured with Clean Architecture.",
     },
     {
-      icon: <Code2 className="w-6 h-6" />,
+      icon: <Code2 className="w-5 h-5" />,
       title: "Web Tech",
-      description: "React, Redux Toolkit, and Tailwind CSS."
+      description: "React, Redux Toolkit, and Tailwind CSS.",
     },
     {
-      icon: <Terminal className="w-6 h-6" />,
+      icon: <Terminal className="w-5 h-5" />,
       title: "Clean Code",
-      description: "Production code that stays maintainable after launch."
+      description: "Production code that stays maintainable after launch.",
     },
     {
-      icon: <Globe2 className="w-6 h-6" />,
+      icon: <Globe2 className="w-5 h-5" />,
       title: "Integrations",
-      description: "Firebase, Supabase, Stripe, and PayPal integrations."
-    }
+      description: "Firebase, Supabase, Stripe, and PayPal integrations.",
+    },
+  ];
+
+  // The reference's two opening paragraphs, re-pointed at Ahmed's own practice.
+  const paragraphs = [
+    <>
+      As a passionate software engineer, I thrive on the intricate dance between logic and
+      creativity. Currently immersed in the dynamic world of mobile and web development, my
+      expertise centers around <span className="font-semibold text-foreground">Flutter</span>,
+      where I seamlessly blend technology with innovation.
+    </>,
+    <>
+      With a fervor for crafting elegant solutions, I navigate the ever-evolving landscape of
+      software development. My journey involves translating concepts into code, creating seamless
+      user experiences, and constantly pushing the boundaries of what&apos;s possible.
+    </>,
+    <>
+      I hold a{" "}
+      <span className="font-semibold text-foreground">Bachelor&apos;s Degree in Computer Science</span>{" "}
+      from the Faculty of Computer and Information, Minya University, and trained as a Front-end and
+      Cross-Platform Developer at the{" "}
+      <span className="font-semibold text-foreground">Information Technology Institute (ITI)</span>.
+      Most of my mobile work is Flutter and React Native with Clean Architecture and API
+      integrations; on the web I use React and Redux Toolkit.
+    </>,
   ];
 
   return (
-    <section id="about" className="section-padding relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03] bg-[radial-gradient(oklch(var(--border))_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Side: Content — enters from its reading origin (the left
-                gutter), so the column arrives the way it is read. */}
-            <div className="space-y-8">
-              <RevealOnScroll direction="right">
-                <div className="space-y-6">
-                  <p className="flex items-baseline gap-3 text-xs font-bold tracking-[0.25em] uppercase text-primary">
-                    <span>About me</span>
-                    <span
-                      className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
-                      aria-hidden="true"
-                    />
-                  </p>
-                  <div className="flex flex-col gap-4">
-                    <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
-                      I build cross-platform apps in Flutter and React.
-                    </h2>
-                    <p className="max-w-md text-muted-foreground text-base md:text-lg leading-relaxed">
-                      Full-time at Truck World in Saudi Arabia, building HR management systems.
-                    </p>
-                  </div>
-                </div>
-              </RevealOnScroll>
+    <section id="about" className="section-padding relative">
+      {/* One bloom, low-strength, behind the content — the section's only
+          decorative layer. */}
+      <div aria-hidden="true" className="uv-orb -left-[10%] bottom-[-12%] h-80 w-80" />
 
-              <RevealOnScroll direction="right" delay={0.1}>
-                <div className="space-y-5 text-base md:text-lg text-muted-foreground leading-relaxed">
-                  <p>
-                    I'm <span className="text-foreground font-semibold">Ahmed Shaban</span>, with a <span className="text-foreground font-semibold">Bachelor's Degree in Computer Science</span> from the <span className="text-primary font-semibold">Faculty of Computer and Information, Minya University</span>. At the <span className="text-foreground font-semibold">Information Technology Institute (ITI)</span> I worked as a Front-end and Cross-Platform Developer, building in <span className="text-foreground font-semibold">Flutter</span>, <span className="text-foreground font-semibold">React Native</span>, and <span className="text-foreground font-semibold">React</span>.
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl">
+            <SectionHeading eyebrow="Explore Now" title="About Me" />
+
+            <RevealOnScroll className="mt-8 space-y-5 text-center text-base leading-relaxed text-muted-foreground md:text-[1.0625rem]">
+              {paragraphs.map((paragraph, i) => (
+                <p key={i} className="text-pretty">
+                  {paragraph}
+                </p>
+              ))}
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={0.1}>
+              {/* Single home for the 10+ fact — ITI + A+ live in Experience. */}
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-10">
+                <div className="text-center">
+                  <p className="text-4xl font-bold tracking-tight text-accent-strong tabular-nums md:text-5xl">
+                    10+
                   </p>
-                  <p>
-                    Most of my mobile work is <span className="text-primary font-semibold">Flutter</span> and <span className="text-primary font-semibold">React Native</span> with Clean Architecture and API integrations. On the web I use <span className="text-primary font-semibold">React</span> and Redux Toolkit.
+                  <p className="mt-1 text-sm text-muted-foreground">Projects Completed</p>
+                </div>
+                <div
+                  className="hidden h-14 w-px bg-gradient-to-b from-transparent via-border to-transparent sm:block"
+                  aria-hidden="true"
+                />
+                <div className="text-center">
+                  <p className="text-4xl font-bold tracking-tight text-accent-strong tabular-nums md:text-5xl">
+                    {playStoreApps.length}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    App{playStoreApps.length === 1 ? "" : "s"} Live on Google Play
                   </p>
                 </div>
-              </RevealOnScroll>
-
-              <RevealOnScroll direction="right" delay={0.2}>
-                {/* Single home for the 10+ fact — ITI + A+ live in Experience. */}
-                <div className="pt-4 flex flex-wrap items-center gap-8">
-                  <div className="text-center sm:text-left">
-                    <p className="text-4xl md:text-5xl font-extrabold tracking-tight text-primary tabular-nums">10+</p>
-                    <p className="text-sm text-muted-foreground mt-1">Projects Completed</p>
-                  </div>
-                  <div className="w-px h-14 bg-gradient-to-b from-transparent via-primary/40 to-transparent hidden sm:block" aria-hidden="true" />
-                  <div className="text-center sm:text-left">
-                    <p className="text-4xl md:text-5xl font-extrabold tracking-tight text-success tabular-nums">{playStoreApps.length}</p>
-                    <p className="text-sm text-muted-foreground mt-1">App{playStoreApps.length === 1 ? "" : "s"} Live on Google Play</p>
-                  </div>
-                </div>
-              </RevealOnScroll>
-            </div>
-
-            {/* Right Side: Highlights Grid — the four cards are a list, so they
-                arrive as one staggered group on the section rather than as one
-                block that snaps in. The opposing column enters from the other
-                edge, so the two halves close on the centre line. */}
-            <SectionReveal>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {highlights.map((item, index) => (
-                  <SectionItem key={index} direction="left" className="h-full">
-                    <HoverCard scale={1.02} className="h-full">
-                      <Card className="modern-card border-border/50 rounded-2xl group hover:border-primary/50 transition-colors duration-300 overflow-hidden h-full">
-                        <CardContent className="p-6 space-y-4">
-                          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                            {item.icon}
-                          </div>
-                          <div className="space-y-2">
-                            <h3 className="text-lg font-bold tracking-tight text-foreground">{item.title}</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              {item.description}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </HoverCard>
-                  </SectionItem>
-                ))}
               </div>
-            </SectionReveal>
-
+            </RevealOnScroll>
           </div>
+
+          {/* The four practice cards are one list, so they arrive as one
+              staggered group on the section rather than four separate pops. */}
+          <SectionReveal className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {highlights.map((item, index) => (
+              <SectionItem key={index} className="h-full">
+                <HoverCard scale={1.02} className="h-full">
+                  <div className="uv-panel group h-full transition-colors duration-300 hover:border-primary/50">
+                    <div className="space-y-3 p-6 text-center sm:text-left">
+                      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-accent-strong transition-transform duration-300 group-hover:scale-110 sm:mx-0">
+                        {item.icon}
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-base font-semibold tracking-tight text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </HoverCard>
+              </SectionItem>
+            ))}
+          </SectionReveal>
         </div>
       </div>
-
-      {/* Background Decorative Element — gradient, not a blur filter */}
-      <div
-        aria-hidden="true"
-        className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at center, oklch(var(--primary) / 0.06) 0%, transparent 70%)",
-        }}
-      />
     </section>
   );
 };

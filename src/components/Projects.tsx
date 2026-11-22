@@ -13,7 +13,6 @@ import {
   Smartphone,
   Globe,
   Code2,
-  Zap,
   Play,
   Clapperboard,
   ImageOff,
@@ -25,6 +24,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { HoverCard } from "@/components/animations/HoverCard";
+import { SectionHeading } from "@/components/SectionHeading";
 import { useAnimationContext } from "@/hooks/useAnimationContext";
 import { staggerContainer, staggerItem, plateTransition, indexRuleTransition, sheetTransition, stepTransition } from "@/lib/animation-variants";
 import { flutterProjects, frontendProjects, type Project, type DemoKind } from "@/data/projects";
@@ -77,20 +77,12 @@ const ProjectImage = memo(function ProjectImage({
           className,
         )}
       >
-        <div
-          className="absolute inset-0 opacity-40"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 30% 20%, oklch(var(--primary) / 0.12) 0, transparent 50%), radial-gradient(circle at 70% 80%, oklch(var(--accent) / 0.08) 0, transparent 50%)",
-          }}
-        />
         {failed ? (
           <button
             type="button"
             onClick={() => setFailed(false)}
             aria-label={`Retry loading ${alt}`}
-            className="relative flex flex-col items-center gap-2 rounded-xl p-4 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="relative flex flex-col items-center gap-2 rounded-xl p-4 text-muted-foreground transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           >
             <ImageOff size={24} aria-hidden="true" />
             <span className="text-xs font-medium underline underline-offset-4">Tap to retry</span>
@@ -129,7 +121,7 @@ const ProjectImage = memo(function ProjectImage({
               setLoaded(false);
             }}
             aria-label={`Retry loading ${alt}`}
-            className="rounded-full border border-border/60 bg-background/80 px-3 py-1 text-[11px] font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="rounded-full border border-border/60 bg-background/80 px-3 py-1 text-[11px] font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           >
             Retry
           </button>
@@ -179,76 +171,128 @@ const ProjectCard = memo(function ProjectCard({
 }) {
   const open = () => onSelect(project);
 
+  // Web work gets a browser-framed banner above the copy; mobile work keeps the
+  // tall phone tile beside it. The shape follows the artwork's aspect.
+  const isWeb = project.kind === "web";
+  // Both kinds fill their media box edge to edge. A contained image sat in the
+  // middle of the tile with empty bands above and below it, which read as a
+  // half-finished card. Cover + top bias shows the top of the screen, which is
+  // where a phone app or a website puts its identity.
+  const imageFit = "[&_img]:object-cover [&_img]:object-top";
+
   return (
     <HoverCard scale={reducedMotion ? 1 : 1.02} className="flex w-full flex-1 flex-col self-stretch min-h-0">
       <article className="flex w-full min-h-0 flex-1 flex-col">
-        <Card className="modern-card group flex flex-1 flex-col overflow-hidden border-border/50">
-          <button
-            type="button"
-            onClick={() => onFullscreen(project)}
-            aria-label={`Open ${project.title} screenshots in fullscreen`}
-            title="Open fullscreen gallery"
-            className="group relative flex h-48 w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60 sm:h-56 md:h-64"
-          >
-            {/* PLATE HANDOFF — a `layoutId` must identify exactly one element at
-                a time. While this project's case sheet is open, the viewer's
-                plate is the leader; the card keeps a plain (unprojected) plate
-                so framer sees the element leave the index and land in the
-                sheet, rather than choosing between two live nodes. */}
-            {selected ? (
-              <div className="absolute inset-0">
-                <ProjectImage
-                  src={project.coverImage}
-                  alt={`${project.title} cover preview`}
-                  className="h-full w-full [&_img]:object-contain"
-                />
-              </div>
-            ) : (
-              <motion.div
-                layoutId={plateId(project.slug)}
-                transition={reducedMotion ? { duration: 0 } : plateTransition}
-                className="absolute inset-0"
-              >
-                <ProjectImage
-                  src={project.coverImage}
-                  alt={`${project.title} cover preview`}
-                  className="h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:object-contain [&_img]:transition-transform [&_img]:duration-300"
-                />
-              </motion.div>
+        <Card
+          className={cn(
+            "group flex flex-1 flex-col overflow-hidden rounded-xl border border-border/60 bg-card/50 transition-colors duration-300 hover:border-primary/60",
+            !isWeb && "sm:flex-row",
+          )}
+        >
+          <div
+            className={cn(
+              "relative flex shrink-0 flex-col overflow-hidden border-border/50 bg-secondary/20",
+              isWeb
+                ? "w-full border-b"
+                : "h-44 w-full border-b sm:h-auto sm:w-44 sm:border-b-0 sm:border-r",
             )}
-            {/* Hover / focus hint — mirrors the inline viewer */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100"
-            >
-              <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
-                <Expand size={14} /> Fullscreen
-              </span>
-            </span>
-          </button>
+          >
+            {/* Browser chrome, the same frame the case sheet uses — it says
+                "this is a website" before the crop says anything. */}
+            {isWeb && (
+              <div
+                className="flex shrink-0 items-center gap-1.5 border-b border-border/50 bg-secondary/30 px-3 py-2"
+                aria-hidden="true"
+              >
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="ml-1.5 truncate rounded-md bg-background/70 px-2 py-0.5 text-[10px] text-muted-foreground">
+                  {demoHost(project.demo)}
+                </span>
+              </div>
+            )}
 
-          <CardHeader className="relative z-10 flex flex-1 flex-col p-6">
-            <div className="mb-4 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => onFullscreen(project)}
+              aria-label={`Open ${project.title} screenshots in fullscreen`}
+              title="Open fullscreen gallery"
+              className={cn(
+                "group relative flex w-full cursor-zoom-in items-center justify-center overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60",
+                isWeb ? "aspect-video" : "h-full",
+              )}
+            >
+              {/* PLATE HANDOFF — a `layoutId` must identify exactly one element at
+                  a time. While this project's case sheet is open, the viewer's
+                  plate is the leader; the card keeps a plain (unprojected) plate
+                  so framer sees the element leave the index and land in the
+                  sheet, rather than choosing between two live nodes. */}
+              {selected ? (
+                <div className="absolute inset-0">
+                  <ProjectImage
+                    src={project.coverImage}
+                    alt={`${project.title} cover preview`}
+                    className={cn("h-full w-full", imageFit)}
+                  />
+                </div>
+              ) : (
+                <motion.div
+                  layoutId={plateId(project.slug)}
+                  transition={reducedMotion ? { duration: 0 } : plateTransition}
+                  className="absolute inset-0"
+                >
+                  <ProjectImage
+                    src={project.coverImage}
+                    alt={`${project.title} cover preview`}
+                    className={cn(
+                      "h-full w-full group-hover:[&_img]:scale-[1.03] [&_img]:transition-transform [&_img]:duration-300",
+                      imageFit,
+                    )}
+                  />
+                </motion.div>
+              )}
+              {/* Hover / focus hint — mirrors the inline viewer */}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "pointer-events-none absolute inset-0 z-10 items-center justify-center bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/10 group-hover:opacity-100 group-focus-visible:opacity-100",
+                  // On the short mobile card the hint would cover the whole tile.
+                  isWeb ? "flex" : "hidden sm:flex",
+                )}
+              >
+                <span className="flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-transform duration-200 group-hover:translate-y-0">
+                  <Expand size={14} /> Fullscreen
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <CardHeader className="relative z-10 flex flex-1 flex-col p-5 md:p-6">
+            <div className="mb-3 flex items-center justify-between gap-2">
               <span
                 className={cn(
-                  "rounded-xl border p-2.5 shadow-sm",
+                  "rounded-lg border p-2",
                   isFlutter
-                    ? "border-primary/20 bg-primary/10 text-primary"
-                    : "border-accent/20 bg-accent/10 text-accent",
+                    ? "border-primary/30 bg-primary/15 text-accent-strong"
+                    : "border-border/60 bg-secondary/40 text-foreground",
                 )}
                 aria-hidden="true"
               >
-                {isFlutter ? <Smartphone size={18} /> : <Globe size={18} />}
+                {isFlutter ? <Smartphone size={16} /> : <Globe size={16} />}
               </span>
               <Badge
                 variant="outline"
-                className="rounded-full border-border/40 bg-background/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider"
+                className="rounded-full border-border/70 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground"
               >
                 {project.role}
               </Badge>
             </div>
 
-            <CardTitle className="mb-2 line-clamp-2 text-xl font-extrabold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary md:min-h-[2lh] md:text-2xl">
+            {/* Reserved line heights: without them a one-line title sat above a
+                two-line one, so every row beneath it (chips, actions) started
+                at a different y across the row of cards. */}
+            <CardTitle className="mb-2 line-clamp-2 text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent-strong md:min-h-[2lh] md:text-xl">
               {project.title}
             </CardTitle>
 
@@ -260,7 +304,7 @@ const ProjectCard = memo(function ProjectCard({
               {project.techStack.slice(0, 4).map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-full border border-border/30 bg-secondary/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
+                  className="rounded-full border border-border/60 px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
                 >
                   {tech}
                 </span>
@@ -272,9 +316,9 @@ const ProjectCard = memo(function ProjectCard({
               )}
             </div>
 
-            <div className="mt-auto flex items-center gap-2 border-t border-border/30 pt-4">
+            <div className="mt-auto flex items-center gap-2 border-t border-border/40 pt-4">
               <Button
-                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-colors hover:bg-primary/90"
+                className="h-11 min-h-[44px] flex-1 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                 onClick={open}
               >
                 View case <ChevronRight size={14} className="ml-1" aria-hidden="true" />
@@ -282,7 +326,7 @@ const ProjectCard = memo(function ProjectCard({
               <Button
                 size="icon"
                 variant="outline"
-                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/40 transition-colors duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                className="h-11 min-h-[44px] w-11 shrink-0 rounded-full border-border/60 transition-colors duration-200 hover:border-primary/50 hover:bg-primary/15 hover:text-accent-strong"
                 asChild
               >
                 <a
@@ -1053,7 +1097,7 @@ const DialogTechStack = memo(function DialogTechStack({ project }: { project: Pr
           <Badge
             key={t}
             variant="outline"
-            className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-colors duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
+            className="cursor-default rounded-full border-border/40 bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground transition-colors duration-200 hover:border-primary/40 hover:bg-primary/15 hover:text-accent-strong"
           >
             {t}
           </Badge>
@@ -1213,24 +1257,16 @@ const Projects = () => {
             gutter so the page reads as a single column of bands, not five
             differently-inset panels. */}
         <div className="mx-auto max-w-6xl">
-          {/* Editorial split header — deliberately breaks the centered pill + gradient formula shared with Skills. */}
-          <div className="mb-10 md:mb-14">
-            <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-              <Zap size={14} aria-hidden="true" />
-              <span>Selected work</span>
-              <span
-                className="h-px flex-1 bg-gradient-to-r from-primary/60 via-primary/25 to-transparent"
-                aria-hidden="true"
-              />
-            </div>
-            <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-4xl font-extrabold tracking-tight leading-[1.02] text-balance md:text-6xl xl:text-7xl">
-                Featured <span className="text-gradient">Projects</span>
-              </h2>
-              <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-right md:text-lg">
-                A selection of my work, from mobile architectures to web applications.
-              </p>
-            </div>
+          <div className="mx-auto mb-12 max-w-3xl md:mb-16">
+            <SectionHeading
+              eyebrow="Explore Now"
+              title={
+                <>
+                  Featured <span className="text-gradient">Projects</span>
+                </>
+              }
+              description="A selection of my work, from mobile architectures to web applications."
+            />
           </div>
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
@@ -1238,7 +1274,7 @@ const Projects = () => {
               {/* One bordeaux rule travels between the collections. The same
                   shared-element mechanism as the navbar indicator, so the two
                   read as one instrument measuring the page. */}
-              <TabsList className="inline-flex h-12 rounded-full border border-primary/25 bg-secondary/50 p-1 shadow-lg shadow-primary/5">
+              <TabsList className="inline-flex h-12 rounded-full border border-border/70 bg-transparent p-1">
                 <TabsTrigger
                   value="flutter"
                   className="relative rounded-full px-6 text-sm font-semibold transition-colors data-[state=active]:text-primary-foreground md:px-8 md:text-base"
@@ -1246,7 +1282,7 @@ const Projects = () => {
                   {tab === "flutter" && (
                     <motion.span
                       layoutId="projects-index-rule"
-                      className="absolute inset-0 rounded-full bg-primary shadow-md shadow-primary/30"
+                      className="absolute inset-0 rounded-full bg-primary"
                       transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
                       aria-hidden="true"
                     />
@@ -1263,7 +1299,7 @@ const Projects = () => {
                   {tab === "frontend" && (
                     <motion.span
                       layoutId="projects-index-rule"
-                      className="absolute inset-0 rounded-full bg-primary shadow-md shadow-primary/30"
+                      className="absolute inset-0 rounded-full bg-primary"
                       transition={reducedMotion ? { duration: 0 } : indexRuleTransition}
                       aria-hidden="true"
                     />
@@ -1284,7 +1320,7 @@ const Projects = () => {
                 initial={reducedMotion ? false : "hidden"}
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
+                className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2"
               >
                 {flutterProjects.map((project, index) => (
                   <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
@@ -1307,7 +1343,7 @@ const Projects = () => {
                 initial={reducedMotion ? false : "hidden"}
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
+                className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2"
               >
                 {frontendProjects.map((project, index) => (
                   <motion.div key={project.slug} variants={staggerItem} className="flex flex-col self-stretch min-h-0">
@@ -1418,7 +1454,7 @@ const Projects = () => {
                       })()}
                       <Button
                         variant="outline"
-                        className="h-11 min-w-0 flex-1 rounded-full border-border/50 text-sm transition-colors duration-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                        className="h-11 min-w-0 flex-1 rounded-full border-border/50 text-sm transition-colors duration-300 hover:border-primary/50 hover:bg-primary/15 hover:text-accent-strong"
                         asChild
                       >
                         <a href={selected.github} target="_blank" rel="noopener noreferrer">

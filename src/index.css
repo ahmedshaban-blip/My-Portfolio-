@@ -4,143 +4,312 @@
 
 @layer base {
   :root {
-    /* Light mode: Bordeaux & Bone: faint rose paper, cool zinc ink. */
-    --background: 0.982 0.003 350;
-    --foreground: 0.215 0.008 320;
-    --card: 0.999 0.001 340;
-    --card-foreground: 0.215 0.008 320;
-    --popover: 0.999 0.001 340;
-    --popover-foreground: 0.215 0.008 320;
-    --primary: 0.415 0.145 352;
-    --primary-foreground: 0.982 0.003 350;
-    --primary-glow: 0.52 0.16 355;
-    --secondary: 0.955 0.005 330;
-    --secondary-foreground: 0.215 0.008 320;
-    --muted: 0.955 0.005 330;
-    --muted-foreground: 0.52 0.014 330;
-    --accent: 0.47 0.155 355;
-    --accent-foreground: 0.982 0.003 350;
+    /* Light mode ("Paper Fan"). The reference is authored dark (pure black,
+       a violet accent, a fan of hairline ellipses). This theme is the same
+       system on paper: white ground, near-black ink, the same violet darkened
+       until it clears AA on white (#6B46E0 measures 5.9:1 on #FFFFFF; the
+       reference's own #9C83FF would measure 2.6:1 and is a dark-mode-only
+       value). Hairlines invert to a pale grey so the fan keeps its weight. */
+    --background: 1 0 0;                      /* #ffffff */
+    --foreground: 0.145 0 0;                  /* #0a0a0a */
+    --card: 0.985 0 0;                        /* #fafafa */
+    --card-foreground: 0.145 0 0;             /* #0a0a0a */
+    --popover: 1 0 0;                         /* #ffffff */
+    --popover-foreground: 0.145 0 0;          /* #0a0a0a */
+    --primary: 0.5283 0.22 287.3;             /* #6b46e0 */
+    --primary-foreground: 1 0 0;              /* #ffffff */
+    --primary-glow: 0.631 0.2352 299.9;       /* #a259ff */
+    --secondary: 0.96 0 0;                    /* #f2f2f2 */
+    --secondary-foreground: 0.145 0 0;        /* #0a0a0a */
+    --muted: 0.96 0 0;                        /* #f2f2f2 */
+    --muted-foreground: 0.56 0 0;             /* #6b6b6b */
+    --accent: 0.5283 0.22 287.3;              /* #6b46e0 */
+    --accent-foreground: 1 0 0;               /* #ffffff */
     /* Accent used as TEXT on a fill tinted with the same accent
-       (`bg-accent/10`-`/20`). A self-tint lifts the background toward the text,
-       so the tighter the fill, the worse it reads: measured 5.38:1 at /10 and
-       4.64:1 at /20 in dark, 7.75:1 and 6.54:1 in light. This is the lightness
-       that clears 4.5:1 at every density the UI uses. */
-    --accent-strong: 0.41 0.15 352;
-    --border: 0.912 0.006 330;
-    --input: 0.912 0.006 330;
-    --ring: 0.415 0.145 352;
-    --radius: 1rem;
-    --success: 0.43 0.1 150;
-    --warning: 0.5 0.115 78;
-    --destructive: 0.49 0.185 28;
-    --destructive-foreground: 0.982 0.003 350;
-    --sidebar-background: 0.999 0.001 340;
-    --sidebar-foreground: 0.215 0.008 320;
-    --sidebar-primary: 0.415 0.145 352;
-    --sidebar-primary-foreground: 0.982 0.003 350;
-    --sidebar-accent: 0.955 0.005 330;
-    --sidebar-accent-foreground: 0.215 0.008 320;
-    --sidebar-border: 0.912 0.006 330;
-    --sidebar-ring: 0.415 0.145 352;
-    /* Data-viz series. A chart needs categorical steps, not two accent reds
-       doing the job of one. Same bordeaux family, separated by lightness. */
-    --chart-1: 0.42 0.145 352;
-    --chart-2: 0.58 0.115 355;
-    --chart-3: 0.72 0.03 330;
+       (`bg-accent/10`-`/20`). A self-tint lifts the ground toward the text, so
+       the tighter the fill, the worse it reads. This is the lightness that
+       clears 4.5:1 at every density the UI uses, on both grounds. */
+    --accent-strong: 0.5283 0.22 287.3;       /* #6b46e0 */
+    --border: 0.91 0 0;                       /* #e1e1e1 */
+    --input: 0.91 0 0;                        /* #e1e1e1 */
+    --ring: 0.5283 0.22 287.3;                /* #6b46e0 */
+    --radius: 0.75rem;
 
-    --mesh-bg: oklch(var(--background));
-    --mesh-color-1: oklch(var(--primary) / 0.045);
-    --mesh-color-2: oklch(var(--accent) / 0.035);
+    --success: 0.5737 0.1299 158.7;           /* #0a8f5b */
+    --warning: 0.63 0.15 70;                  /* #a8620a */
+    --destructive: 0.5218 0.1965 27.47;       /* #c11e1e */
+    --destructive-foreground: 1 0 0;          /* #ffffff */
+
+    --sidebar-background: 1 0 0;
+    --sidebar-foreground: 0.145 0 0;
+    --sidebar-primary: 0.5283 0.22 287.3;
+    --sidebar-primary-foreground: 1 0 0;
+    --sidebar-accent: 0.96 0 0;
+    --sidebar-accent-foreground: 0.145 0 0;
+    --sidebar-border: 0.91 0 0;
+    --sidebar-ring: 0.5283 0.22 287.3;
+
+    /* Data-viz series: the reference's three categorical marks, darkened for
+       paper so each step still separates from the white ground. */
+    --chart-1: 0.5283 0.22 287.3;             /* #6b46e0 violet */
+    --chart-2: 0.6483 0.2078 35.75;           /* #f24e1e orange */
+    --chart-3: 0.5737 0.1299 158.7;           /* #0a8f5b green */
+
+    /* Decorative material, kept as tokens so nothing in TSX restates a colour.
+       `--ring-line` is the fan's hairline stroke (#2E2E2E dark / pale grey
+       light); `--grad-*` is the palette's single gradient, violet → orange. */
+    --glow-core: 0.745 0.15 289;
+    --ring-line: 0.925 0 0;                   /* #e9e9e9 */
+    --orb: 0.96 0 0;                          /* #f2f2f2 */
+    --hairline: 0.91 0 0;                     /* #e1e1e1 */
+    --field-1: 0.97 0.012 288;
+    --field-2: 0.94 0.03 288;
+    --field-3: 0.91 0.05 288;
+    --field-4: 0.94 0.03 288;
+    --field-5: 0.97 0.012 288;
+    --grad-from: 0.5283 0.22 287.3;           /* #6b46e0 */
+    --grad-to: 0.6483 0.2078 35.75;           /* #f24e1e */
+    --glow-alpha: 0.5;
   }
 
   .dark {
-    /* Dark mode: Bordeaux & Bone: near-black violet-cast zinc, bordeaux accent. */
-    --background: 0.16 0.008 310;
-    --foreground: 0.968 0.006 340;
-    --card: 0.2 0.012 310;
-    --card-foreground: 0.968 0.006 340;
-    --popover: 0.2 0.012 310;
-    --popover-foreground: 0.968 0.006 340;
-    --primary: 0.64 0.165 355;
-    --primary-foreground: 0.16 0.008 310;
-    --primary-glow: 0.7 0.17 358;
-    --secondary: 0.248 0.014 310;
-    --secondary-foreground: 0.968 0.006 340;
-    --muted: 0.248 0.014 310;
-    --muted-foreground: 0.715 0.01 320;
-    --accent: 0.67 0.17 358;
-    --accent-foreground: 0.16 0.008 310;
-    /* Dark mode already clears 4.5:1 on every accent tint density (worst 4.64),
-       so the "strong" variant tracks the base accent rather than darkening. */
-    --accent-strong: 0.67 0.17 358;
-    --border: 0.29 0.015 310;
-    --input: 0.29 0.015 310;
-    --ring: 0.64 0.165 355;
-    --success: 0.72 0.11 150;
-    --warning: 0.79 0.12 82;
-    --destructive: 0.66 0.185 28;
-    --destructive-foreground: 0.16 0.008 310;
-    --sidebar-background: 0.2 0.012 310;
-    --sidebar-foreground: 0.968 0.006 340;
-    --sidebar-primary: 0.64 0.165 355;
-    --sidebar-primary-foreground: 0.16 0.008 310;
-    --sidebar-accent: 0.248 0.014 310;
-    --sidebar-accent-foreground: 0.968 0.006 340;
-    --sidebar-border: 0.29 0.015 310;
-    --sidebar-ring: 0.64 0.165 355;
-    /* Data-viz series. A chart needs categorical steps, not two accent reds
-       doing the job of one. Same bordeaux family, separated by lightness. */
-    --chart-1: 0.67 0.17 358;
-    --chart-2: 0.52 0.145 355;
-    --chart-3: 0.84 0.03 320;
+    /* Dark mode: the reference's own ground. Pure black, the reference's exact
+       accent (#9C83FF) and hairline (#2E2E2E), and the palette's violet as the
+       single action colour. Black on the accent measures 14.6:1, so the accent
+       is a button FILL and its own text colour at once — no darkening needed. */
+    --background: 0 0 0;                      /* #000000 */
+    --foreground: 1 0 0;                      /* #ffffff */
+    --card: 0.164 0 0;                        /* #0e0e0e */
+    --card-foreground: 1 0 0;                 /* #ffffff */
+    --popover: 0.145 0 0;                     /* #0a0a0a */
+    --popover-foreground: 1 0 0;              /* #ffffff */
+    --primary: 0.6884 0.1772 290.4;           /* #9c83ff */
+    --primary-foreground: 0 0 0;              /* #000000 */
+    --primary-glow: 0.631 0.2352 299.9;       /* #a259ff */
+    --secondary: 0.218 0 0;                   /* #1a1a1a */
+    --secondary-foreground: 1 0 0;            /* #ffffff */
+    --muted: 0.218 0 0;                       /* #1a1a1a */
+    --muted-foreground: 0.716 0 0;            /* #a3a3a3 */
+    --accent: 0.6884 0.1772 290.4;            /* #9c83ff */
+    --accent-foreground: 0 0 0;               /* #000000 */
+    /* Lifted a step above `--accent` so accent text on an accent-tinted fill
+       (the tighter the fill, the closer the ground comes to the text) still
+       clears 4.5:1 at /20 on black. */
+    --accent-strong: 0.745 0.15 289;          /* #b3a1ff */
+    --border: 0.301 0 0;                      /* #2e2e2e */
+    --input: 0.301 0 0;                       /* #2e2e2e */
+    --ring: 0.6884 0.1772 290.4;              /* #9c83ff */
 
-    --mesh-bg: oklch(var(--background));
-    --mesh-color-1: oklch(var(--primary) / 0.04);
-    --mesh-color-2: oklch(var(--accent) / 0.025);
+    --success: 0.7532 0.1745 158;             /* #0acf83 */
+    --warning: 0.79 0.16 78;                  /* #ffb020 */
+    --destructive: 0.7192 0.1753 28.65;       /* #ff7262 */
+    --destructive-foreground: 0 0 0;          /* #000000 */
+
+    --sidebar-background: 0.145 0 0;
+    --sidebar-foreground: 1 0 0;
+    --sidebar-primary: 0.6884 0.1772 290.4;
+    --sidebar-primary-foreground: 0 0 0;
+    --sidebar-accent: 0.218 0 0;
+    --sidebar-accent-foreground: 1 0 0;
+    --sidebar-border: 0.301 0 0;
+    --sidebar-ring: 0.6884 0.1772 290.4;
+
+    --chart-1: 0.6884 0.1772 290.4;           /* #9c83ff */
+    --chart-2: 0.6483 0.2078 35.75;           /* #f24e1e */
+    --chart-3: 0.7532 0.1745 158;             /* #0acf83 */
+
+    --glow-core: 0.631 0.2352 299.9;          /* #a259ff */
+    --ring-line: 0.301 0 0;                   /* #2e2e2e */
+    --orb: 0.218 0 0;                         /* #1a1a1a */
+    --hairline: 0.301 0 0;                    /* #2e2e2e */
+    --field-1: 0.19 0.03 288;
+    --field-2: 0.23 0.06 288;
+    --field-3: 0.28 0.09 288;
+    --field-4: 0.23 0.06 288;
+    --field-5: 0.19 0.03 288;
+    --grad-from: 0.6884 0.1772 290.4;         /* #9c83ff */
+    --grad-to: 0.6483 0.2078 35.75;           /* #f24e1e */
+    --glow-alpha: 0.5;
+  }
+}
+
+@layer base {
+  /* Two voices, two jobs, straight from the reference. Poppins carries the
+     display line (the hero name and the wordmark); Inter carries everything
+     else — prose, labels, section headings, controls. The `sans` stack in
+     tailwind.config.ts lists the same pair so a utility class agrees. */
+  :root {
+    --font-display: "Poppins", "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Inter", "Poppins", ui-sans-serif, system-ui, sans-serif;
+    --font-nav: "Inter", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  /* The reference's glow: a soft violet bloom with no darkness inside it.
+     Contained and low-strength; the reference reads as lit, not as hazy. */
+  .uv-orb {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      oklch(var(--glow-core) / var(--glow-alpha)) 0%,
+      oklch(var(--glow-core) / calc(var(--glow-alpha) * 0.22)) 45%,
+      transparent 100%
+    );
+  }
+
+  /* Surfaces. The reference is flat on a black ground: a hairline border and a
+     barely-there fill, no glass sheen and no drop shadow. Depth is the border
+     plus the fan line behind the section, never a blur. */
+  .uv-panel {
+    position: relative;
+    border: 1px solid oklch(var(--border) / 0.85);
+    border-radius: var(--radius);
+    background: oklch(var(--card) / 0.55);
+  }
+
+  /* The featured card: the palette's own violet drift at low strength, all of it
+     inside the accent hue, so one panel reads as lit while the rest stay flat. */
+  .uv-panel-field {
+    border: 1px solid oklch(var(--primary) / 0.28);
+    border-radius: var(--radius);
+    background: linear-gradient(
+      163deg,
+      oklch(var(--field-1) / 0.85) 7%,
+      oklch(var(--field-2) / 0.85) 34%,
+      oklch(var(--field-3) / 0.85) 57%,
+      oklch(var(--field-4) / 0.85) 85%,
+      oklch(var(--field-5) / 0.85) 100%
+    );
+  }
+
+  /* The thin bright rail that peeks out behind a panel's top edge. */
+  .uv-rail {
+    position: absolute;
+    left: 0;
+    right: calc(-1 * var(--rail-bleed, 2rem));
+    top: -0.3rem;
+    height: 0.3rem;
+    background: oklch(var(--primary) / 0.6);
+    pointer-events: none;
+  }
+
+  /* The offset plate behind a screenshot. Two plates, the deeper one peeking
+     down-right, so the image sits on a stack rather than on the page. */
+  .uv-plate {
+    position: absolute;
+    inset: 0;
+    border-radius: calc(var(--radius) - 2px);
+    pointer-events: none;
+  }
+  .uv-plate-near { background: oklch(var(--secondary)); transform: translate(2rem, 1.9rem); }
+  .uv-plate-far { background: oklch(var(--primary) / 0.2); transform: translate(1rem, 1rem); }
+
+  /* Section eyebrow. The reference sets a small, widely-tracked, uppercase
+     label BELOW its section heading ("EXPLORE NOW"): Inter 500, 11px, 6.6px
+     tracking, in the accent. */
+  .uv-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.6em;
+    text-indent: 0.6em;
+    text-transform: uppercase;
+    color: oklch(var(--accent-strong));
+  }
+
+  /* Outlined chip, the reference's LEARN MORE control. */
+  .uv-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid oklch(var(--border) / 0.8);
+    border-radius: 0.625rem;
+    background: oklch(var(--card) / 0.6);
+    color: oklch(var(--card-foreground));
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background-color 200ms, border-color 200ms, color 200ms;
+  }
+  .uv-chip:hover {
+    background: oklch(var(--primary) / 0.14);
+    border-color: oklch(var(--primary) / 0.6);
+    color: oklch(var(--accent-strong));
+  }
+
+  /* The skill grid's icon button: a plain disc that lights up. */
+  .uv-orb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: oklch(var(--orb));
+    color: oklch(var(--muted-foreground));
+    transition: background-color 200ms, color 200ms, transform 200ms;
+  }
+  .uv-orb-btn:hover {
+    background: oklch(var(--primary) / 0.2);
+    color: oklch(var(--accent-strong));
+    transform: translateY(-2px);
   }
 }
 
 @layer utilities {
   .premium-mesh {
-    background-color: var(--mesh-bg);
+    background-color: oklch(var(--background));
     position: relative;
+    /* The reference's ground is flat; every bloom is placed per section. Named
+       for the wrapper contract in index.css, not for a page-wide mesh. */
     overflow-x: hidden;
-  }
-
-  .premium-mesh::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-image:
-      radial-gradient(at 0% 0%, var(--mesh-color-1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, var(--mesh-color-2) 0px, transparent 50%);
-    pointer-events: none;
   }
 
   .glass-effect {
     @apply border shadow-lg transition-interaction duration-300;
-    background-color: oklch(var(--card) / 0.96);
+    background-color: oklch(var(--popover) / 0.96);
     border-color: oklch(var(--border) / 0.78);
   }
 
   .text-gradient {
-    color: oklch(var(--primary));
+    background-image: linear-gradient(
+      96deg,
+      oklch(var(--grad-from)) 0%,
+      oklch(var(--grad-to)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* The palette's gradient as a surface, for the one place a fill is earned. */
+  .bg-palette-gradient {
+    background-image: linear-gradient(
+      135deg,
+      oklch(var(--grad-from)) 0%,
+      oklch(var(--grad-to)) 100%
+    );
   }
 
   .glow-primary {
-    box-shadow: 0 18px 50px -28px oklch(var(--primary-glow) / 0.42);
+    box-shadow: 0 18px 50px -28px oklch(var(--primary-glow) / 0.6);
   }
 
   .modern-card {
-    /* PERFORMANCE: only paint properties transition. Animating `box-shadow`
-       (44px blur) on ~25 cards re-rasterized a large layer on every hover frame. */
-    @apply rounded-2xl border border-border/70 bg-card transition-colors duration-300;
+    @apply rounded-2xl border border-border/55 bg-card transition-colors duration-300;
   }
 
   .modern-card:hover {
-    @apply border-primary/45 shadow-lg;
-    box-shadow: 0 18px 44px -30px oklch(var(--primary) / 0.32);
+    @apply border-primary/60;
+    box-shadow: 0 18px 44px -30px oklch(var(--primary) / 0.5);
   }
 
   .section-padding {
@@ -149,11 +318,35 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-body);
   @apply premium-mesh text-foreground antialiased;
-  /* Theme swaps are intentionally instant — a full-page color fade here repaints
+  /* Theme swaps are intentionally instant — a full-page colour fade here repaints
      the entire viewport for ~500ms on every toggle. See theme-provider.tsx. */
   background-color: oklch(var(--background));
+}
+
+/* The reference's two heading voices: Poppins 700 for the hero name and the
+   wordmark, Inter 800 uppercase for section headings. */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+h2 {
+  font-family: var(--font-body);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+h3 {
+  font-weight: 600;
+}
+
+nav,
+nav a,
+nav button {
+  font-family: var(--font-nav);
 }
 
 html {
@@ -205,19 +398,19 @@ html.reduced-motion {
   background: oklch(var(--muted-foreground) / 0.5);
 }
 
-/* Browser surfaces carry the Bordeaux & Bone palette */
+/* Browser surfaces carry the Ultraviolet Ink palette */
 ::selection {
-  background: oklch(var(--primary) / 0.28);
+  background: oklch(var(--primary) / 0.32);
   color: oklch(var(--foreground));
 }
 
 ::-moz-selection {
-  background: oklch(var(--primary) / 0.28);
+  background: oklch(var(--primary) / 0.32);
   color: oklch(var(--foreground));
 }
 
 :focus-visible {
-  outline: 2px solid oklch(var(--ring) / 0.7);
+  outline: 2px solid oklch(var(--ring) / 0.75);
   outline-offset: 2px;
   border-radius: 4px;
 }

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Clock, Copy, Mail, MapPin, Phone, Send } from "lucide-react";
+import { Check, Copy, Mail, MapPin, Phone, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { RevealOnScroll } from "@/components/animations/RevealOnScroll";
 import { SectionReveal, SectionItem } from "@/components/animations/SectionReveal";
+import { SectionHeading } from "@/components/SectionHeading";
 import { Magnetic } from "@/components/animations/Magnetic";
 import { useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -145,30 +145,14 @@ const Contact = () => {
     <section id="contact" className="section-padding relative">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12">
-          <RevealOnScroll direction="down">
-            <div className="space-y-4">
-              <div className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-[0.25em] text-accent">
-                <Mail size={14} aria-hidden="true" />
-                <span>Get in touch</span>
-                <span
-                  className="h-px flex-1 bg-gradient-to-r from-accent/60 via-accent/25 to-transparent"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.06] text-foreground text-balance">
-                  Have a mobile or web role? Let&apos;s talk.
-                </h2>
-                <p className="max-w-md text-muted-foreground text-base md:text-right md:text-lg leading-relaxed">
-                  Available for Flutter and front-end work, on-site or remote.
-                </p>
-              </div>
-              <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock size={14} className="text-success" aria-hidden="true" />
-                Usually replies within 24 hours · Cairo, Egypt (GMT+2)
-              </p>
-            </div>
-          </RevealOnScroll>
+          <div className="mx-auto max-w-3xl">
+            <SectionHeading
+              eyebrow="Get In Touch"
+              title={"Let's Talk"}
+              description="Available for Flutter and front-end work, on-site or remote. Usually replies within 24 hours."
+              className="mb-12"
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Info cards enter from their reading origin (the left gutter);
@@ -176,47 +160,47 @@ const Contact = () => {
                 close on the centre line. */}
             <SectionReveal className="space-y-4">
               <SectionItem direction="right">
-                <Card className="modern-card border-border/50 rounded-xl p-5 group">
+                <div className="uv-panel p-5 group">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 rounded-xl bg-primary/15 text-accent-strong group-hover:scale-110 transition-transform duration-300">
                       <Mail className="h-5 w-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base mb-1 text-foreground">Email</h3>
                       <a
                         href="mailto:ahmed.shabaan.dev@gmail.com"
-                        className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                        className="text-muted-foreground hover:text-accent-strong transition-colors text-sm"
                       >
                         ahmed.shabaan.dev@gmail.com
                       </a>
                     </div>
                   </div>
-                </Card>
+                </div>
               </SectionItem>
 
               <SectionItem direction="right">
-                <Card className="modern-card border-border/50 rounded-xl p-5 group">
+                <div className="uv-panel p-5 group">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-accent/10 text-accent group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 rounded-xl bg-primary/15 text-accent-strong group-hover:scale-110 transition-transform duration-300">
                       <Phone className="h-5 w-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base mb-1 text-foreground">Phone / WhatsApp</h3>
                       <a
                         href="tel:+201114975104"
-                        className="text-muted-foreground hover:text-accent transition-colors text-sm"
+                        className="text-muted-foreground hover:text-accent-strong transition-colors text-sm"
                       >
                         (+20) 1114975104
                       </a>
                     </div>
                   </div>
-                </Card>
+                </div>
               </SectionItem>
 
               <SectionItem direction="right">
-                <Card className="modern-card border-border/50 rounded-xl p-5 group">
+                <div className="uv-panel p-5 group">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-success/10 text-success group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 rounded-xl bg-primary/15 text-accent-strong group-hover:scale-110 transition-transform duration-300">
                       <MapPin className="h-5 w-5" />
                     </div>
                     <div>
@@ -225,14 +209,14 @@ const Contact = () => {
                       <p className="text-xs text-muted-foreground mt-1">Available to relocate</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               </SectionItem>
             </SectionReveal>
 
             {/* The form is the opposing column: it enters from the right edge,
                 closing on the info cards arriving from the left. */}
             <RevealOnScroll direction="left">
-              <Card className="modern-card border-border/50 rounded-xl p-6">
+              <div className="uv-panel p-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                   <div>
                     <label htmlFor="name" className="text-sm font-medium mb-2 block text-foreground">
@@ -244,7 +228,7 @@ const Contact = () => {
                       placeholder="Your name"
                       maxLength={NAME_MAX}
                       dir="auto"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors"
+                      className="border-border/60 bg-background focus-visible:ring-primary/60 focus-visible:border-primary transition-colors"
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? "name-error" : undefined}
                     />
@@ -265,7 +249,7 @@ const Contact = () => {
                       placeholder="your.email@example.com"
                       maxLength={EMAIL_MAX}
                       dir="ltr"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors"
+                      className="border-border/60 bg-background focus-visible:ring-primary/60 focus-visible:border-primary transition-colors"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
                     />
@@ -289,7 +273,7 @@ const Contact = () => {
                       rows={5}
                       maxLength={MESSAGE_MAX}
                       dir="auto"
-                      className="border-border/50 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors resize-none"
+                      className="border-border/60 bg-background focus-visible:ring-primary/60 focus-visible:border-primary transition-colors resize-none"
                       aria-invalid={!!errors.message}
                       aria-describedby={errors.message ? "message-error" : undefined}
                     />
@@ -347,7 +331,7 @@ const Contact = () => {
                     type="button"
                     variant="outline"
                     onClick={handleCopyEmail}
-                    className="w-full border-border/50"
+                    className="w-full border-border/80 bg-card text-card-foreground text-xs font-medium tracking-[0.08em] uppercase hover:bg-primary/15 hover:border-primary/60 hover:text-accent-strong"
                   >
                     {copied ? (
                       <>
@@ -362,7 +346,7 @@ const Contact = () => {
                     )}
                   </Button>
                 </form>
-              </Card>
+              </div>
             </RevealOnScroll>
           </div>
         </div>

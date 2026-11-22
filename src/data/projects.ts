@@ -18,6 +18,15 @@ export type Project = {
   demoKind: DemoKind;
   /** Local cover art served from /public (e.g. "/projects/melano/cover.png"). */
   coverImage: string;
+  /**
+   * Intrinsic size of `coverImage` as `[width, height]`.
+   *
+   * The card sizes its media panel from this so any source fits with no crop
+   * and no letterbox: the project screenshots are 9:16, while a GitHub fallback
+   * cover is 1:1. Stated here rather than measured in the browser so the panel
+   * is correct on the first paint, before the image has loaded.
+   */
+  coverAspect: [number, number];
   /** Local gallery images served from /public. Empty when only a cover exists. */
   screenshots: string[];
 };
@@ -41,6 +50,7 @@ export const flutterProjects: Project[] = [
     demo: "https://play.google.com/store/apps/details?id=com.quvlox.cvbuilder",
     demoKind: "play",
     coverImage: "/projects/cv-builder/shot-2.webp",
+    coverAspect: [941, 1672],
     screenshots: [
       "/projects/cv-builder/shot-1.webp",
       "/projects/cv-builder/shot-2.webp",
@@ -72,6 +82,7 @@ export const flutterProjects: Project[] = [
     demo: "https://play.google.com/store/apps/details?id=quvlox.nassy.com",
     demoKind: "play",
     coverImage: "/projects/nassy/4-home.webp",
+    coverAspect: [941, 1672],
     screenshots: [
       "/projects/nassy/1-splash.webp",
       "/projects/nassy/2-onboarding.webp",
@@ -96,6 +107,7 @@ export const flutterProjects: Project[] = [
     demo: "https://play.google.com/store/apps/details?id=com.rssreader.pro",
     demoKind: "play",
     coverImage: "/projects/rss-reader-pro/shot-2.webp",
+    coverAspect: [940, 1671],
     screenshots: [
       "/projects/rss-reader-pro/shot-2.webp",
       "/projects/rss-reader-pro/shot-3.webp",
@@ -121,6 +133,7 @@ export const flutterProjects: Project[] = [
     demo: "https://drive.google.com/file/d/1Dx9eljBBLQm1gtG8V3AGdzn2NEwKEnpc/view?usp=sharing",
     demoKind: "video",
     coverImage: "/projects/enjez-mobile/cover.webp",
+    coverAspect: [1280, 1280],
     screenshots: [
       "/projects/enjez-mobile/cover.webp",
       "/projects/enjez-mobile/1.webp",
@@ -309,6 +322,7 @@ export const frontendProjects: Project[] = [
     demo: "https://melano.store",
     demoKind: "live",
     coverImage: "/projects/melano/web-1-home.webp",
+    coverAspect: [1920, 878],
     screenshots: [
       "/projects/melano/web-1-home.webp",
       "/projects/melano/web-2-collection.webp",
@@ -334,6 +348,7 @@ export const frontendProjects: Project[] = [
     demo: "https://enjez.vercel.app/home",
     demoKind: "live",
     coverImage: "/projects/enjez-web/web-1-home.webp",
+    coverAspect: [1120, 863],
     screenshots: [
       "/projects/enjez-web/web-1-home.webp",
       "/projects/enjez-web/web-2-services.webp",
@@ -353,6 +368,7 @@ export const frontendProjects: Project[] = [
     demo: "https://elmatgar.vercel.app/",
     demoKind: "live",
     coverImage: "/projects/elmatgar/web-1-home.webp",
+    coverAspect: [1280, 594],
     screenshots: [
       "/projects/elmatgar/web-1-home.webp",
       "/projects/elmatgar/web-2-product.webp",
@@ -373,6 +389,7 @@ export const frontendProjects: Project[] = [
     demo: "https://e-learning-now.vercel.app/",
     demoKind: "live",
     coverImage: "/projects/upcourse/web-1-home.webp",
+    coverAspect: [1280, 590],
     screenshots: [
       "/projects/upcourse/web-1-home.webp",
       "/projects/upcourse/web-2-courses.webp",
